@@ -38,7 +38,6 @@ public:
 
 private:
 	void RenderSkybox(void);
-
 	int numLight;
 	Transform player;
 };

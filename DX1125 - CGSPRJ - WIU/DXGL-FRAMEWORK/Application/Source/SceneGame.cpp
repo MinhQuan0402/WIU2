@@ -17,6 +17,17 @@
 #include <btBulletDynamicsCommon.h>
 #include "CollisionManager.h"
 #include <MyMath.h>
+#include "Utility.h"
+
+SceneGame::SceneGame() : numLight{ 2 }
+{
+	meshList.resize(NUM_GEOMETRY);
+	lights.resize(numLight);
+}
+
+SceneGame::~SceneGame()
+{
+}
 
 std::vector<btRigidBody*> bodies;
 
@@ -56,18 +67,11 @@ btRigidBody* addBox(float size_x, float size_y, float size_z, float x, float y, 
 	return rb;
 }
 
-SceneGame::SceneGame() : numLight{ 2 }
-{
-	meshList.resize(NUM_GEOMETRY);
-	lights.resize(numLight);
-}
-
-SceneGame::~SceneGame()
-{
-}
-
 void SceneGame::Init()
-{// Set background color to dark blue
+{
+	Scene::Init();
+
+	// Set background color to dark blue
 	glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
 
 	//Enable depth buffer and depth testing
@@ -126,7 +130,8 @@ void SceneGame::Init()
 	meshList[GEO_SPHERE] = MeshBuilder::GenerateSphere("Sphere", WHITE, 1.0f, 100, 100);
 	meshList[GEO_CUBE] = MeshBuilder::GenerateCube("Cube", GREEN, 1.0f);
 	meshList[GEO_PLANE] = MeshBuilder::GenerateQuad("Quad", RED, 1000.0f);
-	mainCamera.Init(glm::vec3(8, 6, 6), glm::vec3(0, 3, 0), VECTOR3_UP);
+
+	mainCamera.Init(glm::vec3(8, 6, 6), glm::vec3(0, 6, 0), VECTOR3_UP);
 	
 	glUniform1i(m_parameters[U_NUMLIGHTS], 2);
 
@@ -155,8 +160,6 @@ void SceneGame::Init()
 
 	enableLight = true;
 
-	CollisionManager::GetInstance()->SetUpDynamicWorld(10.0f);
-
 	btTransform groundTransform;
 	groundTransform.setIdentity();
 	groundTransform.setOrigin(btVector3(0.f, 0.f, 0.f));
@@ -169,8 +172,8 @@ void SceneGame::Init()
 	CollisionManager::GetInstance()->GetDynamicsWorld()->addRigidBody(groundRB);
 	bodies.push_back(groundRB);
 
-	addSphere(1.0f, 0.f, 20.0f, 0.f, 1.0f);
-	addBox(1.0f, 1.0f, 1.0f, 0.0f, 30.0f, 0.f, 1.0f);
+	addSphere(2.0f, 0.f, 20.0f, 0.f, 1.0f);
+	addBox(2.0f, 2.5f, 4.0f, 0.0f, 30.0f, 0.f, 1.0f);
 }
 
 void SceneGame::Update()
@@ -189,7 +192,7 @@ void SceneGame::Update()
 	glm::vec3 finalForce = inputMovementDir * 10.0f * Time::deltaTime;
 	mainCamera.m_transform.Translate(finalForce);
 	mainCamera.UpdateCameraRotation();
-	
+
 	if (KeyboardController::GetInstance()->IsKeyPressed(VK_SPACE))
 	{
 		btRigidBody* rb = addSphere(1.0f, mainCamera.m_transform.m_position.x, mainCamera.m_transform.m_position.y, mainCamera.m_transform.m_position.z, 1.0f);
@@ -247,40 +250,22 @@ void SceneGame::Render()
 
 	for (btRigidBody* body : bodies)
 	{
-		if (body->getCollisionShape()->getShapeType() != SPHERE_SHAPE_PROXYTYPE) continue;
-
-		btTransform t;
 		Transform newT;
-		body->getMotionState()->getWorldTransform(t);
-		float mat[16];
-		t.getOpenGLMatrix(mat);
-		newT.Translate(t.getOrigin().x(), t.getOrigin().y(), t.getOrigin().z());
-		RenderMesh(meshList[GEO_SPHERE], false, newT);
-	}
-	for (btRigidBody* body : bodies)
-	{
-		if (body->getCollisionShape()->getShapeType() != BOX_SHAPE_PROXYTYPE) continue;
-
-		btTransform t;
-		Transform newT;
-		body->getMotionState()->getWorldTransform(t);
-		float mat[16];
-		t.getOpenGLMatrix(mat);
-		glm::mat4 matrix{};
-		int index = 0;
-		for (int i = 0; i < 4; ++i)
+		modelStack.PushMatrix();
+		modelStack.LoadMatrix(GetTransformMatrix(body));
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		if (body->getCollisionShape()->getShapeType() == SPHERE_SHAPE_PROXYTYPE)
 		{
-			for (int j = 0; j < 4; ++j)
-			{
-				matrix[i][j] = mat[index];
-				index++;
-			}
+			modelStack.Scale(2.0f, 2.0f, 2.0f);
+			RenderRigidMesh(hitboxMeshList[HITBOX_SPHERE], false, newT, body);
 		}
-		newT.Translate(t.getOrigin().x(), t.getOrigin().y(), t.getOrigin().z());
-		auto rotationT = t.getRotation();
-		glm::vec3 rotation = glm::vec3(btDegrees(rotationT.x()), btDegrees(rotationT.y()), btDegrees(rotationT.z()));
-		newT.Rotate(rotation);
-		RenderMesh(meshList[GEO_CUBE], false, newT);
+		else if (body->getCollisionShape()->getShapeType() == BOX_SHAPE_PROXYTYPE)
+		{
+			modelStack.Scale(2.0f, 2.5f, 4.0f);
+			RenderRigidMesh(hitboxMeshList[HITBOX_BOX], false, newT, body);
+		}
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		modelStack.PopMatrix();
 	}
 }
 
@@ -289,15 +274,7 @@ void SceneGame::Exit()
 	// Cleanup VBO here
 	for (int i = 0; i < NUM_GEOMETRY; ++i) { if (meshList[i]) delete meshList[i]; }
 	meshList.clear();
-	for (size_t i = 0; i < bodies.size(); ++i)
-	{
-		CollisionManager::GetInstance()->GetDynamicsWorld()->removeRigidBody(bodies[i]);
-		btMotionState* motion = bodies[i]->getMotionState();
-		btCollisionShape* shape = bodies[i]->getCollisionShape();
-		delete bodies[i];
-		delete shape;
-		delete motion;
-	}
+	GameObjectManager::GetInstance()->clearGOs();
 
 	glDeleteVertexArrays(1, &m_vertexArrayID);
 	glDeleteProgram(m_programID);

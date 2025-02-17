@@ -7,7 +7,7 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 
-FPCamera::FPCamera() : isDirty(false), right{}, view{}
+FPCamera::FPCamera() : isDirty(false), right{}, view{}, sensitivity{ 10.0f }
 {
 	this->target = glm::vec3(0, 0, 0);
 	this->up = glm::vec3(0, 1, 0);
@@ -46,11 +46,8 @@ void FPCamera::UpdateCameraRotation(void)
 	deltaX = (float)MouseController::GetInstance()->GetMouseDeltaX();
 	deltaY = (float)MouseController::GetInstance()->GetMouseDeltaY();
 
-	float sensitivity = 3.0f; // Adjust sensitivity for both yaw and pitch
-
 	//Yaw update
 	float yawAngle = -deltaX * sensitivity * (float)Time::deltaTime;
-	m_transform.m_rotation.y += -deltaX * sensitivity * (float)Time::deltaTime;
 
 	glm::mat4 yaw = glm::rotate(glm::mat4(1.0f), glm::radians(yawAngle), up);
 	glm::vec3 yawView = yaw * glm::vec4(view, 0.f);

@@ -12,6 +12,7 @@ class FPCamera : public GameObject
 public:
     glm::vec3 target;
     glm::vec3 up;
+    float sensitivity; // Adjust sensitivity for both yaw and pitch
 
     FPCamera();
     ~FPCamera();

@@ -1,32 +1,44 @@
 #pragma once
-#include <vector>
+#include <UnorderedVector.h>
 #include "GameObject.h"
+#include "CQuad.h"
+
 class SceneGame;
 class GameObjectManager
 {
 private:
-	std::vector<GameObject*> m_data;
-
+	CQuad* m_root;
+	UnorderedVector<GameObject*> m_allGOs;
 	static GameObjectManager* m_instance;
 
-	GameObjectManager(void) {};
-	~GameObjectManager(void);
+	void preOrder(CQuad* p, unsigned level);
+	void quadDivision(CQuad* p);
+	CQuad* findQuad(CQuad* p, GameObject* go);
+	void postorderDeleteGO(CQuad* p, GameObject* obj2Remove);
+
+	GameObjectManager(void);
 public:
+	~GameObjectManager(void);
+
 	static GameObjectManager* GetInstance(void);
 	static void DestroyInstance(void);
 	static size_t ListSize(void);
-	static std::vector<GameObject*>& GetData(void);
+	static UnorderedVector<GameObject*>& GetData(void);
+	static CQuad* GetRoot(void);
 
 	static void addItem(GameObject* obj);
-
 	void removeItem(GameObject* obj);
 	static bool findObjInList(const GameObject& value, int& index);
+	static void DivideQuad(void);
 
 	static void IniAll(void);
 	static void UpdateAll(void);
-	static void RenderAll(SceneGame& scene);
+	static void RenderAll(Scene& scene);
 
-	void clearAll(void);
+	void clearQuad(CQuad* p);
+	void clearGOs(void);
+
+	static void PrintTree(void);
 
 	GameObject* operator[](const int& index) const;
 	GameObject*& operator[](const int& index);

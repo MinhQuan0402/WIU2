@@ -146,6 +146,7 @@ void Application::Init()
 void Application::Run()
 {
 	//Main Loop
+	CollisionManager::GetInstance()->SetUpDynamicWorld(10.0f);
 	SceneManager::GetInstance()->PushState(new SceneGame);
 	m_timer.startTimer();    // Start timer to calculate how long it takes to render this frame
 	double accumulatedTime = 0.0;

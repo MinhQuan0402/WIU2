@@ -2,17 +2,27 @@
 #include "Time.h"
 #include "KeyboardController.h"
 #include "Scene.h"
+#include "CollisionManager.h"
 
-GameObject::GameObject(void) : m_parent{ nullptr }, m_transform{}, m_name{}, m_tag{}, isActive{ false }
+GameObject::GameObject(void) : m_parent{ nullptr }, m_transform{}, m_name{}, m_tag{}, isActive{ false }, rb{ nullptr }
 {
 }
 
-GameObject::GameObject(const std::string& name) : m_parent{ nullptr }, m_transform{}, m_name{ name }, m_tag{}, isActive{ false }
+GameObject::GameObject(const std::string& name) : m_parent{ nullptr }, m_transform{}, m_name{ name }, m_tag{}, isActive{ false }, rb{ nullptr }
 {
 }
 
 GameObject::~GameObject(void)
 {
+	if (rb)
+	{
+		CollisionManager::GetInstance()->GetDynamicsWorld()->removeRigidBody(rb);
+		btMotionState* motion = rb->getMotionState();
+		btCollisionShape* shape = rb->getCollisionShape();
+		delete rb;
+		delete shape;
+		delete motion;
+	}
 }
 
 void GameObject::Initialize(glm::vec3 pos, glm::vec3 rot, glm::vec3 scale)

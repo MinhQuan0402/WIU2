@@ -1,4 +1,5 @@
 #include "Scene.h"
+
 #include "MyMath.h"	
 #include "GL\glew.h"
 
@@ -10,11 +11,20 @@
 #include "KeyboardController.h"
 #include "Time.h"
 #include <GLFW/glfw3.h>
+#include "Utility.h"
+
 
 bool Scene::enableLight = true;
 
-Scene::Scene() : axis(nullptr), lightMesh(nullptr), m_vertexArrayID{}, m_programID{}, m_parameters{}
+Scene::Scene() : m_vertexArrayID{}, m_programID{}, m_parameters{}
 {
+}
+
+void Scene::Init()
+{
+	hitboxMeshList.resize(HITBOX_SHAPE);
+	hitboxMeshList[HITBOX_SPHERE] = MeshBuilder::GenerateSphere("Sphere", GREEN, 1.0f, 50, 50);
+	hitboxMeshList[HITBOX_BOX] = MeshBuilder::GenerateCube("Cube", GREEN, 1.0f);
 }
 
 void Scene::RenderMesh(Mesh* mesh, bool enableLight)
@@ -101,6 +111,47 @@ void Scene::RenderMesh(Mesh* mesh, bool enableLight, Transform& transform)
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 	modelStack.Clear();
+}
+void Scene::RenderRigidMesh(Mesh* mesh, bool enableLight, Transform& transform, btRigidBody* body)
+{
+	glm::mat4 MVP, modelView, modelView_inverse_transpose;
+	MVP = projectionStack.Top() * viewStack.Top() * modelStack.Top();
+	glUniformMatrix4fv(m_parameters[U_MVP], 1, GL_FALSE, glm::value_ptr(MVP));
+	modelView = viewStack.Top() * modelStack.Top();
+	glUniformMatrix4fv(m_parameters[U_MODELVIEW], 1, GL_FALSE, glm::value_ptr(modelView));
+	if (enableLight)
+	{
+		glUniform1i(m_parameters[U_LIGHTENABLED], 1);
+		modelView_inverse_transpose = glm::inverseTranspose(modelView);
+		glUniformMatrix4fv(m_parameters[U_MODELVIEW_INVERSE_TRANSPOSE], 1, GL_FALSE, glm::value_ptr(modelView_inverse_transpose));
+
+		//load material
+		glUniform3fv(m_parameters[U_MATERIAL_AMBIENT], 1, &mesh->material.kAmbient.r);
+		glUniform3fv(m_parameters[U_MATERIAL_DIFFUSE], 1, &mesh->material.kDiffuse.r);
+		glUniform3fv(m_parameters[U_MATERIAL_SPECULAR], 1, &mesh->material.kSpecular.r);
+		glUniform1f(m_parameters[U_MATERIAL_SHININESS], mesh->material.kShininess);
+	}
+	else
+	{
+		glUniform1i(m_parameters[U_LIGHTENABLED], 0);
+	}
+
+	if (mesh->textureID > 0)
+	{
+		glUniform1i(m_parameters[U_COLOR_TEXTURE_ENABLED], 1);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, mesh->textureID);
+		glUniform1i(m_parameters[U_COLOR_TEXTURE], 0);
+	}
+	else
+	{
+		glUniform1i(m_parameters[U_COLOR_TEXTURE_ENABLED], 0);
+	}
+	mesh->Render();
+	if (mesh->textureID > 0)
+	{
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
 }
 void Scene::RenderMeshOnScreen(Mesh* mesh, float x, float y, float sizex, float sizey, glm::vec3 rotation)
 {
@@ -230,6 +281,7 @@ void Scene::RenderLine(glm::vec3 startPoint, glm::vec3 endPoint, float thickness
 	//RenderMesh(meshList[GEO_BOX], color);
 	//modelStack.PopMatrix();
 }
+
 void Scene::HandleKeyPress(void)
 {
 	if (KeyboardController::GetInstance()->IsKeyPressed(0x31))
@@ -287,3 +339,4 @@ void Scene::HandleKeyPress(void)
 	}
 
 }
+

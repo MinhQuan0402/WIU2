@@ -9,9 +9,6 @@
 
 class Scene
 {
-private:
-	Mesh *axis, *lightMesh;
-
 public:
 	enum UNIFORM_TYPE
 	{
@@ -79,20 +76,29 @@ public:
 
 public:
 	Scene();
-	~Scene() {}
+	~Scene() = default;
 
-	virtual void Init() = 0;
+	virtual void Init();
 	virtual void Update() = 0;
 	virtual void Render() = 0;
 	virtual void Exit() = 0;
 
 	void RenderMesh(Mesh* mesh, bool enableLight = false);
 	void RenderMesh(Mesh* mesh, bool enableLight, Transform& transform);
+	void RenderRigidMesh(Mesh* mesh, bool enableLight, Transform& transform, btRigidBody* body);
 	void RenderMeshOnScreen(Mesh* mesh, float x, float y, float sizex, float sizey, glm::vec3 rotation = glm::vec3{});
 	void RenderText(Mesh* mesh, std::string text, glm::vec3 color);
 	void RenderTextOnScreen(Mesh* mesh, std::string text, glm::vec3 color, float size, float x, float y);
 	void RenderLine(glm::vec3 startPoint, glm::vec3 endPoint, float thickness, glm::vec3 color, float depth);
 protected:
+	enum HITBOX_TYPE
+	{
+		HITBOX_SPHERE,
+		HITBOX_BOX,
+		HITBOX_SHAPE
+	};
+	UnorderedVector<Mesh*> hitboxMeshList;
+
 	FPCamera mainCamera;
 
 	virtual void HandleKeyPress(void);

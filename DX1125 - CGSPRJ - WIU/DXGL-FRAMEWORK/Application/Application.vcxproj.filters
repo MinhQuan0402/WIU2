@@ -25,6 +25,12 @@
     <Filter Include="Source Files\Managers">
       <UniqueIdentifier>{6a217aff-8802-436e-bad7-e91e72c081ad}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Managers\GameManager">
+      <UniqueIdentifier>{f73e29a6-5fb1-4ba0-9caa-d74c964e90ef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Managers\GameManager">
+      <UniqueIdentifier>{dade94ca-696f-4d2e-8b6b-b0c9c72e4804}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Application.cpp">
@@ -75,9 +81,6 @@
     <ClCompile Include="Source\SceneManager.cpp">
       <Filter>Source Files\Managers</Filter>
     </ClCompile>
-    <ClCompile Include="Source\GameObjectManager.cpp">
-      <Filter>Source Files\Managers</Filter>
-    </ClCompile>
     <ClCompile Include="Source\LoadPNG.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -86,6 +89,18 @@
     </ClCompile>
     <ClCompile Include="Source\CollisionManager.cpp">
       <Filter>Source Files\Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GameObjectManager.cpp">
+      <Filter>Source Files\Managers\GameManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CQuad.cpp">
+      <Filter>Source Files\Managers\GameManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Utility.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ColliderManager.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -137,9 +152,6 @@
     <ClInclude Include="Source\Time.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\SceneManager.h">
-      <Filter>Header Files\Managers</Filter>
-    </ClInclude>
     <ClInclude Include="Source\GameObjectManager.h">
       <Filter>Header Files\Managers</Filter>
     </ClInclude>
@@ -152,8 +164,17 @@
     <ClInclude Include="Source\CollisionManager.h">
       <Filter>Header Files\Managers</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="ClassDiagram.cd" />
+    <ClInclude Include="Source\SceneManager.h">
+      <Filter>Header Files\Managers\GameManager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\..\..\School\DX1125 - CGSPRJ - WIU\DXGL-FRAMEWORK\Application\Source\CQuad.h">
+      <Filter>Header Files\Managers\GameManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Utility.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ColliderManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
