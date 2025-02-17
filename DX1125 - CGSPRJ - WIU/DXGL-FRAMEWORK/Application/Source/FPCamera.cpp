@@ -46,7 +46,7 @@ void FPCamera::UpdateCameraRotation(void)
 	deltaX = (float)MouseController::GetInstance()->GetMouseDeltaX();
 	deltaY = (float)MouseController::GetInstance()->GetMouseDeltaY();
 
-	float sensitivity = 3.0f; // Adjust sensitivity for both yaw and pitch
+	float sensitivity = 20.0f; // Adjust sensitivity for both yaw and pitch
 
 	//Yaw update
 	float yawAngle = -deltaX * sensitivity * (float)Time::deltaTime;

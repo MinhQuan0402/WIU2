@@ -17,6 +17,7 @@
 #include "SceneGame.h"
 #include "SceneManager.h"
 #include "CollisionManager.h"
+#include "SceneDuckFishing.h"
 
 GLFWmonitor* primaryMonitor;
 const GLFWvidmode* videoMode;
@@ -146,6 +147,7 @@ void Application::Init()
 void Application::Run()
 {
 	//Main Loop
+
 	SceneManager::GetInstance()->PushState(new SceneGame);
 	m_timer.startTimer();    // Start timer to calculate how long it takes to render this frame
 	double accumulatedTime = 0.0;

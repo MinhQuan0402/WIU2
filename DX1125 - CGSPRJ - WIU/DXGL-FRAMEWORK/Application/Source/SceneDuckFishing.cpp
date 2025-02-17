@@ -1,5 +1,5 @@
 #define _USE_MATH_DEFINES
-#include "SceneGame.h"
+#include "SceneDuckFishing.h"
 #include "GL\glew.h"
 
 #include "shader.hpp"
@@ -18,55 +18,17 @@
 #include "CollisionManager.h"
 #include <MyMath.h>
 
-std::vector<btRigidBody*> bodies;
-
-btRigidBody* addSphere(float rad, float x, float y, float z, float mass)
-{
-	btTransform t;
-	t.setIdentity();
-	t.setOrigin(btVector3(x, y, z));
-	btSphereShape* sphere = new btSphereShape(rad);
-	btVector3 inertia(0.f, 0.f, 0.f);
-	if (mass != 0.0f) sphere->calculateLocalInertia(mass, inertia);
-	btMotionState* motion = new btDefaultMotionState(t);
-	btRigidBody::btRigidBodyConstructionInfo info(mass, motion, sphere, inertia);
-	info.m_restitution = 0.8f;
-	info.m_friction = 0.8f;
-	btRigidBody* rb = new btRigidBody(info);
-	CollisionManager::GetInstance()->GetDynamicsWorld()->addRigidBody(rb);
-	bodies.push_back(rb);
-	return rb;
-}
-
-btRigidBody* addBox(float size_x, float size_y, float size_z, float x, float y, float z, float mass)
-{
-	btTransform t;
-	t.setIdentity();
-	t.setOrigin(btVector3(x, y, z));
-	btBoxShape* box = new btBoxShape(btVector3(size_x / 2.0f, size_y / 2.0f, size_z / 2.0f));
-	btVector3 inertia(0.f, 0.f, 0.f);
-	if (mass != 0.0f) box->calculateLocalInertia(mass, inertia);
-	btMotionState* motion = new btDefaultMotionState(t);
-	btRigidBody::btRigidBodyConstructionInfo info(mass, motion, box, inertia);
-	info.m_restitution = 0.8f;
-	info.m_friction = 0.8f;
-	btRigidBody* rb = new btRigidBody(info);
-	CollisionManager::GetInstance()->GetDynamicsWorld()->addRigidBody(rb);
-	bodies.push_back(rb);
-	return rb;
-}
-
-SceneGame::SceneGame() : numLight{ 2 }
+SceneDuckFishing::SceneDuckFishing() : numLight{ 2 }
 {
 	meshList.resize(NUM_GEOMETRY);
 	lights.resize(numLight);
 }
 
-SceneGame::~SceneGame()
+SceneDuckFishing::~SceneDuckFishing()
 {
 }
 
-void SceneGame::Init()
+void SceneDuckFishing::Init()
 {// Set background color to dark blue
 	glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
 
@@ -126,7 +88,7 @@ void SceneGame::Init()
 	meshList[GEO_SPHERE] = MeshBuilder::GenerateSphere("Sphere", WHITE, 1.0f, 100, 100);
 	meshList[GEO_CUBE] = MeshBuilder::GenerateCube("Cube", GREEN, 1.0f);
 	meshList[GEO_PLANE] = MeshBuilder::GenerateQuad("Quad", RED, 1000.0f);
-	mainCamera.Init(glm::vec3(8, 6, 6), glm::vec3(0, 6, 0), VECTOR3_UP);
+	mainCamera.Init(glm::vec3(8, 6, 6), glm::vec3(0, 3, 0), VECTOR3_UP);
 	
 	glUniform1i(m_parameters[U_NUMLIGHTS], 2);
 
@@ -156,24 +118,9 @@ void SceneGame::Init()
 	enableLight = true;
 
 	CollisionManager::GetInstance()->SetUpDynamicWorld(10.0f);
-
-	btTransform groundTransform;
-	groundTransform.setIdentity();
-	groundTransform.setOrigin(btVector3(0.f, 0.f, 0.f));
-	btStaticPlaneShape* plane = new btStaticPlaneShape(btVector3(0.f, 1.0f, 0.f), 0);
-	btMotionState* motion = new btDefaultMotionState(groundTransform);
-	btRigidBody::btRigidBodyConstructionInfo info(0.f, motion, plane);
-	info.m_restitution = 0.8f;
-	info.m_friction = 0.5f;
-	btRigidBody* groundRB = new btRigidBody(info);
-	CollisionManager::GetInstance()->GetDynamicsWorld()->addRigidBody(groundRB);
-	bodies.push_back(groundRB);
-
-	addSphere(1.0f, 0.f, 20.0f, 0.f, 1.0f);
-	addBox(1.0f, 1.0f, 1.0f, 0.0f, 30.0f, 0.f, 1.0f);
 }
 
-void SceneGame::Update()
+void SceneDuckFishing::Update()
 {
 	HandleKeyPress();
 	mainCamera.Update();
@@ -190,15 +137,9 @@ void SceneGame::Update()
 	mainCamera.m_transform.Translate(finalForce);
 	mainCamera.UpdateCameraRotation();
 	
-	if (KeyboardController::GetInstance()->IsKeyPressed(VK_SPACE))
-	{
-		btRigidBody* rb = addSphere(1.0f, mainCamera.m_transform.m_position.x, mainCamera.m_transform.m_position.y, mainCamera.m_transform.m_position.z, 1.0f);
-		glm::vec3 look = mainCamera.view * 20.0f;
-		rb->setLinearVelocity(btVector3(look.x, look.y, look.z));
-	}
 }
 
-void SceneGame::Render()
+void SceneDuckFishing::Render()
 {
 	// Clear color buffer every frame
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -239,71 +180,20 @@ void SceneGame::Render()
 	modelStack.PushMatrix();
 	RenderMesh(meshList[GEO_AXIS]);
 	modelStack.PopMatrix();
-
-	modelStack.PushMatrix();
-	modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
-	RenderMesh(meshList[GEO_PLANE]);
-	modelStack.PopMatrix();
-
-	for (btRigidBody* body : bodies)
-	{
-		if (body->getCollisionShape()->getShapeType() != SPHERE_SHAPE_PROXYTYPE) continue;
-
-		btTransform t;
-		Transform newT;
-		body->getMotionState()->getWorldTransform(t);
-		float mat[16];
-		t.getOpenGLMatrix(mat);
-		newT.Translate(t.getOrigin().x(), t.getOrigin().y(), t.getOrigin().z());
-		RenderMesh(meshList[GEO_SPHERE], false, newT);
-	}
-	for (btRigidBody* body : bodies)
-	{
-		if (body->getCollisionShape()->getShapeType() != BOX_SHAPE_PROXYTYPE) continue;
-
-		btTransform t;
-		Transform newT;
-		body->getMotionState()->getWorldTransform(t);
-		float mat[16];
-		t.getOpenGLMatrix(mat);
-		glm::mat4 matrix{};
-		int index = 0;
-		for (int i = 0; i < 4; ++i)
-		{
-			for (int j = 0; j < 4; ++j)
-			{
-				matrix[i][j] = mat[index];
-				index++;
-			}
-		}
-		newT.Translate(t.getOrigin().x(), t.getOrigin().y(), t.getOrigin().z());
-		auto rotationT = t.getRotation();
-		glm::vec3 rotation = glm::vec3(btDegrees(rotationT.x()), btDegrees(rotationT.y()), btDegrees(rotationT.z()));
-		newT.Rotate(rotation);
-		RenderMesh(meshList[GEO_CUBE], false, newT);
-	}
 }
 
-void SceneGame::Exit()
+void SceneDuckFishing::Exit()
 {
 	// Cleanup VBO here
 	for (int i = 0; i < NUM_GEOMETRY; ++i) { if (meshList[i]) delete meshList[i]; }
 	meshList.clear();
-	for (size_t i = 0; i < bodies.size(); ++i)
-	{
-		CollisionManager::GetInstance()->GetDynamicsWorld()->removeRigidBody(bodies[i]);
-		btMotionState* motion = bodies[i]->getMotionState();
-		btCollisionShape* shape = bodies[i]->getCollisionShape();
-		delete bodies[i];
-		delete shape;
-		delete motion;
-	}
+	
 
 	glDeleteVertexArrays(1, &m_vertexArrayID);
 	glDeleteProgram(m_programID);
 }
 
-void SceneGame::RenderSkybox(void)
+void SceneDuckFishing::RenderSkybox(void)
 {
 	float size = 50.0f;
 	modelStack.PushMatrix();
