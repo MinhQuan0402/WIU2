@@ -7,7 +7,7 @@ PhysicsMaterial::PhysicsMaterial(void)
 {
 }
 
-btRigidBody* addSphereCollider(GameObject*& go, const float& rad, PhysicsMaterial& mat)
+btRigidBody* addSphereCollider(GameObject* go, const float& rad, PhysicsMaterial& mat)
 {
 	if (!go) return nullptr;
 
@@ -27,11 +27,11 @@ btRigidBody* addSphereCollider(GameObject*& go, const float& rad, PhysicsMateria
 
 	btRigidBody* rb = new btRigidBody(info);
 	CollisionManager::GetInstance()->GetDynamicsWorld()->addRigidBody(rb);
-	bodies.push_back(rb);
+	//bodies.push_back(rb);
 	return rb;
 }
 
-btRigidBody* addBoxCollider(GameObject*& go, const float& width, const float& height, const float& depth, PhysicsMaterial& mat)
+btRigidBody* addBoxCollider(GameObject* go, const float& width, const float& height, const float& depth, PhysicsMaterial& mat)
 {
 	if (!go) return nullptr;
 
@@ -51,6 +51,30 @@ btRigidBody* addBoxCollider(GameObject*& go, const float& width, const float& he
 
 	btRigidBody* rb = new btRigidBody(info);
 	CollisionManager::GetInstance()->GetDynamicsWorld()->addRigidBody(rb);
-	bodies.push_back(rb);
+	//bodies.push_back(rb);
+	return rb;
+}
+
+btRigidBody* addCylinderCollider(GameObject* go, const float& height, const float& rad, PhysicsMaterial& mat)
+{
+	if (!go) return nullptr;
+
+	btTransform t;
+	t.setIdentity();
+	t.setOrigin(btVector3(go->m_transform.m_position.x, go->m_transform.m_position.y, go->m_transform.m_position.z));
+	btCylinderShape* cylinder = new btCylinderShape(btVector3(rad / 2.0f, height / 2.0f, rad / 2.0f));
+	btVector3 inertia(0.f, 0.f, 0.f);
+	if (mat.m_mass != 0.0f) cylinder->calculateLocalInertia(mat.m_mass, inertia);
+	btMotionState* motion = new btDefaultMotionState(t);
+	btRigidBody::btRigidBodyConstructionInfo info(mat.m_mass, motion, cylinder, inertia);
+
+	mat.m_bounciness = glm::clamp(mat.m_bounciness, 0.0f, 1.0f);
+	mat.m_friction = glm::clamp(mat.m_friction, 0.0f, 1.0f);
+	info.m_restitution = mat.m_bounciness;
+	info.m_friction = mat.m_friction;
+
+	btRigidBody* rb = new btRigidBody(info);
+	CollisionManager::GetInstance()->GetDynamicsWorld()->addRigidBody(rb);
+	//bodies.push_back(rb);
 	return rb;
 }
