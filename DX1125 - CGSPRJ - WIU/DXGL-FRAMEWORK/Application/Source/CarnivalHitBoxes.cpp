@@ -5,8 +5,7 @@
 
 CarnivalHitBoxes::CarnivalHitBoxes()
 {
-	
-
+	rbGOType = STATIC;
 	GameObjectManager::GetInstance()->addItem(this);
 }
 
