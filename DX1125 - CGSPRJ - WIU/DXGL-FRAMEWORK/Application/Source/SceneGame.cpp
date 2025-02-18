@@ -18,6 +18,8 @@
 #include "CollisionManager.h"
 #include <MyMath.h>
 #include "Utility.h"
+#include "RigidBody.h"
+#include "ColliderManager.h"
 
 SceneGame::SceneGame() : numLight{ 2 }
 {
@@ -29,7 +31,7 @@ SceneGame::~SceneGame()
 {
 }
 
-//std::vector<btRigidBody*> bodies;
+std::vector<btRigidBody*> bodies;
 
 btRigidBody* addSphere(float rad, float x, float y, float z, float mass)
 {
@@ -45,7 +47,7 @@ btRigidBody* addSphere(float rad, float x, float y, float z, float mass)
 	info.m_friction = 0.8f;
 	btRigidBody* rb = new btRigidBody(info);
 	CollisionManager::GetInstance()->GetDynamicsWorld()->addRigidBody(rb);
-	//bodies.push_back(rb);
+	bodies.push_back(rb);
 	return rb;
 }
 
@@ -63,7 +65,7 @@ btRigidBody* addBox(float size_x, float size_y, float size_z, float x, float y, 
 	info.m_friction = 0.8f;
 	btRigidBody* rb = new btRigidBody(info);
 	CollisionManager::GetInstance()->GetDynamicsWorld()->addRigidBody(rb);
-	//bodies.push_back(rb);
+	bodies.push_back(rb);
 	return rb;
 }
 
@@ -120,13 +122,10 @@ void SceneGame::Init()
 	m_parameters[U_TEXT_ENABLED] = glGetUniformLocation(m_programID, "textEnabled");
 	m_parameters[U_TEXT_COLOR] = glGetUniformLocation(m_programID, "textColor");
 
-	meshList[GEO_HITBOX] = MeshBuilder::GenerateCube("HitBox", glm::vec3(0.0f, 1.0f, 0.0f), 1.0f);
 	meshList[GEO_AXIS] = MeshBuilder::GenerateAxes("Axes", 10000.f, 10000.f, 10000.f);
 	meshList[GEO_LIGHT] = MeshBuilder::GenerateSphere("Sphere", WHITE, .05f, 180, 180);
 	meshList[GEO_TEXT] = MeshBuilder::GenerateText("text", 16, 16);
 	meshList[GEO_TEXT]->textureID = LoadTGA("Images//calibri.tga");
-	meshList[GEO_MODEL1] = MeshBuilder::GenerateOBJ("Doorman", "Models//doorman.obj");
-	meshList[GEO_MODEL1]->textureID = LoadPNG("Images//doorman.png");
 	meshList[GEO_SPHERE] = MeshBuilder::GenerateSphere("Sphere", WHITE, 1.0f, 100, 100);
 	meshList[GEO_CUBE] = MeshBuilder::GenerateCube("Cube", GREEN, 1.0f);
 	meshList[GEO_PLANE] = MeshBuilder::GenerateQuad("Quad", RED, 1000.0f);
@@ -160,20 +159,30 @@ void SceneGame::Init()
 
 	enableLight = true;
 
-	btTransform groundTransform;
-	groundTransform.setIdentity();
-	groundTransform.setOrigin(btVector3(0.f, 0.f, 0.f));
-	btStaticPlaneShape* plane = new btStaticPlaneShape(btVector3(0.f, 1.0f, 0.f), 0);
-	btMotionState* motion = new btDefaultMotionState(groundTransform);
-	btRigidBody::btRigidBodyConstructionInfo info(0.f, motion, plane);
-	info.m_restitution = 0.8f;
-	info.m_friction = 0.5f;
-	btRigidBody* groundRB = new btRigidBody(info);
-	CollisionManager::GetInstance()->GetDynamicsWorld()->addRigidBody(groundRB);
-	//bodies.push_back(groundRB);
+	PhysicsMaterial groundMat;
+	groundMat.m_bounciness = 0.5f;
+	groundMat.m_friction = 0.5f;
+	objInScene[GROUND] = new GameObject();
+	objInScene[GROUND]->rb = addStaticPlane(objInScene[GROUND], VECTOR3_UP, groundMat);
+	GameObjectManager::GetInstance()->addItem(objInScene[GROUND]);
 
-	addSphere(2.0f, 0.f, 20.0f, 0.f, 1.0f);
-	addBox(2.0f, 2.5f, 4.0f, 0.0f, 30.0f, 0.f, 1.0f);
+	PhysicsMaterial mat;
+	mat.m_bounciness = 0.5f;
+	mat.m_friction = 0.5f;
+	objInScene[BOX] = new GameObject();
+	objInScene[BOX]->m_transform.Translate(0.0f, 50.0f, 0.0f);
+	objInScene[BOX]->rb = addBoxCollider(objInScene[BOX], 4.0f, 2.5f, 4.0f, mat);
+	GameObjectManager::GetInstance()->addItem(objInScene[BOX]);
+
+	objInScene[SPHERE] = new GameObject();
+	objInScene[SPHERE]->m_transform.Translate(0.0f, 20.0f, 0.0f);
+	objInScene[SPHERE]->rb = addSphereCollider(objInScene[SPHERE], 5.0f, mat);
+	GameObjectManager::GetInstance()->addItem(objInScene[SPHERE]);
+
+	objInScene[CYLINDER] = new GameObject();
+	objInScene[CYLINDER]->m_transform.Translate(0.0f, 80.0f, 0.0f);
+	objInScene[CYLINDER]->rb = addCylinderCollider(objInScene[CYLINDER], 2.0f, 1.0f, mat);
+	GameObjectManager::GetInstance()->addItem(objInScene[CYLINDER]);
 }
 
 void SceneGame::Update()
@@ -192,13 +201,6 @@ void SceneGame::Update()
 	glm::vec3 finalForce = inputMovementDir * 10.0f * Time::deltaTime;
 	mainCamera.m_transform.Translate(finalForce);
 	mainCamera.UpdateCameraRotation();
-
-	if (KeyboardController::GetInstance()->IsKeyPressed(VK_SPACE))
-	{
-		btRigidBody* rb = addSphere(1.0f, mainCamera.m_transform.m_position.x, mainCamera.m_transform.m_position.y, mainCamera.m_transform.m_position.z, 1.0f);
-		glm::vec3 look = mainCamera.view * 20.0f;
-		rb->setLinearVelocity(btVector3(look.x, look.y, look.z));
-	}
 }
 
 void SceneGame::Render()
@@ -248,7 +250,48 @@ void SceneGame::Render()
 	RenderMesh(meshList[GEO_PLANE]);
 	modelStack.PopMatrix();
 
-	
+#ifdef DRAW_HITBOX
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	for (btCollisionShape* shape : ColliderManager::GetInstance()->colliders)
+	{
+		modelStack.PushMatrix();
+		modelStack.LoadIdentity();
+		GameObject* userGO = static_cast<GameObject*>(shape->getUserPointer());
+		modelStack.LoadMatrix(GetTransformMatrix(userGO->rb));
+		if (shape->getShapeType() == SPHERE_SHAPE_PROXYTYPE)
+		{
+			SphereCollider* sphereCollider = static_cast<SphereCollider*>(shape);
+			float size = sphereCollider->GetRadius();
+			modelStack.Scale(size, size, size);
+			RenderMesh(hitboxMeshList[HITBOX_SPHERE]);
+		}
+		else if (shape->getShapeType() == BOX_SHAPE_PROXYTYPE)
+		{
+			BoxCollider* boxCollider = static_cast<BoxCollider*>(shape);
+			float width, height, depth;
+			boxCollider->GetDimension(width, height, depth);
+			modelStack.Scale(width, height, depth);
+			RenderMesh(hitboxMeshList[HITBOX_BOX]);
+		}
+		else if (shape->getShapeType() == CYLINDER_SHAPE_PROXYTYPE)
+		{
+			CylinderCollider* cylinderCollider = static_cast<CylinderCollider*>(shape);
+			float rad, height;
+			cylinderCollider->GetDimension(rad, height);
+			modelStack.Scale(rad / 2.0f, height, rad / 2.0f);
+			RenderMesh(hitboxMeshList[HITBOX_CYLINDER]);
+		}
+		else if (shape->getShapeType() == STATIC_PLANE_PROXYTYPE)
+		{
+			modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
+			RenderMesh(hitboxMeshList[HITBOX_GROUND]);
+		}
+		modelStack.PopMatrix();
+	}
+
+	if(isFillMode) 
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+#endif
 }
 
 void SceneGame::Exit()
