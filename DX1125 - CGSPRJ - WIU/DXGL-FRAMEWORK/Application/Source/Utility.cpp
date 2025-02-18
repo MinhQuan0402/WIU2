@@ -24,12 +24,13 @@ Transform ConvertMatrix2Transform(float mat[16])
     t.m_position = glm::vec3(mat[12], mat[13], mat[14]);
     glm::mat3 rotationMatrix = glm::mat3(
         glm::normalize(glm::vec3(mat[0])),
-        glm::normalize(glm::vec3(mat[5])),
-        glm::normalize(glm::vec3(mat[10]))
+        glm::normalize(glm::vec3(mat[1])),
+        glm::normalize(glm::vec3(mat[2]))
     );
     glm::quat rotationQuat = glm::quat_cast(rotationMatrix);
     t.m_rotation = glm::eulerAngles(rotationQuat);
     t.m_rotation = glm::degrees(t.m_rotation);
+    t.m_rotation = glm::vec3(t.m_rotation.y, t.m_rotation.x, t.m_rotation.z);
     return t;
 }
 

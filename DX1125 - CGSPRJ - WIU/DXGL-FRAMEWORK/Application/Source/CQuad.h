@@ -26,6 +26,10 @@ private:
 	CQuad* BotR;
 
 	UnorderedVector<GameObject*> GOList;
+	UnorderedVector<GameObject*> m_staticGOs;
+	UnorderedVector<GameObject*> m_kinematicGOs;
+	UnorderedVector<GameObject*> m_dynamicGOs;
+
 	ENUM_QUADTYPE m_quadType;
 
 public:

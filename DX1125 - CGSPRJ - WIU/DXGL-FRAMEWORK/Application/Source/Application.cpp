@@ -17,7 +17,6 @@
 #include "SceneGame.h"
 #include "SceneManager.h"
 #include "CollisionManager.h"
-#include "carnivalroaming.h"
 
 GLFWmonitor* primaryMonitor;
 const GLFWvidmode* videoMode;
@@ -148,7 +147,8 @@ void Application::Run()
 {
 	//Main Loop
 	CollisionManager::GetInstance()->SetUpDynamicWorld(10.0f);
-	SceneManager::GetInstance()->PushState(new carnivalroaming);
+	SceneManager::GetInstance()->PushState(new SceneGame);
+	Time::fixedDeltaTime = FIXED_TIME_STEP;
 	m_timer.startTimer();    // Start timer to calculate how long it takes to render this frame
 	double accumulatedTime = 0.0;
 	while (!glfwWindowShouldClose(m_window) && !IsKeyPressed(VK_ESCAPE))
@@ -164,12 +164,8 @@ void Application::Run()
 		Time::time += Time::deltaTime;
 
 		SceneManager::GetInstance()->Update();
-		accumulatedTime += Time::deltaTime;
-		while (accumulatedTime >= FIXED_TIME_STEP)
-		{
-			CollisionManager::GetInstance()->UpdateCollision(FIXED_TIME_STEP);
-			accumulatedTime -= FIXED_TIME_STEP;
-		}
+		CollisionManager::GetInstance()->UpdateCollision();
+
 		SceneManager::GetInstance()->Render();
 		//Swap buffers
 		glfwSwapBuffers(m_window);

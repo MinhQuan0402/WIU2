@@ -1,4 +1,5 @@
 #include "CQuad.h"
+#include "btBulletDynamicsCommon.h"
 
 CQuad::CQuad(void)
 	: m_origin{}, m_width{}, m_depth{}, UpL{ nullptr },
@@ -32,7 +33,17 @@ CQuad* CQuad::BotRGetter(void) { return BotR; }
 
 UnorderedVector<GameObject*> CQuad::GOListGetter(void) { return GOList; }
 
-void CQuad::insertGO(GameObject* newObj) { GOList.push_back(newObj); }
+void CQuad::insertGO(GameObject* newObj) 
+{
+	GOList.push_back(newObj); 
+
+	switch (newObj->rbGOType)
+	{
+	case GameObject::DYNAMIC: m_dynamicGOs.push_back(newObj);  break;
+	case GameObject::KINEMATIC: m_kinematicGOs.push_back(newObj);  break;
+	case GameObject::STATIC: m_staticGOs.push_back(newObj);  break;
+	}
+}
 
 void CQuad::removeGO(GameObject* obj2Remove) { GOList.remove(obj2Remove); }
 

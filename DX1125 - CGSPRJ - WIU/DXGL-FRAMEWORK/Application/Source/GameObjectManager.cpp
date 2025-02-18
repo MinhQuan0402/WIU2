@@ -154,6 +154,13 @@ void GameObjectManager::addItem(GameObject* obj)
 {
 	GameObjectManager::GetInstance()->GetRoot()->insertGO(obj);
     GameObjectManager::GetInstance()->m_allGOs.push_back(obj);
+
+	switch (obj->rbGOType)
+	{
+	case GameObject::DYNAMIC:  GameObjectManager::GetInstance()->m_dynamicGOs.push_back(obj);  break;
+	case GameObject::KINEMATIC:  GameObjectManager::GetInstance()->m_kinematicGOs.push_back(obj);  break;
+	case GameObject::STATIC:  GameObjectManager::GetInstance()->m_staticGOs.push_back(obj);  break;
+	}
 }
 void GameObjectManager::removeItem(GameObject* obj)
 {
