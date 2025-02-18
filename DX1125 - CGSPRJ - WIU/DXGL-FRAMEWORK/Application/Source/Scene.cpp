@@ -16,15 +16,17 @@
 
 bool Scene::enableLight = true;
 
-Scene::Scene() : m_vertexArrayID{}, m_programID{}, m_parameters{}
+Scene::Scene() : m_vertexArrayID{}, m_programID{}, m_parameters{}, isFillMode{ true }
 {
 }
 
 void Scene::Init()
 {
 	hitboxMeshList.resize(HITBOX_SHAPE);
-	hitboxMeshList[HITBOX_SPHERE] = MeshBuilder::GenerateSphere("Sphere", GREEN, 1.0f, 50, 50);
+	hitboxMeshList[HITBOX_SPHERE] = MeshBuilder::GenerateSphere("Sphere", GREEN, 1.0f, 25, 25);
 	hitboxMeshList[HITBOX_BOX] = MeshBuilder::GenerateCube("Cube", GREEN, 1.0f);
+	hitboxMeshList[HITBOX_CYLINDER] = MeshBuilder::GenerateCylinder("Cylinder", GREEN, 25, 1.0f, 1.0f);
+	hitboxMeshList[HITBOX_GROUND] = MeshBuilder::GenerateQuad("Quad", GREEN, 1000.0f);
 }
 
 void Scene::RenderMesh(Mesh* mesh, bool enableLight)
@@ -298,11 +300,13 @@ void Scene::HandleKeyPress(void)
 	{
 		// Key press to enable fill mode for the polygon
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); //default fill mode
+		isFillMode = true;
 	}
 	if (KeyboardController::GetInstance()->IsKeyPressed(0x34))
 	{
 		// Key press to enable wireframe mode for the polygon
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); //wireframe mode
+		isFillMode = false;
 	}
 
 	if (KeyboardController::GetInstance()->IsKeyPressed(VK_DELETE))
