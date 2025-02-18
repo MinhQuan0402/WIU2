@@ -5,6 +5,7 @@
 #include "Mesh.h"
 #include "Transform.h"
 #include "GameObject.h"
+#include "RigidBody.h"
 
 class SceneCanKnockdown : public Scene
 {
@@ -26,6 +27,12 @@ public:
 		GEO_PLANE,
 		GEO_CUBE,
 		GEO_CYLINDER,
+
+		TABLE,
+		CAN,
+		TENT,
+		COUNTER,
+
 		NUM_GEOMETRY
 	};
 
@@ -42,7 +49,21 @@ private:
 	int numLight;
 	Transform player;
 
-	glm::vec3 ballPos;
+	enum OBJINSCENE {
+		GROUND,
+		BALL,
+		SODACAN,
+		SODACAN1,
+		SODACAN2,
+		SODACAN3,
+		SODACAN4,
+		SODACAN5,
+		FOLDABLE_TABLE,
+
+		NUM_OBJ
+	};
+	
+	GameObject* objInScene[NUM_OBJ];
 
 	float power;
 	bool isShooting;

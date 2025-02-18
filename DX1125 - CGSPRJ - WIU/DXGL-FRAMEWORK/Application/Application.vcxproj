@@ -151,6 +151,9 @@
   <ItemGroup>
     <ClCompile Include="Source\Application.cpp" />
     <ClCompile Include="Source\Camera.cpp" />
+    <ClCompile Include="Source\CK_Ball.cpp" />
+    <ClCompile Include="Source\CK_Cube.cpp" />
+    <ClCompile Include="Source\CK_Cylinder.cpp" />
     <ClCompile Include="Source\ColliderManager.cpp" />
     <ClCompile Include="Source\CollisionManager.cpp" />
     <ClCompile Include="Source\CQuad.cpp" />
@@ -167,6 +170,7 @@
     <ClCompile Include="Source\MeshBuilder.cpp" />
     <ClCompile Include="Source\RigidBody.cpp" />
     <ClCompile Include="Source\Scene.cpp" />
+    <ClCompile Include="Source\SceneCanKnockdown.cpp" />
     <ClCompile Include="Source\SceneGame.cpp" />
     <ClCompile Include="Source\SceneManager.cpp" />
     <ClCompile Include="Source\shader.cpp" />
@@ -178,6 +182,9 @@
     <ClInclude Include="..\Common\Source\MyMath.h" />
     <ClInclude Include="Source\Application.h" />
     <ClInclude Include="Source\Camera.h" />
+    <ClInclude Include="Source\CK_Ball.h" />
+    <ClInclude Include="Source\CK_Cube.h" />
+    <ClInclude Include="Source\CK_Cylinder.h" />
     <ClInclude Include="Source\ColliderManager.h" />
     <ClInclude Include="Source\CollisionManager.h" />
     <ClInclude Include="Source\FPCamera.h" />
@@ -195,6 +202,7 @@
     <ClInclude Include="Source\MeshBuilder.h" />
     <ClInclude Include="Source\RigidBody.h" />
     <ClInclude Include="Source\Scene.h" />
+    <ClInclude Include="Source\SceneCanKnockdown.h" />
     <ClInclude Include="Source\SceneGame.h" />
     <ClInclude Include="Source\SceneManager.h" />
     <ClInclude Include="Source\shader.hpp" />
