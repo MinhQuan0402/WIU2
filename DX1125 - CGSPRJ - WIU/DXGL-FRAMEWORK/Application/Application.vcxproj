@@ -165,6 +165,7 @@
     <ClCompile Include="Source\Mesh.cpp" />
     <ClCompile Include="Source\MeshBuilder.cpp" />
     <ClCompile Include="Source\PlinkoBall.cpp" />
+    <ClCompile Include="Source\PlinkoBoard.cpp" />
     <ClCompile Include="Source\PlinkoCylinder.cpp" />
     <ClCompile Include="Source\PlinkoGlass.cpp" />
     <ClCompile Include="Source\PlinkoWall.cpp" />
@@ -198,6 +199,7 @@
     <ClInclude Include="Source\Mesh.h" />
     <ClInclude Include="Source\MeshBuilder.h" />
     <ClInclude Include="Source\PlinkoBall.h" />
+    <ClInclude Include="Source\PlinkoBoard.h" />
     <ClInclude Include="Source\PlinkoCylinder.h" />
     <ClInclude Include="Source\PlinkoGlass.h" />
     <ClInclude Include="Source\PlinkoWall.h" />

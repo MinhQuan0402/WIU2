@@ -16,6 +16,7 @@
 #include "LoadPNG.h"
 #include <btBulletDynamicsCommon.h>
 #include "CollisionManager.h"
+#include "ColliderManager.h"
 #include <MyMath.h>
 #include "Utility.h"
 #include "PlinkoBall.h"
@@ -96,8 +97,10 @@ void ScenePlinko::Init()
 	meshList[GEO_CUBE] = MeshBuilder::GenerateCube("Cube", WHITE, 1.0f);
 	meshList[GEO_PLANE] = MeshBuilder::GenerateQuad("Quad", GREY, 1000.0f);
 	meshList[GEO_CYLINDER] = MeshBuilder::GenerateCylinder("Cylinder", WHITE, 100, 1.f, 2.f);
+	meshList[GEO_PLINKO] = MeshBuilder::GenerateOBJMTL("Plinko", "Models//plinko.obj", "Models//plinko.mtl");
+	meshList[GEO_PLINKO]->textureID = LoadPNG("Images//Atlas_1_baseColor.png");
 
-	mainCamera.Init(glm::vec3(30, 6, 0), glm::vec3(0, 6, 0), VECTOR3_UP);
+	mainCamera.Init(glm::vec3(10, 3, 0), glm::vec3(0, 3, 0), VECTOR3_UP);
 	
 	mainCamera.sensitivity = 15.f;
 
@@ -128,81 +131,81 @@ void ScenePlinko::Init()
 
 	enableLight = true;
 
-	// Create object in scene
-	objInScene[BALL] = new PlinkoBall();
-	objInScene[CYLINDER] = new PlinkoCylinder();
-	objInScene[CYLINDER1] = new PlinkoCylinder();
-	objInScene[CYLINDER2] = new PlinkoCylinder();
-	objInScene[CYLINDER3] = new PlinkoCylinder();
-	objInScene[CYLINDER4] = new PlinkoCylinder();
-	objInScene[CYLINDER5] = new PlinkoCylinder();
-	objInScene[CYLINDER6] = new PlinkoCylinder();
-	objInScene[CYLINDER7] = new PlinkoCylinder();
-	objInScene[CYLINDER8] = new PlinkoCylinder();
-	objInScene[CYLINDER9] = new PlinkoCylinder();
-	objInScene[CYLINDER10] = new PlinkoCylinder();
-	objInScene[CYLINDER11] = new PlinkoCylinder();
-	objInScene[CYLINDER12] = new PlinkoCylinder();
-	objInScene[CYLINDER13] = new PlinkoCylinder();
-	objInScene[CYLINDER14] = new PlinkoCylinder();
-	objInScene[CYLINDER15] = new PlinkoCylinder();
-	objInScene[CYLINDER16] = new PlinkoCylinder();
-	objInScene[CYLINDER17] = new PlinkoCylinder();
-	objInScene[CYLINDER18] = new PlinkoCylinder();
-	objInScene[CYLINDER19] = new PlinkoCylinder();
-	objInScene[CYLINDER20] = new PlinkoCylinder();
-	objInScene[CYLINDER21] = new PlinkoCylinder();
-	objInScene[CYLINDER22] = new PlinkoCylinder();
-	objInScene[LWALL] = new PlinkoWall();
-	objInScene[RWALL] = new PlinkoWall();
-	objInScene[BOTWALL] = new PlinkoWall();
-	objInScene[BACKWALL] = new PlinkoWall();
-	objInScene[WALL1] = new PlinkoWall();
-	objInScene[WALL2] = new PlinkoWall();
-	objInScene[WALL3] = new PlinkoWall();
-	objInScene[WALL4] = new PlinkoWall();
+	//// Create object in scene
+	//objInScene[BALL] = new PlinkoBall();
+	//objInScene[CYLINDER] = new PlinkoCylinder();
+	//objInScene[CYLINDER1] = new PlinkoCylinder();
+	//objInScene[CYLINDER2] = new PlinkoCylinder();
+	//objInScene[CYLINDER3] = new PlinkoCylinder();
+	//objInScene[CYLINDER4] = new PlinkoCylinder();
+	//objInScene[CYLINDER5] = new PlinkoCylinder();
+	//objInScene[CYLINDER6] = new PlinkoCylinder();
+	//objInScene[CYLINDER7] = new PlinkoCylinder();
+	//objInScene[CYLINDER8] = new PlinkoCylinder();
+	//objInScene[CYLINDER9] = new PlinkoCylinder();
+	//objInScene[CYLINDER10] = new PlinkoCylinder();
+	//objInScene[CYLINDER11] = new PlinkoCylinder();
+	//objInScene[CYLINDER12] = new PlinkoCylinder();
+	//objInScene[CYLINDER13] = new PlinkoCylinder();
+	//objInScene[CYLINDER14] = new PlinkoCylinder();
+	//objInScene[CYLINDER15] = new PlinkoCylinder();
+	//objInScene[CYLINDER16] = new PlinkoCylinder();
+	//objInScene[CYLINDER17] = new PlinkoCylinder();
+	//objInScene[CYLINDER18] = new PlinkoCylinder();
+	//objInScene[CYLINDER19] = new PlinkoCylinder();
+	//objInScene[CYLINDER20] = new PlinkoCylinder();
+	//objInScene[CYLINDER21] = new PlinkoCylinder();
+	//objInScene[CYLINDER22] = new PlinkoCylinder();
+	//objInScene[LWALL] = new PlinkoWall();
+	//objInScene[RWALL] = new PlinkoWall();
+	//objInScene[BOTWALL] = new PlinkoWall();
+	//objInScene[BACKWALL] = new PlinkoWall();
+	//objInScene[WALL1] = new PlinkoWall();
+	//objInScene[WALL2] = new PlinkoWall();
+	//objInScene[WALL3] = new PlinkoWall();
+	//objInScene[WALL4] = new PlinkoWall();
 
 
-	// Translate, Rotate and Scale for objects
-	objInScene[CYLINDER1]->m_transform.Translate(0, 0, 3);
-	objInScene[CYLINDER2]->m_transform.Translate(0, 0, -3);
-	objInScene[CYLINDER3]->m_transform.Translate(0, 0, 6);
-	objInScene[CYLINDER4]->m_transform.Translate(0, 0, -6);
-	objInScene[CYLINDER5]->m_transform.Translate(0, 3, 1.5);
-	objInScene[CYLINDER6]->m_transform.Translate(0, 3, -1.5);
-	objInScene[CYLINDER7]->m_transform.Translate(0, 3, 4.5);
-	objInScene[CYLINDER8]->m_transform.Translate(0, 3, -4.5);
-	objInScene[CYLINDER9]->m_transform.Translate(0, 6, 3);
-	objInScene[CYLINDER10]->m_transform.Translate(0, 6, -3);
-	objInScene[CYLINDER11]->m_transform.Translate(0, 6, 6);
-	objInScene[CYLINDER12]->m_transform.Translate(0, 6, -6);
-	objInScene[CYLINDER13]->m_transform.Translate(0, 6, 0);
-	objInScene[CYLINDER14]->m_transform.Translate(0, 9, 1.5);
-	objInScene[CYLINDER15]->m_transform.Translate(0, 9, -1.5);
-	objInScene[CYLINDER16]->m_transform.Translate(0, 9, 4.5);
-	objInScene[CYLINDER17]->m_transform.Translate(0, 9, -4.5);
-	objInScene[CYLINDER18]->m_transform.Translate(0, 12, 3);
-	objInScene[CYLINDER19]->m_transform.Translate(0, 12, -3);
-	objInScene[CYLINDER20]->m_transform.Translate(0, 12, 6);
-	objInScene[CYLINDER21]->m_transform.Translate(0, 12, -6);
-	objInScene[CYLINDER22]->m_transform.Translate(0, 12, 0);
-	objInScene[LWALL]->m_transform.Translate(0, 10, 9);
-	objInScene[LWALL]->m_transform.Rotate(90, 0, 0);
-	objInScene[RWALL]->m_transform.Translate(0, 10, -9);
-	objInScene[RWALL]->m_transform.Rotate(90, 0, 0);
-	objInScene[BACKWALL]->m_transform.Translate(-1, 10, 0);
-	objInScene[WALL1]->m_transform.Translate(0, 1.5, 1.5);
-	objInScene[WALL2]->m_transform.Translate(0, 1.5, -1.5);
-	objInScene[WALL3]->m_transform.Translate(0, 1.5, 4.5);
-	objInScene[WALL4]->m_transform.Translate(0, 1.5, -4.5);
+	//// Translate, Rotate and Scale for objects
+	//objInScene[CYLINDER1]->m_transform.Translate(0, 0, 3);
+	//objInScene[CYLINDER2]->m_transform.Translate(0, 0, -3);
+	//objInScene[CYLINDER3]->m_transform.Translate(0, 0, 6);
+	//objInScene[CYLINDER4]->m_transform.Translate(0, 0, -6);
+	//objInScene[CYLINDER5]->m_transform.Translate(0, 3, 1.5);
+	//objInScene[CYLINDER6]->m_transform.Translate(0, 3, -1.5);
+	//objInScene[CYLINDER7]->m_transform.Translate(0, 3, 4.5);
+	//objInScene[CYLINDER8]->m_transform.Translate(0, 3, -4.5);
+	//objInScene[CYLINDER9]->m_transform.Translate(0, 6, 3);
+	//objInScene[CYLINDER10]->m_transform.Translate(0, 6, -3);
+	//objInScene[CYLINDER11]->m_transform.Translate(0, 6, 6);
+	//objInScene[CYLINDER12]->m_transform.Translate(0, 6, -6);
+	//objInScene[CYLINDER13]->m_transform.Translate(0, 6, 0);
+	//objInScene[CYLINDER14]->m_transform.Translate(0, 9, 1.5);
+	//objInScene[CYLINDER15]->m_transform.Translate(0, 9, -1.5);
+	//objInScene[CYLINDER16]->m_transform.Translate(0, 9, 4.5);
+	//objInScene[CYLINDER17]->m_transform.Translate(0, 9, -4.5);
+	//objInScene[CYLINDER18]->m_transform.Translate(0, 12, 3);
+	//objInScene[CYLINDER19]->m_transform.Translate(0, 12, -3);
+	//objInScene[CYLINDER20]->m_transform.Translate(0, 12, 6);
+	//objInScene[CYLINDER21]->m_transform.Translate(0, 12, -6);
+	//objInScene[CYLINDER22]->m_transform.Translate(0, 12, 0);
+	//objInScene[LWALL]->m_transform.Translate(0, 10, 9);
+	//objInScene[LWALL]->m_transform.Rotate(90, 0, 0);
+	//objInScene[RWALL]->m_transform.Translate(0, 10, -9);
+	//objInScene[RWALL]->m_transform.Rotate(90, 0, 0);
+	//objInScene[BACKWALL]->m_transform.Translate(-1, 10, 0);
+	//objInScene[WALL1]->m_transform.Translate(0, 1.5, 1.5);
+	//objInScene[WALL2]->m_transform.Translate(0, 1.5, -1.5);
+	//objInScene[WALL3]->m_transform.Translate(0, 1.5, 4.5);
+	//objInScene[WALL4]->m_transform.Translate(0, 1.5, -4.5);
 
-	GameObjectManager::GetInstance()->IniAll();
+	//GameObjectManager::GetInstance()->IniAll();
 
-	objInScene[BACKWALL]->m_transform.ScaleBy(0.5, 21, 19);
-	objInScene[WALL1]->m_transform.ScaleBy(1.5, 2.5, 0.5);
-	objInScene[WALL2]->m_transform.ScaleBy(1.5, 2.5, 0.5);
-	objInScene[WALL3]->m_transform.ScaleBy(1.5, 2.5, 0.5);
-	objInScene[WALL4]->m_transform.ScaleBy(1.5, 2.5, 0.5);
+	//objInScene[BACKWALL]->m_transform.ScaleBy(0.5, 21, 19);
+	//objInScene[WALL1]->m_transform.ScaleBy(1.5, 2.5, 0.5);
+	//objInScene[WALL2]->m_transform.ScaleBy(1.5, 2.5, 0.5);
+	//objInScene[WALL3]->m_transform.ScaleBy(1.5, 2.5, 0.5);
+	//objInScene[WALL4]->m_transform.ScaleBy(1.5, 2.5, 0.5);
 }
 
 void ScenePlinko::Update()
@@ -272,9 +275,55 @@ void ScenePlinko::Render()
 	RenderMesh(meshList[GEO_PLANE]);
 	modelStack.PopMatrix();
 
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	modelStack.PushMatrix();
+	modelStack.Translate(0, 0.2, 0);
+	RenderMesh(meshList[GEO_PLINKO]);
+	modelStack.PopMatrix();
+
 	GameObjectManager::GetInstance()->RenderAll(*this);
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+#ifdef DRAW_HITBOX
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	for (btCollisionShape* shape : ColliderManager::GetInstance()->colliders)
+	{
+		modelStack.PushMatrix();
+		modelStack.LoadIdentity();
+		GameObject* userGO = static_cast<GameObject*>(shape->getUserPointer());
+		modelStack.LoadMatrix(GetTransformMatrix(userGO->rb));
+		if (shape->getShapeType() == SPHERE_SHAPE_PROXYTYPE)
+		{
+			SphereCollider* sphereCollider = static_cast<SphereCollider*>(shape);
+			float size = sphereCollider->GetRadius();
+			modelStack.Scale(size, size, size);
+			RenderMesh(hitboxMeshList[HITBOX_SPHERE]);
+		}
+		else if (shape->getShapeType() == BOX_SHAPE_PROXYTYPE)
+		{
+			BoxCollider* boxCollider = static_cast<BoxCollider*>(shape);
+			float width, height, depth;
+			boxCollider->GetDimension(width, height, depth);
+			modelStack.Scale(width, height, depth);
+			RenderMesh(hitboxMeshList[HITBOX_BOX]);
+		}
+		else if (shape->getShapeType() == CYLINDER_SHAPE_PROXYTYPE)
+		{
+			CylinderCollider* cylinderCollider = static_cast<CylinderCollider*>(shape);
+			float rad, height;
+			cylinderCollider->GetDimension(rad, height);
+			modelStack.Scale(rad / 2.0f, height, rad / 2.0f);
+			RenderMesh(hitboxMeshList[HITBOX_CYLINDER]);
+		}
+		else if (shape->getShapeType() == STATIC_PLANE_PROXYTYPE)
+		{
+			modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
+			RenderMesh(hitboxMeshList[HITBOX_GROUND]);
+		}
+		modelStack.PopMatrix();
+	}
+
+	if (isFillMode)
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+#endif
 }
 
 void ScenePlinko::Exit()

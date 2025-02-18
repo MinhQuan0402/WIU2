@@ -26,6 +26,7 @@ public:
 		GEO_PLANE,
 		GEO_CUBE,
 		GEO_CYLINDER,
+		GEO_PLINKO,
 		NUM_GEOMETRY
 	};
 
