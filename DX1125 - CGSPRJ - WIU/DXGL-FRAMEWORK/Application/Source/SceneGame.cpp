@@ -130,6 +130,7 @@ void SceneGame::Init()
 	meshList[GEO_CUBE] = MeshBuilder::GenerateCube("Cube", GREEN, 1.0f);
 	meshList[GEO_PLANE] = MeshBuilder::GenerateQuad("Quad", RED, 1000.0f);
 
+	
 	mainCamera.Init(glm::vec3(8, 6, 6), glm::vec3(0, 6, 0), VECTOR3_UP);
 	
 	glUniform1i(m_parameters[U_NUMLIGHTS], 2);

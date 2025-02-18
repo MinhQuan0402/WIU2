@@ -19,6 +19,8 @@
 #include <MyMath.h>
 #include "Utility.h"
 #include "CarnivalHitBoxes.h"
+#include "ColliderManager.h"
+#include "RigidBody.h"
 carnivalroaming::carnivalroaming() : numLight{ 2 }
 {
 	meshList.resize(NUM_GEOMETRY);
@@ -93,10 +95,19 @@ void carnivalroaming::Init()
 	meshList[GEO_MODEL1] = MeshBuilder::GenerateOBJ("Doorman", "Models//doorman.obj");
 	meshList[GEO_MODEL1]->textureID = LoadPNG("Images//doorman.png");
 	meshList[GEO_SPHERE] = MeshBuilder::GenerateSphere("Sphere", WHITE, 1.0f, 100, 100);
-	meshList[GEO_CUBE] = MeshBuilder::GenerateCube("Cube", GREEN, 1.0f);
+	meshList[GEO_CUBE] = MeshBuilder::GenerateCube("Cube", YELLOW, 1.0f);
 	meshList[GEO_PLANE] = MeshBuilder::GenerateQuad("Quad", RED, 1.0f);
 
 	meshList[GEO_CIRCUSTENT] = MeshBuilder::GenerateCircle("Circle", WHITE, 200);
+	meshList[GEO_CIRCUSTENT] = MeshBuilder::GenerateOBJMTL("CircusTent", "Models//circusTentTest.obj", "Models//circusTentTest.mtl");
+	meshList[GEO_CIRCUSTENT]->textureID = LoadPNG("Images//CircusTentTest.png");
+
+	//meshList[GEO_CIRCUSTENT] = MeshBuilder::GenerateCircle("Circle", WHITE, 200);
+	meshList[GEO_CIRCUSNAME] = MeshBuilder::GenerateOBJMTL("CircusName", "Models//circusName.obj", "Models//circusName.mtl");
+	meshList[GEO_CIRCUSNAME]->textureID = LoadPNG("Images//CircusNameTestpng.png");
+
+	
+
 	meshList[GEO_SHOOTINGGAME] = MeshBuilder::GenerateQuad("Quad", WHITE, 1);
 
 	mainCamera.Init(glm::vec3(8, 6, 6), glm::vec3(0, 6, 0), VECTOR3_UP);
@@ -129,8 +140,13 @@ void carnivalroaming::Init()
 
 	enableLight = true;
 
+	PhysicsMaterial mat;
+	mat.m_mass = 0.0f;
+
 	objInscene[CIRCLE] = new CircusTent();
 	objInscene[BOX] = new CarnivalHitBoxes();
+	
+	
 	objInscene[BOX2] = new CarnivalHitBoxes();
 	objInscene[BOX3] = new CarnivalHitBoxes();
 	objInscene[BOX4] = new CarnivalHitBoxes();
@@ -146,28 +162,41 @@ void carnivalroaming::Init()
 
 	objInscene[BOX]->m_transform.Translate(0.0f, 0.5f, 400.0f);
 	objInscene[BOX]->m_transform.ScaleBy(350.0f, 100.f, 100.0f);
+	objInscene[BOX]->rb = addBoxCollider(objInscene[BOX], 350.0f, 100.f, 100.0f, mat);
 
 	objInscene[BOX2]->m_transform.Translate(512.5f, 0.5f, 400.0f);
 	objInscene[BOX2]->m_transform.ScaleBy(275.0f, 100.f, 100.0f);
+	objInscene[BOX2]->rb = addBoxCollider(objInscene[BOX2], 275.0f, 100.f, 100.0f, mat);
 
 	objInscene[BOX3]->m_transform.Translate(-512.5f, 0.5f, 400.0f);
 	objInscene[BOX3]->m_transform.ScaleBy(275.0f, 100.f, 100.0f);
+	objInscene[BOX3]->rb = addBoxCollider(objInscene[BOX3], 275.0f, 100.f, 100.0f, mat);
+
 
 	objInscene[BOX4]->m_transform.Translate(650.5f, 0.5f, 0.0f);
 	objInscene[BOX4]->m_transform.ScaleBy(100.0f, 100.f, 300.0f);
+	objInscene[BOX4]->rb = addBoxCollider(objInscene[BOX4], 100.0f, 100.f, 300.0f, mat);
+
+
 
 	objInscene[BOX5]->m_transform.Translate(-650.5f, 0.5f, 0.0f);
 	objInscene[BOX5]->m_transform.ScaleBy(100.0f, 100.f, 300.0f);
+	objInscene[BOX5]->rb = addBoxCollider(objInscene[BOX5], 100.0f, 100.f, 300.0f, mat);
+
 
 	objInscene[BOX6]->m_transform.Translate(-650.5f, 0.5f, 250.0f);
 	objInscene[BOX6]->m_transform.ScaleBy(50.0f, 100.f, 100.0f);
+	objInscene[BOX6]->rb = addBoxCollider(objInscene[BOX6], 50.0f, 100.f, 100.0f, mat);
 
 
 	objInscene[BOX7]->m_transform.Translate(-650.5f, 0.5f, -300.0f);
 	objInscene[BOX7]->m_transform.ScaleBy(100.0f, 100.f, 200.0f);
+	objInscene[BOX7]->rb = addBoxCollider(objInscene[BOX7], 100.0f, 100.f, 200.0f, mat);
 
 	objInscene[BOX8]->m_transform.Translate(650.5f, 0.5f, -300.0f);
 	objInscene[BOX8]->m_transform.ScaleBy(100.0f, 100.f, 200.0f);
+	objInscene[BOX8]->rb = addBoxCollider(objInscene[BOX8], 100.0f, 100.f, 200.0f, mat);
+
 
 	GameObjectManager::GetInstance()->IniAll();
 
@@ -255,8 +284,14 @@ void carnivalroaming::Render()
 
 	modelStack.PushMatrix();
 	modelStack.Translate(0.0f, 0.5f, 0.0f);
-	modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
+	modelStack.Scale(45, 45, 45);
 	RenderMesh(meshList[GEO_CIRCUSTENT]);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(0.0f, 0.5f, 0.0f);
+	modelStack.Scale(45, 45, 45);
+	RenderMesh(meshList[GEO_CIRCUSNAME]);
 	modelStack.PopMatrix();
 
 	//shooting
@@ -324,6 +359,49 @@ void carnivalroaming::Render()
 	modelStack.PopMatrix();
 
 	GameObjectManager::GetInstance()->RenderAll(*this);
+
+#ifdef DRAW_HITBOX
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	for (btCollisionShape* shape : ColliderManager::GetInstance()->colliders)
+	{
+		modelStack.PushMatrix();
+		modelStack.LoadIdentity();
+		GameObject* userGO = static_cast<GameObject*>(shape->getUserPointer());
+		modelStack.LoadMatrix(GetTransformMatrix(userGO->rb));
+		if (shape->getShapeType() == SPHERE_SHAPE_PROXYTYPE)
+		{
+			SphereCollider* sphereCollider = static_cast<SphereCollider*>(shape);
+			float size = sphereCollider->GetRadius();
+			modelStack.Scale(size, size, size);
+			RenderMesh(hitboxMeshList[HITBOX_SPHERE]);
+		}
+		else if (shape->getShapeType() == BOX_SHAPE_PROXYTYPE)
+		{
+			BoxCollider* boxCollider = static_cast<BoxCollider*>(shape);
+			float width, height, depth;
+			boxCollider->GetDimension(width, height, depth);
+			modelStack.Scale(width, height, depth);
+			RenderMesh(hitboxMeshList[HITBOX_BOX]);
+		}
+		else if (shape->getShapeType() == CYLINDER_SHAPE_PROXYTYPE)
+		{
+			CylinderCollider* cylinderCollider = static_cast<CylinderCollider*>(shape);
+			float rad, height;
+			cylinderCollider->GetDimension(rad, height);
+			modelStack.Scale(rad / 2.0f, height, rad / 2.0f);
+			RenderMesh(hitboxMeshList[HITBOX_CYLINDER]);
+		}
+		else if (shape->getShapeType() == STATIC_PLANE_PROXYTYPE)
+		{
+			modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
+			RenderMesh(hitboxMeshList[HITBOX_GROUND]);
+		}
+		modelStack.PopMatrix();
+	}
+
+	if (isFillMode)
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+#endif
 }
 
 void carnivalroaming::Exit()

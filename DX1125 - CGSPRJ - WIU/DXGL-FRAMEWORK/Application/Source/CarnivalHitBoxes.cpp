@@ -5,9 +5,8 @@
 
 CarnivalHitBoxes::CarnivalHitBoxes()
 {
-	PhysicsMaterial mat;
-	mat.m_mass = 0.0f;
-	rb = addSphereCollider(this, 50, mat);
+	
+
 	GameObjectManager::GetInstance()->addItem(this);
 }
 
