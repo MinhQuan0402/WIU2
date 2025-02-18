@@ -1,5 +1,5 @@
 #define _USE_MATH_DEFINES
-#include "SceneGame.h"
+#include "carnivalroaming.h"
 #include "GL\glew.h"
 
 #include "shader.hpp"
@@ -18,56 +18,21 @@
 #include "CollisionManager.h"
 #include <MyMath.h>
 #include "Utility.h"
-
-SceneGame::SceneGame() : numLight{ 2 }
+#include "CarnivalHitBoxes.h"
+carnivalroaming::carnivalroaming() : numLight{ 2 }
 {
 	meshList.resize(NUM_GEOMETRY);
 	lights.resize(numLight);
 }
 
-SceneGame::~SceneGame()
+carnivalroaming::~carnivalroaming()
 {
 }
 
-//std::vector<btRigidBody*> bodies;
 
-btRigidBody* addSphere(float rad, float x, float y, float z, float mass)
-{
-	btTransform t;
-	t.setIdentity();
-	t.setOrigin(btVector3(x, y, z));
-	btSphereShape* sphere = new btSphereShape(rad);
-	btVector3 inertia(0.f, 0.f, 0.f);
-	if (mass != 0.0f) sphere->calculateLocalInertia(mass, inertia);
-	btMotionState* motion = new btDefaultMotionState(t);
-	btRigidBody::btRigidBodyConstructionInfo info(mass, motion, sphere, inertia);
-	info.m_restitution = 0.8f;
-	info.m_friction = 0.8f;
-	btRigidBody* rb = new btRigidBody(info);
-	CollisionManager::GetInstance()->GetDynamicsWorld()->addRigidBody(rb);
-	//bodies.push_back(rb);
-	return rb;
-}
 
-btRigidBody* addBox(float size_x, float size_y, float size_z, float x, float y, float z, float mass)
-{
-	btTransform t;
-	t.setIdentity();
-	t.setOrigin(btVector3(x, y, z));
-	btBoxShape* box = new btBoxShape(btVector3(size_x / 2.0f, size_y / 2.0f, size_z / 2.0f));
-	btVector3 inertia(0.f, 0.f, 0.f);
-	if (mass != 0.0f) box->calculateLocalInertia(mass, inertia);
-	btMotionState* motion = new btDefaultMotionState(t);
-	btRigidBody::btRigidBodyConstructionInfo info(mass, motion, box, inertia);
-	info.m_restitution = 0.8f;
-	info.m_friction = 0.8f;
-	btRigidBody* rb = new btRigidBody(info);
-	CollisionManager::GetInstance()->GetDynamicsWorld()->addRigidBody(rb);
-	//bodies.push_back(rb);
-	return rb;
-}
 
-void SceneGame::Init()
+void carnivalroaming::Init()
 {
 	Scene::Init();
 
@@ -129,10 +94,14 @@ void SceneGame::Init()
 	meshList[GEO_MODEL1]->textureID = LoadPNG("Images//doorman.png");
 	meshList[GEO_SPHERE] = MeshBuilder::GenerateSphere("Sphere", WHITE, 1.0f, 100, 100);
 	meshList[GEO_CUBE] = MeshBuilder::GenerateCube("Cube", GREEN, 1.0f);
-	meshList[GEO_PLANE] = MeshBuilder::GenerateQuad("Quad", RED, 1000.0f);
+	meshList[GEO_PLANE] = MeshBuilder::GenerateQuad("Quad", RED, 1.0f);
+
+	meshList[GEO_CIRCUSTENT] = MeshBuilder::GenerateCircle("Circle", WHITE, 200);
+	meshList[GEO_SHOOTINGGAME] = MeshBuilder::GenerateQuad("Quad", WHITE, 1);
 
 	mainCamera.Init(glm::vec3(8, 6, 6), glm::vec3(0, 6, 0), VECTOR3_UP);
-	
+	mainCamera.sensitivity = 20;
+
 	glUniform1i(m_parameters[U_NUMLIGHTS], 2);
 
 	lights[0].m_transform.m_position = glm::vec3{};
@@ -160,23 +129,51 @@ void SceneGame::Init()
 
 	enableLight = true;
 
-	btTransform groundTransform;
-	groundTransform.setIdentity();
-	groundTransform.setOrigin(btVector3(0.f, 0.f, 0.f));
-	btStaticPlaneShape* plane = new btStaticPlaneShape(btVector3(0.f, 1.0f, 0.f), 0);
-	btMotionState* motion = new btDefaultMotionState(groundTransform);
-	btRigidBody::btRigidBodyConstructionInfo info(0.f, motion, plane);
-	info.m_restitution = 0.8f;
-	info.m_friction = 0.5f;
-	btRigidBody* groundRB = new btRigidBody(info);
-	CollisionManager::GetInstance()->GetDynamicsWorld()->addRigidBody(groundRB);
-	//bodies.push_back(groundRB);
+	objInscene[CIRCLE] = new CircusTent();
+	objInscene[BOX] = new CarnivalHitBoxes();
+	objInscene[BOX2] = new CarnivalHitBoxes();
+	objInscene[BOX3] = new CarnivalHitBoxes();
+	objInscene[BOX4] = new CarnivalHitBoxes();
+	objInscene[BOX5] = new CarnivalHitBoxes();
+	objInscene[BOX6] = new CarnivalHitBoxes();
+	objInscene[BOX7] = new CarnivalHitBoxes();
+	objInscene[BOX8] = new CarnivalHitBoxes();
 
-	addSphere(2.0f, 0.f, 20.0f, 0.f, 1.0f);
-	addBox(2.0f, 2.5f, 4.0f, 0.0f, 30.0f, 0.f, 1.0f);
+
+	
+	objInscene[CIRCLE]->m_transform.ScaleBy(200.0f, 200.f, 200.0f);
+
+
+	objInscene[BOX]->m_transform.Translate(0.0f, 0.5f, 400.0f);
+	objInscene[BOX]->m_transform.ScaleBy(350.0f, 100.f, 100.0f);
+
+	objInscene[BOX2]->m_transform.Translate(512.5f, 0.5f, 400.0f);
+	objInscene[BOX2]->m_transform.ScaleBy(275.0f, 100.f, 100.0f);
+
+	objInscene[BOX3]->m_transform.Translate(-512.5f, 0.5f, 400.0f);
+	objInscene[BOX3]->m_transform.ScaleBy(275.0f, 100.f, 100.0f);
+
+	objInscene[BOX4]->m_transform.Translate(650.5f, 0.5f, 0.0f);
+	objInscene[BOX4]->m_transform.ScaleBy(100.0f, 100.f, 300.0f);
+
+	objInscene[BOX5]->m_transform.Translate(-650.5f, 0.5f, 0.0f);
+	objInscene[BOX5]->m_transform.ScaleBy(100.0f, 100.f, 300.0f);
+
+	objInscene[BOX6]->m_transform.Translate(-650.5f, 0.5f, 250.0f);
+	objInscene[BOX6]->m_transform.ScaleBy(50.0f, 100.f, 100.0f);
+
+
+	objInscene[BOX7]->m_transform.Translate(-650.5f, 0.5f, -300.0f);
+	objInscene[BOX7]->m_transform.ScaleBy(100.0f, 100.f, 200.0f);
+
+	objInscene[BOX8]->m_transform.Translate(650.5f, 0.5f, -300.0f);
+	objInscene[BOX8]->m_transform.ScaleBy(100.0f, 100.f, 200.0f);
+
+	GameObjectManager::GetInstance()->IniAll();
+
 }
 
-void SceneGame::Update()
+void carnivalroaming::Update()
 {
 	HandleKeyPress();
 	mainCamera.Update();
@@ -189,19 +186,25 @@ void SceneGame::Update()
 		inputMovementDir = mainCamera.right;
 	if (KeyboardController::GetInstance()->IsKeyDown('A'))
 		inputMovementDir = -mainCamera.right;
-	glm::vec3 finalForce = inputMovementDir * 10.0f * Time::deltaTime;
+	glm::vec3 finalForce = inputMovementDir * 100.0f * Time::deltaTime;
 	mainCamera.m_transform.Translate(finalForce);
 	mainCamera.UpdateCameraRotation();
 
-	if (KeyboardController::GetInstance()->IsKeyPressed(VK_SPACE))
-	{
-		btRigidBody* rb = addSphere(1.0f, mainCamera.m_transform.m_position.x, mainCamera.m_transform.m_position.y, mainCamera.m_transform.m_position.z, 1.0f);
-		glm::vec3 look = mainCamera.view * 20.0f;
-		rb->setLinearVelocity(btVector3(look.x, look.y, look.z));
-	}
+
+	GameObject::MoveObj(objInscene[CIRCLE]->m_transform);
+	GameObject::MoveObj(objInscene[BOX]->m_transform);
+	GameObject::MoveObj(objInscene[BOX2]->m_transform);
+	GameObject::MoveObj(objInscene[BOX3]->m_transform);
+	GameObject::MoveObj(objInscene[BOX4]->m_transform);
+	GameObject::MoveObj(objInscene[BOX5]->m_transform);
+	GameObject::MoveObj(objInscene[BOX6]->m_transform);
+	GameObject::MoveObj(objInscene[BOX7]->m_transform);
+
+	
+	GameObjectManager::GetInstance()->UpdateAll();
 }
 
-void SceneGame::Render()
+void carnivalroaming::Render()
 {
 	// Clear color buffer every frame
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -244,14 +247,86 @@ void SceneGame::Render()
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
+	
 	modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
+	modelStack.Scale(1500.0f, 1000.0f, 0.0f);
 	RenderMesh(meshList[GEO_PLANE]);
 	modelStack.PopMatrix();
 
-	
+	modelStack.PushMatrix();
+	modelStack.Translate(0.0f, 0.5f, 0.0f);
+	modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
+	RenderMesh(meshList[GEO_CIRCUSTENT]);
+	modelStack.PopMatrix();
+
+	//shooting
+	modelStack.PushMatrix();
+	modelStack.Translate(0.0f, 0.5f, 400.0f);
+	modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
+	modelStack.Scale(350.0f, 100.f, 0.0f);
+	RenderMesh(meshList[GEO_HITBOX]);
+	modelStack.PopMatrix();
+
+	//balloon 
+	modelStack.PushMatrix();
+	modelStack.Translate(512.5f, 0.5f, 400.0f);
+	modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
+	modelStack.Scale(275.0f, 100.f, 0.0f);
+	RenderMesh(meshList[GEO_HITBOX]);
+	modelStack.PopMatrix();
+
+	//can
+	modelStack.PushMatrix();
+	modelStack.Translate(-512.5f, 0.5f, 400.0f);
+	modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
+	modelStack.Scale(275.0f, 100.f, 0.0f);
+	RenderMesh(meshList[GEO_HITBOX]);
+	modelStack.PopMatrix();
+
+	//ringtoss
+	modelStack.PushMatrix();
+	modelStack.Translate(650.5f, 0.5f, 0.0f);
+	modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
+	modelStack.Scale(100.0f, 300.f, 0.0f);
+	RenderMesh(meshList[GEO_HITBOX]);
+	modelStack.PopMatrix();
+
+	//duck fishing
+	modelStack.PushMatrix();
+	modelStack.Translate(-650.5f, 0.5f, 0.0f);
+	modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
+	modelStack.Scale(100.0f, 300.f, 0.0f);
+	RenderMesh(meshList[GEO_HITBOX]);
+	modelStack.PopMatrix();
+
+	//plinko
+	modelStack.PushMatrix();
+	modelStack.Translate(-650.5f, 0.5f, 250.0f);
+	modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
+	modelStack.Scale(50.0f, 100.f, 0.0f);
+	RenderMesh(meshList[GEO_HITBOX]);
+	modelStack.PopMatrix();
+
+	//food 1 
+	modelStack.PushMatrix();
+	modelStack.Translate(-650.5f, 0.5f, -300.0f);
+	modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
+	modelStack.Scale(100.0f, 200.f, 0.0f);
+	RenderMesh(meshList[GEO_HITBOX]);
+	modelStack.PopMatrix();
+
+	//food 2
+	modelStack.PushMatrix();
+	modelStack.Translate(650.5f, 0.5f, -300.0f);
+	modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
+	modelStack.Scale(100.0f, 200.f, 0.0f);
+	RenderMesh(meshList[GEO_HITBOX]);
+	modelStack.PopMatrix();
+
+	GameObjectManager::GetInstance()->RenderAll(*this);
 }
 
-void SceneGame::Exit()
+void carnivalroaming::Exit()
 {
 	// Cleanup VBO here
 	for (int i = 0; i < NUM_GEOMETRY; ++i) { if (meshList[i]) delete meshList[i]; }
@@ -262,7 +337,7 @@ void SceneGame::Exit()
 	glDeleteProgram(m_programID);
 }
 
-void SceneGame::RenderSkybox(void)
+void carnivalroaming::RenderSkybox(void)
 {
 	float size = 50.0f;
 	modelStack.PushMatrix();

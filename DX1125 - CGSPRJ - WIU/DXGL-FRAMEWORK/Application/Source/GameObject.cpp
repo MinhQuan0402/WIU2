@@ -86,7 +86,7 @@ void GameObject::MoveObj(Transform& transform)
 	if (KeyboardController::GetInstance()->IsKeyDown('O'))
 		rawInput.y = 1;
 
-	transform.Rotate(rawInput * speed);
+	transform.Translate(rawInput * speed);
 
 	if (KeyboardController::GetInstance()->IsKeyPressed('P'))
 		std::cout << transform << std::endl;

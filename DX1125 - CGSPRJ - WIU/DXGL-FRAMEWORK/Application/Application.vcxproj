@@ -151,6 +151,9 @@
   <ItemGroup>
     <ClCompile Include="Source\Application.cpp" />
     <ClCompile Include="Source\Camera.cpp" />
+    <ClCompile Include="Source\CarnivalHitBoxes.cpp" />
+    <ClCompile Include="Source\CircusTent.cpp" />
+    <ClCompile Include="Source\carnivalroaming.cpp" />
     <ClCompile Include="Source\ColliderManager.cpp" />
     <ClCompile Include="Source\CollisionManager.cpp" />
     <ClCompile Include="Source\CQuad.cpp" />
@@ -178,6 +181,9 @@
     <ClInclude Include="..\Common\Source\MyMath.h" />
     <ClInclude Include="Source\Application.h" />
     <ClInclude Include="Source\Camera.h" />
+    <ClInclude Include="Source\CarnivalHitBoxes.h" />
+    <ClInclude Include="Source\CircusTent.h" />
+    <ClInclude Include="Source\carnivalroaming.h" />
     <ClInclude Include="Source\ColliderManager.h" />
     <ClInclude Include="Source\CollisionManager.h" />
     <ClInclude Include="Source\FPCamera.h" />

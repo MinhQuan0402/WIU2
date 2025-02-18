@@ -7,7 +7,7 @@ PhysicsMaterial::PhysicsMaterial(void)
 {
 }
 
-btRigidBody* addSphereCollider(GameObject*& go, const float& rad, PhysicsMaterial& mat)
+btRigidBody* addSphereCollider(GameObject* go, const float& rad, PhysicsMaterial& mat)
 {
 	if (!go) return nullptr;
 
@@ -27,11 +27,11 @@ btRigidBody* addSphereCollider(GameObject*& go, const float& rad, PhysicsMateria
 
 	btRigidBody* rb = new btRigidBody(info);
 	CollisionManager::GetInstance()->GetDynamicsWorld()->addRigidBody(rb);
-	bodies.push_back(rb);
+	//bodies.push_back(rb);
 	return rb;
 }
 
-btRigidBody* addBoxCollider(GameObject*& go, const float& width, const float& height, const float& depth, PhysicsMaterial& mat)
+btRigidBody* addBoxCollider(GameObject* go, const float& width, const float& height, const float& depth, PhysicsMaterial& mat)
 {
 	if (!go) return nullptr;
 
@@ -51,6 +51,6 @@ btRigidBody* addBoxCollider(GameObject*& go, const float& width, const float& he
 
 	btRigidBody* rb = new btRigidBody(info);
 	CollisionManager::GetInstance()->GetDynamicsWorld()->addRigidBody(rb);
-	bodies.push_back(rb);
+	//bodies.push_back(rb);
 	return rb;
 }
