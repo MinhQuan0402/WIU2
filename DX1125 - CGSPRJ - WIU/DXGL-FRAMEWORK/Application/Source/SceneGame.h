@@ -19,10 +19,8 @@ public:
 		GEO_BOTTOM,
 		GEO_RIGHT,
 		GEO_LEFT,
-		GEO_HITBOX,
 		GEO_TEXT,
 		GEO_SPHERE,
-		GEO_MODEL1,
 		GEO_PLANE,
 		GEO_CUBE,
 		NUM_GEOMETRY
@@ -39,7 +37,17 @@ public:
 private:
 	void RenderSkybox(void);
 	int numLight;
-	Transform player;
+	
+	enum OBJINSCENE
+	{
+		GROUND,
+		BOX, 
+		SPHERE,
+		CYLINDER,
+		NUMOBJ
+	};
+
+	GameObject* objInScene[NUMOBJ];
 };
 
 #endif

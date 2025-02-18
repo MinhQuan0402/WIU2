@@ -1,4 +1,5 @@
 #include "ColliderManager.h"
+#include "GameObject.h"
 
 ColliderManager* ColliderManager::m_instance = nullptr;
 ColliderManager::ColliderManager(void)
@@ -18,10 +19,11 @@ void ColliderManager::DestroyInstance(void)
 void ColliderManager::AddCollider(btCollisionShape* collider2Add) { colliders.push_back(collider2Add); }
 void ColliderManager::RemoveCollider(btCollisionShape* collider2Remove) { colliders.remove(collider2Remove); }
 
-BoxCollider::BoxCollider(float width, float height, float depth)
+BoxCollider::BoxCollider(GameObject* go, float width, float height, float depth)
     : btBoxShape{ btVector3(width / 2.0f, height / 2.0f, depth / 2.0f) },
     m_width{ width }, m_height{ height }, m_depth{ depth }
 {
+    setUserPointer(go);
 }
 
 void BoxCollider::GetDimension(float& width, float& height, float& depth) const {
@@ -30,16 +32,19 @@ void BoxCollider::GetDimension(float& width, float& height, float& depth) const 
     depth = m_depth;
 }
 
-SphereCollider::SphereCollider(float rad) : btSphereShape{ rad }, m_rad{ rad }
+SphereCollider::SphereCollider(GameObject* go, float rad)
+    : btSphereShape{ rad }, m_rad{ rad }
 {
+    setUserPointer(go);
 }
 
 float SphereCollider::GetRadius(void) const { return m_rad; }
 
-CylinderCollider::CylinderCollider(const float& height, const float& rad)
+CylinderCollider::CylinderCollider(GameObject* go, const float& height, const float& rad)
     : btCylinderShape{ btVector3(rad / 2.0f, height / 2.0f, rad / 2.0f) },
     m_rad{ rad }, m_height{ height }
 {
+    setUserPointer(go);
 }
 
 void CylinderCollider::GetDimension(float& rad, float& height) const {

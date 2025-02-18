@@ -1,5 +1,7 @@
 #include <btBulletDynamicsCommon.h>
 #include <UnorderedVector.h>
+#include <glm/vec3.hpp>
+
 class GameObject;
 
 struct PhysicsMaterial

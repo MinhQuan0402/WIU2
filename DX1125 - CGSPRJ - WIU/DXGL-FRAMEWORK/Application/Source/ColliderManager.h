@@ -1,8 +1,11 @@
 #pragma once
 #include <UnorderedVector.h>
+#include "BulletCollision/CollisionShapes/btCollisionShape.h"
 #include "BulletCollision/CollisionShapes/btBoxShape.h"
 #include "BulletCollision/CollisionShapes/btSphereShape.h"
 #include "BulletCollision/CollisionShapes/btCylinderShape.h"
+
+class GameObject;
 
 class BoxCollider : public btBoxShape
 {
@@ -10,7 +13,7 @@ private:
 	float m_width, m_height, m_depth;
 
 public:
-	BoxCollider(float width, float height, float depth);
+	BoxCollider(GameObject* go, float width, float height, float depth);
 	~BoxCollider(void) = default;
 	
 	void GetDimension(float& width, float& height, float& depth) const;
@@ -22,7 +25,7 @@ private :
 	float m_rad;
 
 public:
-	SphereCollider(float rad);
+	SphereCollider(GameObject* go, float rad);
 	~SphereCollider(void) = default;
 
 	float GetRadius(void) const;
@@ -34,7 +37,7 @@ private:
 	float m_rad, m_height;
 
 public:
-	CylinderCollider(const float& height, const float& rad);
+	CylinderCollider(GameObject* go, const float& height, const float& rad);
 	~CylinderCollider(void) = default;
 
 	void GetDimension(float& rad, float& height) const;

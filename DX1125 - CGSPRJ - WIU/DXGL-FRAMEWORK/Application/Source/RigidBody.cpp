@@ -15,7 +15,7 @@ btRigidBody* addSphereCollider(GameObject* go, const float& rad, PhysicsMaterial
 	btTransform t;
 	t.setIdentity();
 	t.setOrigin(btVector3(go->m_transform.m_position.x, go->m_transform.m_position.y, go->m_transform.m_position.z));
-	btSphereShape* sphere = new SphereCollider(rad);
+	btSphereShape* sphere = new SphereCollider(go, rad);
 	ColliderManager::GetInstance()->AddCollider(sphere);
 	btVector3 inertia(0.f, 0.f, 0.f);
 	if (mat.m_mass != 0.0f) sphere->calculateLocalInertia(mat.m_mass, inertia);
@@ -29,6 +29,7 @@ btRigidBody* addSphereCollider(GameObject* go, const float& rad, PhysicsMaterial
 
 	btRigidBody* rb = new btRigidBody(info);
 	CollisionManager::GetInstance()->GetDynamicsWorld()->addRigidBody(rb);
+	rb->setUserPointer(go);
 	return rb;
 }
 
@@ -39,7 +40,7 @@ btRigidBody* addBoxCollider(GameObject* go, const float& width, const float& hei
 	btTransform t;
 	t.setIdentity();
 	t.setOrigin(btVector3(go->m_transform.m_position.x, go->m_transform.m_position.y, go->m_transform.m_position.z));
-	btBoxShape* box = new BoxCollider(width, height, depth);
+	btBoxShape* box = new BoxCollider(go, width, height, depth);
 	ColliderManager::GetInstance()->AddCollider(box);
 	btVector3 inertia(0.f, 0.f, 0.f);
 	if (mat.m_mass != 0.0f) box->calculateLocalInertia(mat.m_mass, inertia);
@@ -53,6 +54,7 @@ btRigidBody* addBoxCollider(GameObject* go, const float& width, const float& hei
 
 	btRigidBody* rb = new btRigidBody(info);
 	CollisionManager::GetInstance()->GetDynamicsWorld()->addRigidBody(rb);
+	rb->setUserPointer(go);
 	return rb;
 }
 
@@ -63,7 +65,7 @@ btRigidBody* addCylinderCollider(GameObject* go, const float& height, const floa
 	btTransform t;
 	t.setIdentity();
 	t.setOrigin(btVector3(go->m_transform.m_position.x, go->m_transform.m_position.y, go->m_transform.m_position.z));
-	btCylinderShape* cylinder = new CylinderCollider(height, rad);
+	btCylinderShape* cylinder = new CylinderCollider(go, height, rad);
 	ColliderManager::GetInstance()->AddCollider(cylinder);
 	btVector3 inertia(0.f, 0.f, 0.f);
 	if (mat.m_mass != 0.0f) cylinder->calculateLocalInertia(mat.m_mass, inertia);
@@ -77,10 +79,11 @@ btRigidBody* addCylinderCollider(GameObject* go, const float& height, const floa
 
 	btRigidBody* rb = new btRigidBody(info);
 	CollisionManager::GetInstance()->GetDynamicsWorld()->addRigidBody(rb);
+	rb->setUserPointer(go);
 	return rb;
 }
 
-btRigidBody* addStaticPlane(GameObject* go, const glm::vec3 normal, PhysicsMaterial& mat)
+btRigidBody* addStaticPlane(GameObject* go, glm::vec3 normal, PhysicsMaterial& mat)
 {
 	mat.m_mass = 0.0f;
 
@@ -88,6 +91,7 @@ btRigidBody* addStaticPlane(GameObject* go, const glm::vec3 normal, PhysicsMater
 	t.setIdentity();
 	t.setOrigin(btVector3(0.f, 0.f, 0.f));
 	btStaticPlaneShape* plane = new btStaticPlaneShape(btVector3(normal.x, normal.y, normal.z), 0);
+	plane->setUserPointer(go);
 	ColliderManager::GetInstance()->AddCollider(plane);
 	btMotionState* motion = new btDefaultMotionState(t);
 	btRigidBody::btRigidBodyConstructionInfo info(mat.m_mass, motion, plane);
@@ -99,5 +103,6 @@ btRigidBody* addStaticPlane(GameObject* go, const glm::vec3 normal, PhysicsMater
 
 	btRigidBody* rb = new btRigidBody(info);
 	CollisionManager::GetInstance()->GetDynamicsWorld()->addRigidBody(rb);
+	rb->setUserPointer(go);
 	return rb;
 }
