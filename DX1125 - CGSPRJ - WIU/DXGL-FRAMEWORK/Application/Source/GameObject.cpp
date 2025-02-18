@@ -4,11 +4,15 @@
 #include "Scene.h"
 #include "CollisionManager.h"
 
-GameObject::GameObject(void) : m_parent{ nullptr }, m_transform{}, m_name{}, m_tag{}, isActive{ false }, rb{ nullptr }
+GameObject::GameObject(void) 
+	: m_parent{ nullptr }, m_transform{}, m_name{}, 
+	m_tag{}, isActive{ false }, rb{ nullptr }, rbGOType{ DYNAMIC }
 {
 }
 
-GameObject::GameObject(const std::string& name) : m_parent{ nullptr }, m_transform{}, m_name{ name }, m_tag{}, isActive{ false }, rb{ nullptr }
+GameObject::GameObject(const std::string& name)
+	: m_parent{ nullptr }, m_transform{}, m_name{ name },
+	m_tag{}, isActive{ false }, rb{ nullptr }, rbGOType{ DYNAMIC }
 {
 }
 

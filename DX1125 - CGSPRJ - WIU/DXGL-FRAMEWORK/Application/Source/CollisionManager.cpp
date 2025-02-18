@@ -1,4 +1,5 @@
 #include "CollisionManager.h"
+#include "Time.h"
 
 CollisionManager* CollisionManager::m_instance = nullptr;
 CollisionManager::CollisionManager(void)
@@ -37,11 +38,10 @@ void CollisionManager::SetUpDynamicWorld(const float& gravity)
 	m_world->setGravity(btVector3(0.0f, -gravity, 0.0f));
 }
 
-void CollisionManager::UpdateCollision(float fixedDeltaTime)
+void CollisionManager::UpdateCollision(void)
 {
 	if (!m_world) return;
-
-	m_world->stepSimulation(btScalar(fixedDeltaTime));
+	m_world->stepSimulation(btScalar(Time::deltaTime), 1, btScalar(Time::fixedDeltaTime));
 }
 
 btDynamicsWorld* CollisionManager::GetDynamicsWorld(void) { return m_world; }

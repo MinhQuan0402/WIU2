@@ -254,39 +254,50 @@ void SceneGame::Render()
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	for (btCollisionShape* shape : ColliderManager::GetInstance()->colliders)
 	{
-		modelStack.PushMatrix();
 		modelStack.LoadIdentity();
 		GameObject* userGO = static_cast<GameObject*>(shape->getUserPointer());
 		modelStack.LoadMatrix(GetTransformMatrix(userGO->rb));
 		if (shape->getShapeType() == SPHERE_SHAPE_PROXYTYPE)
 		{
+			modelStack.PushMatrix();
 			SphereCollider* sphereCollider = static_cast<SphereCollider*>(shape);
 			float size = sphereCollider->GetRadius();
 			modelStack.Scale(size, size, size);
 			RenderMesh(hitboxMeshList[HITBOX_SPHERE]);
+			modelStack.PopMatrix();
 		}
 		else if (shape->getShapeType() == BOX_SHAPE_PROXYTYPE)
 		{
+			btTransform t;
+			userGO->rb->getMotionState()->getWorldTransform(t);
+			float mat[16]{};
+			t.getOpenGLMatrix(mat);
+			Transform newT = ConvertMatrix2Transform(mat);
+
 			BoxCollider* boxCollider = static_cast<BoxCollider*>(shape);
 			float width, height, depth;
 			boxCollider->GetDimension(width, height, depth);
 			modelStack.Scale(width, height, depth);
-			RenderMesh(hitboxMeshList[HITBOX_BOX]);
+			RenderMesh(hitboxMeshList[HITBOX_BOX], false, newT);
 		}
 		else if (shape->getShapeType() == CYLINDER_SHAPE_PROXYTYPE)
 		{
+			modelStack.PushMatrix();
 			CylinderCollider* cylinderCollider = static_cast<CylinderCollider*>(shape);
 			float rad, height;
 			cylinderCollider->GetDimension(rad, height);
 			modelStack.Scale(rad / 2.0f, height, rad / 2.0f);
 			RenderMesh(hitboxMeshList[HITBOX_CYLINDER]);
+			modelStack.PopMatrix();
 		}
 		else if (shape->getShapeType() == STATIC_PLANE_PROXYTYPE)
 		{
+			modelStack.PushMatrix();
 			modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
 			RenderMesh(hitboxMeshList[HITBOX_GROUND]);
+			modelStack.PopMatrix();
 		}
-		modelStack.PopMatrix();
+		
 	}
 
 	if(isFillMode) 

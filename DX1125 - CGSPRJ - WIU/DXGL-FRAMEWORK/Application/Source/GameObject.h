@@ -15,10 +15,19 @@ private:
 	UnorderedVector<GameObject*> m_children; //Store children go
 
 public:
+	enum RB_TYPE
+	{
+		DYNAMIC,
+		KINEMATIC,
+		STATIC
+	};
+	
 	Transform m_transform; //Transform of this object
 	btRigidBody* rb;
 	std::string m_name; //Store its name
 	std::string m_tag; //Store its tag/categories
+
+	RB_TYPE rbGOType;
 
 public:
 	GameObject(void);

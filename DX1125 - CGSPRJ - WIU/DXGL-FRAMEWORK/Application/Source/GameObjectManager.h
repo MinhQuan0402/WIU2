@@ -9,6 +9,10 @@ class GameObjectManager
 private:
 	CQuad* m_root;
 	UnorderedVector<GameObject*> m_allGOs;
+	UnorderedVector<GameObject*> m_staticGOs;
+	UnorderedVector<GameObject*> m_kinematicGOs;
+	UnorderedVector<GameObject*> m_dynamicGOs;
+
 	static GameObjectManager* m_instance;
 
 	void preOrder(CQuad* p, unsigned level);
