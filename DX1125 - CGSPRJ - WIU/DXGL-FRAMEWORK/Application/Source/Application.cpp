@@ -15,6 +15,7 @@
 #include "GameObjectManager.h"
 #include "Time.h"
 #include "SceneGame.h"
+#include "SceneCanKnockdown.h"
 #include "SceneManager.h"
 #include "CollisionManager.h"
 
@@ -147,10 +148,9 @@ void Application::Run()
 {
 	//Main Loop
 	CollisionManager::GetInstance()->SetUpDynamicWorld(10.0f);
-	SceneManager::GetInstance()->PushState(new SceneGame);
+	SceneManager::GetInstance()->PushState(new SceneCanKnockdown);
 	Time::fixedDeltaTime = FIXED_TIME_STEP;
 	m_timer.startTimer();    // Start timer to calculate how long it takes to render this frame
-	double accumulatedTime = 0.0;
 	while (!glfwWindowShouldClose(m_window) && !IsKeyPressed(VK_ESCAPE))
 	{
 		if (enableCursor == false)

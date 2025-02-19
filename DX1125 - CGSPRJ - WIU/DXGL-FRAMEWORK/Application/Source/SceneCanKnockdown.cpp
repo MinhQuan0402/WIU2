@@ -223,14 +223,14 @@ void SceneCanKnockdown::Update()
 	HandleKeyPress();
 	mainCamera.Update();
 	glm::vec3 inputMovementDir{};
-	if (KeyboardController::GetInstance()->IsKeyDown('W'))
-		inputMovementDir = mainCamera.view;
-	if (KeyboardController::GetInstance()->IsKeyDown('S'))
-		inputMovementDir = -mainCamera.view;
-	if (KeyboardController::GetInstance()->IsKeyDown('D'))
-		inputMovementDir = mainCamera.right;
-	if (KeyboardController::GetInstance()->IsKeyDown('A'))
-		inputMovementDir = -mainCamera.right;
+	//if (KeyboardController::GetInstance()->IsKeyDown('W'))
+	//	inputMovementDir = mainCamera.view;
+	//if (KeyboardController::GetInstance()->IsKeyDown('S'))
+	//	inputMovementDir = -mainCamera.view;
+	//if (KeyboardController::GetInstance()->IsKeyDown('D'))
+	//	inputMovementDir = mainCamera.right;
+	//if (KeyboardController::GetInstance()->IsKeyDown('A'))
+	//	inputMovementDir = -mainCamera.right;
 
 	glm::vec3 finalForce = inputMovementDir * 10.0f * Time::deltaTime;
 	mainCamera.m_transform.Translate(finalForce);
@@ -238,23 +238,23 @@ void SceneCanKnockdown::Update()
 	mainCamera.UpdateCameraRotation();
 
 	//// stop player rotating too far:
-	//{
-	//	glm::vec3 toObject = glm::normalize(glm::vec3(0, 3, 0) - mainCamera.m_transform.m_position);
+	{
+		glm::vec3 toObject = glm::normalize(glm::vec3(0, 3, 0) - mainCamera.m_transform.m_position);
 
-	//	glm::vec3 lookVector = glm::normalize(mainCamera.target - mainCamera.m_transform.m_position);
+		glm::vec3 lookVector = glm::normalize(mainCamera.target - mainCamera.m_transform.m_position);
 
-	//	float dotProduct = glm::dot(lookVector, toObject);
-	//	float threshold = glm::cos(glm::radians(fov * 0.5));
+		float dotProduct = glm::dot(lookVector, toObject);
+		float threshold = glm::cos(glm::radians(fov * 0.5));
 
-	//	if (dotProduct <= threshold) // Rotated too much
-	//	{
-	//		mainCamera.target = prevTarget;
-	//	}
-	//	else {
-	//		float closeness = (dotProduct - threshold) / (1.0f - threshold);
-	//		mainCamera.sensitivity = 10 + closeness * (50 - 10);
-	//	}
-	//}
+		if (dotProduct <= threshold) // Rotated too much
+		{
+			mainCamera.target = prevTarget;
+		}
+		else {
+			float closeness = (dotProduct - threshold) / (1.0f - threshold);
+			mainCamera.sensitivity = 10 + closeness * (50 - 10);
+		}
+	}
 
 	float speed = 5 * Time::deltaTime;
 	if (KeyboardController::GetInstance()->IsKeyDown('I'))
@@ -286,8 +286,10 @@ void SceneCanKnockdown::Update()
 			// shoot:
 			isShooting = true;
 			onCooldown = true;
-			glm::vec3 look = mainCamera.view * 20.0f;
+			glm::vec3 look = mainCamera.view * 5.0f;
+			SetObjectDynamic(objInScene[BALL]->rb, 1.0f);
 			objInScene[BALL]->rb->setLinearVelocity(btVector3(look.x, look.y, look.z));
+
 		}
 	}
 
@@ -299,9 +301,11 @@ void SceneCanKnockdown::Update()
 		glm::vec3 up = mainCamera.up;
 
 		// Calculate world position of the ball
-		objInScene[BALL]->m_transform.m_position = cameraPos + (forward * 2.f) + (right * 1.f) + (up * -1.f);
+		glm::vec3 newPos = cameraPos + (forward * 2.f) + (right * 1.f) + (up * -1.f);
+		
+		objInScene[BALL]->SetRigidbodyPosition(newPos);
+		SetObjectStatic(objInScene[BALL]->rb);
 	}
-
 
 	GameObjectManager::GetInstance()->UpdateAll();
 }
@@ -389,108 +393,95 @@ void SceneCanKnockdown::Render()
 		float tableHeight = 2.84;
 		float canHeight = 0.67;
 
-		// Bottom 3 cans:
-		{
-			modelStack.PushMatrix();
-			modelStack.Translate(objInScene[CAN]->m_transform.m_position.x, tableHeight, objInScene[CAN]->m_transform.m_position.z);
-			modelStack.Scale(canScale, canScale, canScale);
-			RenderMesh(meshList[GEO_CAN], enableLight);
-			modelStack.PopMatrix();
+		//// Bottom 3 cans:
+		//{
+		//	modelStack.PushMatrix();
+		//	modelStack.Translate(objInScene[CAN]->m_transform.m_position.x, tableHeight, objInScene[CAN]->m_transform.m_position.z);
+		//	modelStack.Scale(canScale, canScale, canScale);
+		//	RenderMesh(meshList[GEO_CAN], enableLight);
+		//	modelStack.PopMatrix();
 
-			modelStack.PushMatrix();
-			modelStack.Translate(objInScene[CAN2]->m_transform.m_position.x, tableHeight, objInScene[CAN2]->m_transform.m_position.z);
-			modelStack.Scale(canScale, canScale, canScale);
-			RenderMesh(meshList[GEO_CAN], enableLight);
-			modelStack.PopMatrix();
+		//	modelStack.PushMatrix();
+		//	modelStack.Translate(objInScene[CAN2]->m_transform.m_position.x, tableHeight, objInScene[CAN2]->m_transform.m_position.z);
+		//	modelStack.Scale(canScale, canScale, canScale);
+		//	RenderMesh(meshList[GEO_CAN], enableLight);
+		//	modelStack.PopMatrix();
 
-			modelStack.PushMatrix();
-			modelStack.Translate(objInScene[CAN3]->m_transform.m_position.x, tableHeight, objInScene[CAN3]->m_transform.m_position.z);
-			modelStack.Scale(canScale, canScale, canScale);
-			RenderMesh(meshList[GEO_CAN], enableLight);
-			modelStack.PopMatrix();
-		}
+		//	modelStack.PushMatrix();
+		//	modelStack.Translate(objInScene[CAN3]->m_transform.m_position.x, tableHeight, objInScene[CAN3]->m_transform.m_position.z);
+		//	modelStack.Scale(canScale, canScale, canScale);
+		//	RenderMesh(meshList[GEO_CAN], enableLight);
+		//	modelStack.PopMatrix();
+		//}
 
-		// Middle 2 cans:
-		{
-			modelStack.PushMatrix();
-			modelStack.Translate(objInScene[CAN4]->m_transform.m_position.x, tableHeight + canHeight, objInScene[CAN4]->m_transform.m_position.z);
-			modelStack.Scale(canScale, canScale, canScale);
-			RenderMesh(meshList[GEO_CAN], enableLight);
-			modelStack.PopMatrix();
+		//// Middle 2 cans:
+		//{
+		//	modelStack.PushMatrix();
+		//	modelStack.Translate(objInScene[CAN4]->m_transform.m_position.x, tableHeight + canHeight, objInScene[CAN4]->m_transform.m_position.z);
+		//	modelStack.Scale(canScale, canScale, canScale);
+		//	RenderMesh(meshList[GEO_CAN], enableLight);
+		//	modelStack.PopMatrix();
 
-			modelStack.PushMatrix();
-			modelStack.Translate(objInScene[CAN5]->m_transform.m_position.x, tableHeight + canHeight, objInScene[CAN5]->m_transform.m_position.z);
-			modelStack.Scale(canScale, canScale, canScale);
-			RenderMesh(meshList[GEO_CAN], enableLight);
-			modelStack.PopMatrix();
-		}
+		//	modelStack.PushMatrix();
+		//	modelStack.Translate(objInScene[CAN5]->m_transform.m_position.x, tableHeight + canHeight, objInScene[CAN5]->m_transform.m_position.z);
+		//	modelStack.Scale(canScale, canScale, canScale);
+		//	RenderMesh(meshList[GEO_CAN], enableLight);
+		//	modelStack.PopMatrix();
+		//}
 
-		// Top can:
-		{
-			modelStack.PushMatrix();
-			modelStack.Translate(objInScene[CAN6]->m_transform.m_position.x, tableHeight + canHeight * 2, objInScene[CAN6]->m_transform.m_position.z);
-			modelStack.Scale(canScale, canScale, canScale);
-			RenderMesh(meshList[GEO_CAN], enableLight);
-			modelStack.PopMatrix();
-		}
+		//// Top can:
+		//{
+		//	modelStack.PushMatrix();
+		//	modelStack.Translate(objInScene[CAN6]->m_transform.m_position.x, tableHeight + canHeight * 2, objInScene[CAN6]->m_transform.m_position.z);
+		//	modelStack.Scale(canScale, canScale, canScale);
+		//	RenderMesh(meshList[GEO_CAN], enableLight);
+		//	modelStack.PopMatrix();
+		//}
 	}
 
 	// Render hitboxes:
 	GameObjectManager::GetInstance()->RenderAll(*this);
 
-#ifdef DRAW_HITBOX
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	for (btCollisionShape* shape : ColliderManager::GetInstance()->colliders)
 	{
+		modelStack.PushMatrix();
 		modelStack.LoadIdentity();
 		GameObject* userGO = static_cast<GameObject*>(shape->getUserPointer());
 		modelStack.LoadMatrix(GetTransformMatrix(userGO->rb));
 		if (shape->getShapeType() == SPHERE_SHAPE_PROXYTYPE)
 		{
-			modelStack.PushMatrix();
 			SphereCollider* sphereCollider = static_cast<SphereCollider*>(shape);
 			float size = sphereCollider->GetRadius();
 			modelStack.Scale(size, size, size);
 			RenderMesh(hitboxMeshList[HITBOX_SPHERE]);
-			modelStack.PopMatrix();
 		}
 		else if (shape->getShapeType() == BOX_SHAPE_PROXYTYPE)
 		{
-			btTransform t;
-			userGO->rb->getMotionState()->getWorldTransform(t);
-			float mat[16]{};
-			t.getOpenGLMatrix(mat);
-			Transform newT = ConvertMatrix2Transform(mat);
-
 			BoxCollider* boxCollider = static_cast<BoxCollider*>(shape);
 			float width, height, depth;
 			boxCollider->GetDimension(width, height, depth);
 			modelStack.Scale(width, height, depth);
-			RenderMesh(hitboxMeshList[HITBOX_BOX], false, newT);
+			RenderMesh(hitboxMeshList[HITBOX_BOX]);
 		}
 		else if (shape->getShapeType() == CYLINDER_SHAPE_PROXYTYPE)
 		{
-			modelStack.PushMatrix();
 			CylinderCollider* cylinderCollider = static_cast<CylinderCollider*>(shape);
 			float rad, height;
 			cylinderCollider->GetDimension(rad, height);
 			modelStack.Scale(rad / 2.0f, height, rad / 2.0f);
 			RenderMesh(hitboxMeshList[HITBOX_CYLINDER]);
-			modelStack.PopMatrix();
 		}
 		else if (shape->getShapeType() == STATIC_PLANE_PROXYTYPE)
 		{
-			modelStack.PushMatrix();
 			modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
 			RenderMesh(hitboxMeshList[HITBOX_GROUND]);
-			modelStack.PopMatrix();
 		}
-
+		modelStack.PopMatrix();
 	}
 
 	if (isFillMode)
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-#endif
 }
 
 void SceneCanKnockdown::Exit()

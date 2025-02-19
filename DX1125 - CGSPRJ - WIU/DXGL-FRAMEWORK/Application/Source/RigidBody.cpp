@@ -130,3 +130,18 @@ btRigidBody* addStaticPlane(GameObject* go, glm::vec3 normal, PhysicsMaterial& m
 	rb->setUserPointer(go);
 	return rb;
 }
+
+void SetObjectDynamic(btRigidBody* body, float mass) {
+	btVector3 inertia(0, 0, 0);
+	body->getCollisionShape()->calculateLocalInertia(mass, inertia); // Recalculate inertia
+	body->setMassProps(mass, inertia);
+	body->updateInertiaTensor();
+	body->setActivationState(ACTIVE_TAG);
+	
+}
+
+void SetObjectStatic(btRigidBody* body) {
+	body->setMassProps(0, btVector3(0, 0, 0)); // Set mass to 0 (static)
+	body->updateInertiaTensor();
+	body->setActivationState(ACTIVE_TAG);
+}

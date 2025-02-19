@@ -11,7 +11,7 @@ void CK_Table::Start()
 {
 	PhysicsMaterial mat;
 	mat.m_mass = 0;
-	rb = addBoxCollider(this, 10, 10, 10, mat);
+	rb = addBoxCollider(this, 2.6, 2.84, 1.8, mat);
 }
 
 void CK_Table::Update()

@@ -10,7 +10,7 @@ CK_Ball::CK_Ball() {
 void CK_Ball::Start()
 {
 	PhysicsMaterial mat;
-	mat.m_mass = 0.0f;
+	mat.m_mass = 1.0f;
 	mat.m_bounciness = 0.6f;
 	mat.m_friction = 0.5f;
 	rb = addSphereCollider(this, 0.25, mat);
@@ -22,5 +22,5 @@ void CK_Ball::Update()
 
 void CK_Ball::Render(Scene& scene)
 {
-	scene.RenderMesh(scene.meshList[SceneCanKnockdown::GEO_BALL], scene.enableLight, m_transform);
+	scene.RenderRigidMesh(scene.meshList[SceneCanKnockdown::GEO_BALL], scene.enableLight, m_transform, rb);
 }

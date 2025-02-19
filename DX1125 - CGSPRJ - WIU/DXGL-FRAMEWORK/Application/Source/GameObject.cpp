@@ -69,9 +69,9 @@ void GameObject::SetRigidbodyPosition(const glm::vec3& newPos)
 {
 	btTransform t;
 	t.setIdentity();
-	rb->getMotionState()->getWorldTransform(t);
+	t = rb->getWorldTransform();
 	t.setOrigin(btVector3(newPos.x, newPos.y, newPos.z));
-	rb->getMotionState()->setWorldTransform(t);
+	rb->setWorldTransform(t);
 }
 
 void GameObject::SetRigidbodyPosition(const float& x, const float& y, const float& z)

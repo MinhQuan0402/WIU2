@@ -9,7 +9,8 @@ CK_Can::CK_Can() {
 void CK_Can::Start()
 {
 	PhysicsMaterial mat;
-	mat.m_mass = 0;
+	mat.m_mass = 0.8f;
+	m_transform.ScaleBy(glm::vec3(0.092));
 	rb = addCylinderCollider(this, 0.67, 0.48, mat);
 }
 
@@ -19,5 +20,5 @@ void CK_Can::Update()
 
 void CK_Can::Render(Scene& scene)
 {
-	
+	scene.RenderRigidMesh(scene.meshList[SceneCanKnockdown::GEO_CAN], scene.enableLight, m_transform, rb);
 }
