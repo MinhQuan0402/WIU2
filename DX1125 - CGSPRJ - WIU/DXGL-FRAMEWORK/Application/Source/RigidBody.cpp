@@ -2,20 +2,20 @@
 #include "CollisionManager.h"
 #include "GameObject.h"
 #include "ColliderManager.h"
-#include "BulletCollision/CollisionShapes/btTriangleShape.h"
 
 PhysicsMaterial::PhysicsMaterial(void)
 	: m_mass{ 1.0f }, m_bounciness{ 0.0f }, m_friction{ 0.0f }
 {
 }
 
-btRigidBody* addSphereCollider(GameObject* go, const float& rad, PhysicsMaterial& mat)
+btRigidBody* addSphereCollider(GameObject* go, const float& rad, PhysicsMaterial& mat, const glm::vec3& offset)
 {
 	if (!go) return nullptr;
-
+	go->colliderOffset = offset;
 	btTransform t;
 	t.setIdentity();
-	t.setOrigin(btVector3(go->m_transform.m_position.x, go->m_transform.m_position.y, go->m_transform.m_position.z));
+	btVector3 finalPosition = btVector3(go->m_transform.m_position.x + offset.x, go->m_transform.m_position.y + offset.y, go->m_transform.m_position.z + offset.z);
+	t.setOrigin(btVector3(finalPosition));
 	btQuaternion rotationX = btQuaternion(btVector3(1, 0, 0), glm::radians(go->m_transform.m_rotation.x));
 	btQuaternion rotationY = btQuaternion(btVector3(0, 1, 0), glm::radians(go->m_transform.m_rotation.y));
 	btQuaternion rotationZ = btQuaternion(btVector3(0, 0, 1), glm::radians(go->m_transform.m_rotation.z));
@@ -39,13 +39,14 @@ btRigidBody* addSphereCollider(GameObject* go, const float& rad, PhysicsMaterial
 	return rb;
 }
 
-btRigidBody* addBoxCollider(GameObject* go, const float& width, const float& height, const float& depth, PhysicsMaterial& mat)
+btRigidBody* addBoxCollider(GameObject* go, const float& width, const float& height, const float& depth, PhysicsMaterial& mat, const glm::vec3& offset)
 {
 	if (!go) return nullptr;
-
+	go->colliderOffset = offset;
 	btTransform t;
 	t.setIdentity();
-	t.setOrigin(btVector3(go->m_transform.m_position.x, go->m_transform.m_position.y, go->m_transform.m_position.z));
+	btVector3 finalPosition = btVector3(go->m_transform.m_position.x + offset.x, go->m_transform.m_position.y + offset.y, go->m_transform.m_position.z + offset.z);
+	t.setOrigin(btVector3(finalPosition));
 	btQuaternion rotationX = btQuaternion(btVector3(1, 0, 0), glm::radians(go->m_transform.m_rotation.x));
 	btQuaternion rotationY = btQuaternion(btVector3(0, 1, 0), glm::radians(go->m_transform.m_rotation.y));
 	btQuaternion rotationZ = btQuaternion(btVector3(0, 0, 1), glm::radians(go->m_transform.m_rotation.z));
@@ -69,13 +70,14 @@ btRigidBody* addBoxCollider(GameObject* go, const float& width, const float& hei
 	return rb;
 }
 
-btRigidBody* addCylinderCollider(GameObject* go, const float& height, const float& rad, PhysicsMaterial& mat)
+btRigidBody* addCylinderCollider(GameObject* go, const float& height, const float& rad, PhysicsMaterial& mat, const glm::vec3& offset)
 {
 	if (!go) return nullptr;
-
+	go->colliderOffset = offset;
 	btTransform t;
 	t.setIdentity();
-	t.setOrigin(btVector3(go->m_transform.m_position.x, go->m_transform.m_position.y, go->m_transform.m_position.z));
+	btVector3 finalPosition = btVector3(go->m_transform.m_position.x + offset.x, go->m_transform.m_position.y + offset.y, go->m_transform.m_position.z + offset.z);
+	t.setOrigin(btVector3(finalPosition));
 	btQuaternion rotationX = btQuaternion(btVector3(1, 0, 0), glm::radians(go->m_transform.m_rotation.x));
 	btQuaternion rotationY = btQuaternion(btVector3(0, 1, 0), glm::radians(go->m_transform.m_rotation.y));
 	btQuaternion rotationZ = btQuaternion(btVector3(0, 0, 1), glm::radians(go->m_transform.m_rotation.z));
@@ -99,13 +101,14 @@ btRigidBody* addCylinderCollider(GameObject* go, const float& height, const floa
 	return rb;
 }
 
-btRigidBody* addStaticPlane(GameObject* go, glm::vec3 normal, PhysicsMaterial& mat)
+btRigidBody* addStaticPlane(GameObject* go, glm::vec3 normal, PhysicsMaterial& mat, const glm::vec3& offset)
 {
 	mat.m_mass = 0.0f;
-
+	go->colliderOffset = offset;
 	btTransform t;
 	t.setIdentity();
-	t.setOrigin(btVector3(go->m_transform.m_position.x, go->m_transform.m_position.y, go->m_transform.m_position.z));
+	btVector3 finalPosition = btVector3(go->m_transform.m_position.x + offset.x, go->m_transform.m_position.y + offset.y, go->m_transform.m_position.z + offset.z);
+	t.setOrigin(btVector3(finalPosition));
 	btQuaternion rotationX = btQuaternion(btVector3(1, 0, 0), glm::radians(go->m_transform.m_rotation.x));
 	btQuaternion rotationY = btQuaternion(btVector3(0, 1, 0), glm::radians(go->m_transform.m_rotation.y));
 	btQuaternion rotationZ = btQuaternion(btVector3(0, 0, 1), glm::radians(go->m_transform.m_rotation.z));

@@ -154,10 +154,17 @@ void GameObjectManager::addItem(GameObject* obj)
 {
 	GameObjectManager::GetInstance()->GetRoot()->insertGO(obj);
     GameObjectManager::GetInstance()->m_allGOs.push_back(obj);
+
+	switch (obj->rbGOType)
+	{
+	case GameObject::DYNAMIC:  GameObjectManager::GetInstance()->m_dynamicGOs.push_back(obj);  break;
+	case GameObject::KINEMATIC:  GameObjectManager::GetInstance()->m_kinematicGOs.push_back(obj);  break;
+	case GameObject::STATIC:  GameObjectManager::GetInstance()->m_staticGOs.push_back(obj);  break;
+	}
 }
 void GameObjectManager::removeItem(GameObject* obj)
 {
-	CQuad* quad = GameObjectManager::GetInstance()->findQuad(m_root, obj);
+	CQuad* quad = GameObjectManager::GetInstance()->findQuad(GameObjectManager::GetInstance()->m_root, obj);
 	GameObjectManager::GetInstance()->postorderDeleteGO(quad, obj);
 	GameObjectManager::GetInstance()->m_allGOs.remove(obj); 
 }
@@ -173,8 +180,7 @@ bool GameObjectManager::findObjInList(const GameObject& value, int& index)
 			index = i;
 			break;
 		}
-		else
-			index = -1;
+		else index = -1;
 	}
 	return isFound;
 }
@@ -187,17 +193,11 @@ void GameObjectManager::IniAll(void)
 }
 void GameObjectManager::UpdateAll(void)
 {
-	for (GameObject*& value : GameObjectManager::GetInstance()->m_allGOs)
-	{
-		if(value) value->Update();
-	}
+	for (GameObject*& value : GameObjectManager::GetInstance()->m_allGOs) { if (value) value->Update(); }
 }
 void GameObjectManager::RenderAll(Scene& scene)
 {
-	for (GameObject*& value : GameObjectManager::GetInstance()->m_allGOs)
-	{
-		if (value) value->Render(scene);
-	}
+	for (GameObject*& value : GameObjectManager::GetInstance()->m_allGOs) { if (value) value->Render(scene); }
 }
 
 void GameObjectManager::clearQuad(CQuad* p)

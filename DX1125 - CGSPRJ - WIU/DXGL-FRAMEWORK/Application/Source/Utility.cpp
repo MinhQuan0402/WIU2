@@ -24,12 +24,13 @@ Transform ConvertMatrix2Transform(float mat[16])
     t.m_position = glm::vec3(mat[12], mat[13], mat[14]);
     glm::mat3 rotationMatrix = glm::mat3(
         glm::normalize(glm::vec3(mat[0])),
-        glm::normalize(glm::vec3(mat[5])),
-        glm::normalize(glm::vec3(mat[10]))
+        glm::normalize(glm::vec3(mat[1])),
+        glm::normalize(glm::vec3(mat[2]))
     );
     glm::quat rotationQuat = glm::quat_cast(rotationMatrix);
     t.m_rotation = glm::eulerAngles(rotationQuat);
     t.m_rotation = glm::degrees(t.m_rotation);
+    t.m_rotation = glm::vec3(t.m_rotation.y, t.m_rotation.x, t.m_rotation.z);
     return t;
 }
 
@@ -44,4 +45,10 @@ glm::mat4 addMatrix(glm::mat4 a, glm::mat4 b)
         }
     }
     return newMatrix;
+}
+
+btVector3 QuaternionToEuler(btQuaternion quat) {
+    btScalar roll, pitch, yaw;
+    btMatrix3x3(quat).getEulerZYX(yaw, pitch, roll); // Convert quaternion to Euler angles (ZYX order)
+    return btVector3(roll, pitch, yaw); // Angles in radians
 }

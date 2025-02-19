@@ -19,7 +19,7 @@ public:
 	static void DestroyInstance(void);
 
 	void SetUpDynamicWorld(const float& gravity = 0.0f);
-	void UpdateCollision(float fixedDeltaTime);
+	void UpdateCollision(void);
 
 	btDynamicsWorld* GetDynamicsWorld(void);
 };

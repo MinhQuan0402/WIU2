@@ -9,6 +9,10 @@ class GameObjectManager
 private:
 	CQuad* m_root;
 	UnorderedVector<GameObject*> m_allGOs;
+	UnorderedVector<GameObject*> m_staticGOs;
+	UnorderedVector<GameObject*> m_kinematicGOs;
+	UnorderedVector<GameObject*> m_dynamicGOs;
+
 	static GameObjectManager* m_instance;
 
 	void preOrder(CQuad* p, unsigned level);
@@ -27,7 +31,7 @@ public:
 	static CQuad* GetRoot(void);
 
 	static void addItem(GameObject* obj);
-	void removeItem(GameObject* obj);
+	static void removeItem(GameObject* obj);
 	static bool findObjInList(const GameObject& value, int& index);
 	static void DivideQuad(void);
 

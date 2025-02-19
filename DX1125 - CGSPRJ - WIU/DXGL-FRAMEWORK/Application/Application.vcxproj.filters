@@ -106,7 +106,7 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\ColliderManager.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Managers</Filter>
     </ClCompile>
     <ClCompile Include="Source\ScenePlinko.cpp">
       <Filter>Source Files\Scene</Filter>
@@ -201,7 +201,7 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\ColliderManager.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Managers</Filter>
     </ClInclude>
     <ClInclude Include="Source\ScenePlinko.h">
       <Filter>Header Files\Scene</Filter>
