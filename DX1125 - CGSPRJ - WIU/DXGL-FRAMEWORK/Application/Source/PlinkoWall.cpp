@@ -5,17 +5,19 @@
 
 PlinkoWall::PlinkoWall()
 {
-	PhysicsMaterial mat;
-	mat.m_mass = 0.f;
-	mat.m_friction = 0.5f;
-	mat.m_bounciness = 0.6f;
-	rb = addBoxCollider(this, 1.f, 1.f, 1.f, mat);
 	GameObjectManager::GetInstance()->addItem(this);
 }
 
 void PlinkoWall::Start()
 {
-	m_transform.ScaleBy(1.5f, 1.f, 19.f);
+	PhysicsMaterial mat;
+	mat.m_mass = 0.f;
+	mat.m_friction = 0.5f;
+	mat.m_bounciness = 0.6f;
+	m_transform.Translate(-0.08, 0, 0);
+	m_transform.Rotate(30, 0, 0);
+
+	rb = addBoxCollider(this, 0.15f, 0.25f, 0.05f, mat);
 }
 
 void PlinkoWall::Update()
@@ -25,5 +27,5 @@ void PlinkoWall::Update()
 
 void PlinkoWall::Render(Scene& scene)
 {
-	scene.RenderMesh(scene.meshList[ScenePlinko::GEO_CUBE], false, m_transform);
+	//scene.RenderMesh(scene.meshList[ScenePlinko::GEO_CUBE], false, m_transform);
 }

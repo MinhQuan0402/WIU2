@@ -77,6 +77,7 @@ private:
 		WALL2,
 		WALL3,
 		WALL4,
+		PLINKO,
 
 		NUM_OBJ
 	};

@@ -22,6 +22,7 @@
 #include "PlinkoBall.h"
 #include "PlinkoCylinder.h"
 #include "PlinkoWall.h"
+#include "PlinkoBoard.h"
 
 ScenePlinko::ScenePlinko() : numLight{ 2 }
 {
@@ -131,8 +132,9 @@ void ScenePlinko::Init()
 
 	enableLight = true;
 
-	//// Create object in scene
-	//objInScene[BALL] = new PlinkoBall();
+	// Create object in scene
+	objInScene[PLINKO] = new PlinkoBoard();
+	objInScene[BALL] = new PlinkoBall();
 	//objInScene[CYLINDER] = new PlinkoCylinder();
 	//objInScene[CYLINDER1] = new PlinkoCylinder();
 	//objInScene[CYLINDER2] = new PlinkoCylinder();
@@ -199,7 +201,7 @@ void ScenePlinko::Init()
 	//objInScene[WALL3]->m_transform.Translate(0, 1.5, 4.5);
 	//objInScene[WALL4]->m_transform.Translate(0, 1.5, -4.5);
 
-	//GameObjectManager::GetInstance()->IniAll();
+	GameObjectManager::GetInstance()->IniAll();
 
 	//objInScene[BACKWALL]->m_transform.ScaleBy(0.5, 21, 19);
 	//objInScene[WALL1]->m_transform.ScaleBy(1.5, 2.5, 0.5);
@@ -275,10 +277,10 @@ void ScenePlinko::Render()
 	RenderMesh(meshList[GEO_PLANE]);
 	modelStack.PopMatrix();
 
-	modelStack.PushMatrix();
-	modelStack.Translate(0, 0.2, 0);
-	RenderMesh(meshList[GEO_PLINKO]);
-	modelStack.PopMatrix();
+	//modelStack.PushMatrix();
+	//modelStack.Translate(0, 0.2, 0);
+	//RenderMesh(meshList[GEO_PLINKO]);
+	//modelStack.PopMatrix();
 
 	GameObjectManager::GetInstance()->RenderAll(*this);
 
