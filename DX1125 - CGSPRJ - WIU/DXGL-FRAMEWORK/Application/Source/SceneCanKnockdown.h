@@ -20,6 +20,7 @@ public:
 		GEO_BOTTOM,
 		GEO_RIGHT,
 		GEO_LEFT,
+
 		GEO_HITBOX,
 		GEO_TEXT,
 		GEO_SPHERE,
@@ -28,10 +29,11 @@ public:
 		GEO_CUBE,
 		GEO_CYLINDER,
 
-		TABLE,
-		CAN,
-		TENT,
-		COUNTER,
+		GEO_BALL,
+		GEO_TABLE,
+		GEO_CAN,
+		GEO_TENT,
+		GEO_COUNTER,
 
 		NUM_GEOMETRY
 	};
@@ -49,16 +51,21 @@ private:
 	int numLight;
 	Transform player;
 
+	float fov;
+
 	enum OBJINSCENE {
 		GROUND,
 		BALL,
-		SODACAN,
-		SODACAN1,
-		SODACAN2,
-		SODACAN3,
-		SODACAN4,
-		SODACAN5,
-		FOLDABLE_TABLE,
+		CAN,
+		CAN2,
+		CAN3,
+		CAN4,
+		CAN5,
+		CAN6,
+		TABLE,
+		COUNTER,
+		COUNTER2,
+		COUNTER3,
 
 		NUM_OBJ
 	};

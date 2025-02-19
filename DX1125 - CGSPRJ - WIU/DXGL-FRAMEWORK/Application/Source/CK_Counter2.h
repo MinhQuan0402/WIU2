@@ -1,10 +1,10 @@
 #pragma once
 #include "GameObject.h"
-class CK_Cylinder :
+class CK_Counter2 :
     public GameObject
 {
 public:
-    CK_Cylinder();
+    CK_Counter2();
 
     void Start() override;
     void Update() override;

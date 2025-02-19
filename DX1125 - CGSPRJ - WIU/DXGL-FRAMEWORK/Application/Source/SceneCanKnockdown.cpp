@@ -15,13 +15,15 @@
 #include "Time.h"
 #include "LoadPNG.h"
 #include <btBulletDynamicsCommon.h>
-#include "CollisionManager.h"
+#include "ColliderManager.h"
 #include <MyMath.h>
 #include "Utility.h"
 
 #include "CK_Ball.h"
-#include "CK_Cube.h"
-#include "CK_Cylinder.h"
+#include "CK_Can.h"
+#include "CK_Table.h"
+#include "CK_Counter.h"
+#include "CK_Counter2.h"
 
 SceneCanKnockdown::SceneCanKnockdown() : numLight{ 2 }
 {
@@ -58,6 +60,7 @@ void SceneCanKnockdown::Init()
 		"Shader//MainShader.fragmentshader");
 	glUseProgram(m_programID);
 
+	
 	// Get a handle for our "MVP" uniform
 	m_parameters[U_MVP] = glGetUniformLocation(m_programID, "MVP");
 	m_parameters[U_MODELVIEW] = glGetUniformLocation(m_programID, "MV");
@@ -86,42 +89,54 @@ void SceneCanKnockdown::Init()
 	m_parameters[U_TEXT_ENABLED] = glGetUniformLocation(m_programID, "textEnabled");
 	m_parameters[U_TEXT_COLOR] = glGetUniformLocation(m_programID, "textColor");
 
-	meshList[GEO_HITBOX] = MeshBuilder::GenerateCube("HitBox", glm::vec3(0.0f, 1.0f, 0.0f), 1.0f);
+	Mesh::SetMaterialLoc(m_parameters[U_MATERIAL_AMBIENT], m_parameters[U_MATERIAL_DIFFUSE], m_parameters[U_MATERIAL_SPECULAR], m_parameters[U_MATERIAL_SHININESS]);
+
+	meshList[GEO_HITBOX] = MeshBuilder::GenerateCube("HitBox", GREEN, 1.0f);
+
 	meshList[GEO_AXIS] = MeshBuilder::GenerateAxes("Axes", 10000.f, 10000.f, 10000.f);
 	meshList[GEO_LIGHT] = MeshBuilder::GenerateSphere("Sphere", WHITE, .05f, 180, 180);
 	meshList[GEO_TEXT] = MeshBuilder::GenerateText("text", 16, 16);
 	meshList[GEO_TEXT]->textureID = LoadTGA("Images//calibri.tga");
 	meshList[GEO_MODEL1] = MeshBuilder::GenerateOBJ("Doorman", "Models//doorman.obj");
 	meshList[GEO_MODEL1]->textureID = LoadPNG("Images//doorman.png");
+
 	meshList[GEO_SPHERE] = MeshBuilder::GenerateSphere("Sphere", WHITE, 1.0f, 100, 100);
-	meshList[GEO_CUBE] = MeshBuilder::GenerateCube("Cube", GREEN, 1.0f);
-	meshList[GEO_PLANE] = MeshBuilder::GenerateQuad("Quad", GREY, 1000.0f);
-	meshList[GEO_CYLINDER] = MeshBuilder::GenerateCylinder("Cylinder", GREEN, 100, 1, 1);
+	meshList[GEO_CYLINDER] = MeshBuilder::GenerateCylinder("Cylinder", WHITE, 100, 1, 1);
+	meshList[GEO_CUBE] = MeshBuilder::GenerateCube("Cube", WHITE, 1.0f);
 
-	meshList[TABLE] = MeshBuilder::GenerateOBJMTL("Table", "Models//FoldableTable.obj", "Models//FoldableTable.mtl");
-	meshList[TABLE]->textureID = LoadPNG("Images//FoldableTable.png");
+	meshList[GEO_PLANE] = MeshBuilder::GenerateQuad("Quad", WHITE, 1000.0f);
+	meshList[GEO_PLANE]->material = Material::Metal(GREY);
 
-	meshList[CAN] = MeshBuilder::GenerateOBJMTL("Can", "Models//Can.obj", "Models//Can.mtl");
-	meshList[CAN]->textureID = LoadPNG("Images//Can.png");
-
-	meshList[TENT] = MeshBuilder::GenerateOBJMTL("Tent", "Models//Tent.obj", "Models//Tent.mtl");
-
-	meshList[COUNTER] = MeshBuilder::GenerateCube("Counter", glm::vec3(1, 1, 1), 1);
-	meshList[COUNTER]->textureID = LoadPNG("Images//Wood.png");
-
-	mainCamera.Init(glm::vec3(0, 3, 3), glm::vec3(0, 3, 0), VECTOR3_UP);
 	
-	glUniform1i(m_parameters[U_NUMLIGHTS], 2);
 
-	lights[0].m_transform.m_position = glm::vec3{};
-	lights[0].m_transform.m_position = glm::vec3(0, 5, 0);
+	meshList[GEO_BALL] = MeshBuilder::GenerateSphere("Ball", WHITE, 1.0f, 100, 100);
+	meshList[GEO_BALL]->material = Material::Plastic(BLUE);
+
+	meshList[GEO_TABLE] = MeshBuilder::GenerateOBJMTL("Table", "Models//FoldableTable.obj", "Models//FoldableTable.mtl");
+	meshList[GEO_TABLE]->textureID = LoadPNG("Images//FoldableTable.png");
+
+	meshList[GEO_CAN] = MeshBuilder::GenerateOBJMTL("Can", "Models//Can.obj", "Models//Can.mtl");
+	meshList[GEO_CAN]->textureID = LoadPNG("Images//Can.png");
+
+	meshList[GEO_TENT] = MeshBuilder::GenerateOBJMTL("Tent", "Models//Tent.obj", "Models//Tent.mtl");
+
+	meshList[GEO_COUNTER] = MeshBuilder::GenerateCube("Counter", glm::vec3(0.459, 0.302, 0), 1);
+	meshList[GEO_COUNTER]->textureID = LoadPNG("Images//Wood.png");
+	meshList[GEO_COUNTER]->material = Material::Wood(glm::vec3(0.459, 0.302, 0));
+
+	mainCamera.Init(glm::vec3(0, 4, 6.5), glm::vec3(0, 4, 0), VECTOR3_UP);
+	mainCamera.sensitivity = 50.0f;
+
+	glUniform1i(m_parameters[U_NUMLIGHTS], 1);
+
+	lights[0].m_transform.m_position = glm::vec3(0, 10, 0);
 	lights[0].color = glm::vec3(1, 1, 1);
 	lights[0].type = Light::LIGHT_SPOT;
 	lights[0].power = 1;
 	lights[0].kC = 1.f;
 	lights[0].kL = 0.01f;
 	lights[0].kQ = 0.001f;
-	lights[0].cosCutoff = 45.f;
+	lights[0].cosCutoff = 60.f;
 	lights[0].cosInner = 30.f;
 	lights[0].exponent = 3.f;
 	lights[0].spotDirection = glm::vec3(0.f, 1.f, 0.f);
@@ -147,46 +162,54 @@ void SceneCanKnockdown::Init()
 	info.m_restitution = 0.8f;
 	info.m_friction = 0.5f;
 
-
-
+	fov = 45.0f;
 
 	// Create objects in scene:
-	objInScene[BALL] = new CK_Ball;
-	objInScene[SODACAN] = new CK_Cylinder;
-	objInScene[SODACAN1] = new CK_Cylinder;
-	objInScene[SODACAN2] = new CK_Cylinder;
-	objInScene[SODACAN3] = new CK_Cylinder;
-	objInScene[SODACAN4] = new CK_Cylinder;
-	objInScene[SODACAN5] = new CK_Cylinder;
-	objInScene[FOLDABLE_TABLE] = new CK_Cube;
+	{
+		objInScene[BALL] = new CK_Ball;
+		objInScene[CAN] = new CK_Can;
+		objInScene[CAN2] = new CK_Can;
+		objInScene[CAN3] = new CK_Can;
+		objInScene[CAN4] = new CK_Can;
+		objInScene[CAN5] = new CK_Can;
+		objInScene[CAN6] = new CK_Can;
+		objInScene[TABLE] = new CK_Table;
+		objInScene[COUNTER] = new CK_Counter;
+		objInScene[COUNTER2] = new CK_Counter2;
+		objInScene[COUNTER3] = new CK_Counter2;
+	}
 
 	// Modify objects in scene:
-	objInScene[BALL]->m_transform.ScaleBy(0.5, 0.5, 0.5);
+	{
+		// Ball:
+		objInScene[BALL]->m_transform.ScaleBy(0.25, 0.25, 0.25);
 
-	glm::vec3 canScale{ 0.24, 0.67, 0.24 };
+		// Counters:
+		{
+			objInScene[COUNTER]->m_transform.Translate(0, 2.65 * 0.5, 3.84);
+			objInScene[COUNTER]->m_transform.ScaleBy(11.4612, 2.65, 1);
 
-	// Bottom 3 cans:
-	objInScene[SODACAN]->m_transform.Translate(-0.65, 2.84 + canScale.y * 0.5, 0);
-	objInScene[SODACAN]->m_transform.ScaleBy(canScale);
+			objInScene[COUNTER2]->m_transform.Translate(5.25, 2.65 * 0.5, -1.31);
+			objInScene[COUNTER2]->m_transform.ScaleBy(1, 2.65, 11);
 
-	objInScene[SODACAN1]->m_transform.Translate(0, 2.84 + canScale.y * 0.5, 0);
-	objInScene[SODACAN1]->m_transform.ScaleBy(canScale);
+			objInScene[COUNTER3]->m_transform.Translate(-5.25, 2.65 * 0.5, -1.31);
+			objInScene[COUNTER3]->m_transform.ScaleBy(1, 2.65, 11);
+		}
 
-	objInScene[SODACAN2]->m_transform.Translate(0.65, 2.84 + canScale.y * 0.5, 0);
-	objInScene[SODACAN2]->m_transform.ScaleBy(canScale);
+		// Cans:
+		{
+			float canY = 0.67;
+			objInScene[CAN]->m_transform.Translate(-0.65, 2.84 + canY * 0.5, 0);
+			objInScene[CAN2]->m_transform.Translate(0, 2.84 + canY * 0.5, 0);
+			objInScene[CAN3]->m_transform.Translate(0.65, 2.84 + canY * 0.5, 0);
+			objInScene[CAN4]->m_transform.Translate(-0.65 * 0.5, 2.84 + canY * 1.5, 0);
+			objInScene[CAN5]->m_transform.Translate(0.65 * 0.5, 2.84 + canY * 1.5, 0);
+			objInScene[CAN6]->m_transform.Translate(0, 2.84 + canY * 2.5, 0);
+		}
 
-	// Middle 2 cans:
-	objInScene[SODACAN3]->m_transform.Translate(-0.65 * 0.5, 2.84 + canScale.y * 1.5, 0);
-	objInScene[SODACAN3]->m_transform.ScaleBy(canScale);
-
-	objInScene[SODACAN4]->m_transform.Translate(0.65 * 0.5, 2.84 + canScale.y * 1.5, 0);
-	objInScene[SODACAN4]->m_transform.ScaleBy(canScale);
-
-	objInScene[SODACAN5]->m_transform.Translate(0, 2.84 + canScale.y * 2.5, 0);
-	objInScene[SODACAN5]->m_transform.ScaleBy(canScale);
-
-	objInScene[FOLDABLE_TABLE]->m_transform.Translate(0, 2.84 * 0.5, 0);
-	objInScene[FOLDABLE_TABLE]->m_transform.ScaleBy(2.8, 2.84, 2);
+		// Table:
+		objInScene[TABLE]->m_transform.Translate(0, 2.84 * 0.5, 0);
+	}
 
 	GameObjectManager::GetInstance()->IniAll();
 
@@ -208,9 +231,30 @@ void SceneCanKnockdown::Update()
 		inputMovementDir = mainCamera.right;
 	if (KeyboardController::GetInstance()->IsKeyDown('A'))
 		inputMovementDir = -mainCamera.right;
+
 	glm::vec3 finalForce = inputMovementDir * 10.0f * Time::deltaTime;
 	mainCamera.m_transform.Translate(finalForce);
+	glm::vec3 prevTarget = mainCamera.target;
 	mainCamera.UpdateCameraRotation();
+
+	//// stop player rotating too far:
+	//{
+	//	glm::vec3 toObject = glm::normalize(glm::vec3(0, 3, 0) - mainCamera.m_transform.m_position);
+
+	//	glm::vec3 lookVector = glm::normalize(mainCamera.target - mainCamera.m_transform.m_position);
+
+	//	float dotProduct = glm::dot(lookVector, toObject);
+	//	float threshold = glm::cos(glm::radians(fov * 0.5));
+
+	//	if (dotProduct <= threshold) // Rotated too much
+	//	{
+	//		mainCamera.target = prevTarget;
+	//	}
+	//	else {
+	//		float closeness = (dotProduct - threshold) / (1.0f - threshold);
+	//		mainCamera.sensitivity = 10 + closeness * (50 - 10);
+	//	}
+	//}
 
 	float speed = 5 * Time::deltaTime;
 	if (KeyboardController::GetInstance()->IsKeyDown('I'))
@@ -226,6 +270,7 @@ void SceneCanKnockdown::Update()
 	if (KeyboardController::GetInstance()->IsKeyDown('P'))
 		devVec.y -= speed;
 
+//	lights[0].m_transform.m_position = devVec;
 	std::cout << devVec.x << ", " << devVec.y << ", " << devVec.z << std::endl;
 
 
@@ -254,7 +299,7 @@ void SceneCanKnockdown::Update()
 		glm::vec3 up = mainCamera.up;
 
 		// Calculate world position of the ball
-		objInScene[BALL]->m_transform.m_position = cameraPos + (forward * 2.5f) + (right * 1.15f) + (up * -1.f);
+		objInScene[BALL]->m_transform.m_position = cameraPos + (forward * 2.f) + (right * 1.f) + (up * -1.f);
 	}
 
 
@@ -268,7 +313,7 @@ void SceneCanKnockdown::Render()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glm::mat4 model = glm::mat4(1.0f);
 		// Setup Model View Projection matrix
-		projectionStack.LoadMatrix(glm::perspective(45.0f,
+		projectionStack.LoadMatrix(glm::perspective(fov,
 			Application::m_consoleWidth / (float)Application::m_consoleHeight,
 			0.1f, 1000.0f));
 
@@ -304,99 +349,148 @@ void SceneCanKnockdown::Render()
 		RenderMesh(meshList[GEO_AXIS]);
 		modelStack.PopMatrix();
 
+
 		modelStack.PushMatrix();
 		modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
-		RenderMesh(meshList[GEO_PLANE]);
+		RenderMesh(meshList[GEO_PLANE], enableLight);
 		modelStack.PopMatrix();
 	}
 
+	
+	// Light:
+	{
+		modelStack.PushMatrix();
+		modelStack.Translate(lights[0].m_transform.m_position.x, lights[0].m_transform.m_position.y, lights[0].m_transform.m_position.z);
+		RenderMesh(meshList[GEO_LIGHT], !enableLight);
+		modelStack.PopMatrix();
+	}
+
+	
 	// Tent:
 	{
 		modelStack.PushMatrix();
-		modelStack.Translate(7.28394, 0, -6.20666);
-		RenderMesh(meshList[TENT]);
+		modelStack.Translate(0,0,0);
+		RenderMesh(meshList[GEO_TENT], enableLight);
 		modelStack.PopMatrix();
-
-		// Counters:
-		{
-			modelStack.PushMatrix();
-			modelStack.Translate(0, 2.65*0.5, 3.84);
-			modelStack.Scale(11.4612, 2.65, 1);
-			RenderMesh(meshList[COUNTER]);
-			modelStack.PopMatrix();
-
-			modelStack.PushMatrix();
-			modelStack.Translate(5, 2.65 * 0.5, -1.31);
-			modelStack.Scale(1, 2.65, 11);
-			RenderMesh(meshList[COUNTER]);
-			modelStack.PopMatrix();
-
-			modelStack.PushMatrix();
-			modelStack.Translate(-5, 2.65 * 0.5, -1.31);
-			modelStack.Scale(1, 2.65, 11);
-			RenderMesh(meshList[COUNTER]);
-			modelStack.PopMatrix();
-		}
 	}
 	
-
 	// Table:
 	{
 		modelStack.PushMatrix();
 		modelStack.Translate(0, 0.0367 * 0.5, 0);
 		modelStack.Scale(0.0367, 0.0367, 0.0367);
-		RenderMesh(meshList[TABLE]);
+		RenderMesh(meshList[GEO_TABLE], enableLight);
 		modelStack.PopMatrix();
 	}
 
-	// Render bottom 3 cans:
+	// Cans:
 	{
-		modelStack.PushMatrix();
-		modelStack.Translate(objInScene[SODACAN]->m_transform.m_position.x, objInScene[FOLDABLE_TABLE]->m_transform.m_scale.y, objInScene[SODACAN]->m_transform.m_position.z);
-		modelStack.Scale(0.092, 0.092, 0.092);
-		RenderMesh(meshList[CAN]);
-		modelStack.PopMatrix();
+		float canScale = 0.092;
+		float tableHeight = 2.84;
+		float canHeight = 0.67;
 
-		modelStack.PushMatrix();
-		modelStack.Translate(objInScene[SODACAN1]->m_transform.m_position.x, objInScene[FOLDABLE_TABLE]->m_transform.m_scale.y, objInScene[SODACAN1]->m_transform.m_position.z);
-		modelStack.Scale(0.092, 0.092, 0.092);
-		RenderMesh(meshList[CAN]);
-		modelStack.PopMatrix();
+		// Bottom 3 cans:
+		{
+			modelStack.PushMatrix();
+			modelStack.Translate(objInScene[CAN]->m_transform.m_position.x, tableHeight, objInScene[CAN]->m_transform.m_position.z);
+			modelStack.Scale(canScale, canScale, canScale);
+			RenderMesh(meshList[GEO_CAN], enableLight);
+			modelStack.PopMatrix();
 
-		modelStack.PushMatrix();
-		modelStack.Translate(objInScene[SODACAN2]->m_transform.m_position.x, objInScene[FOLDABLE_TABLE]->m_transform.m_scale.y, objInScene[SODACAN2]->m_transform.m_position.z);
-		modelStack.Scale(0.092, 0.092, 0.092);
-		RenderMesh(meshList[CAN]);
-		modelStack.PopMatrix();
+			modelStack.PushMatrix();
+			modelStack.Translate(objInScene[CAN2]->m_transform.m_position.x, tableHeight, objInScene[CAN2]->m_transform.m_position.z);
+			modelStack.Scale(canScale, canScale, canScale);
+			RenderMesh(meshList[GEO_CAN], enableLight);
+			modelStack.PopMatrix();
+
+			modelStack.PushMatrix();
+			modelStack.Translate(objInScene[CAN3]->m_transform.m_position.x, tableHeight, objInScene[CAN3]->m_transform.m_position.z);
+			modelStack.Scale(canScale, canScale, canScale);
+			RenderMesh(meshList[GEO_CAN], enableLight);
+			modelStack.PopMatrix();
+		}
+
+		// Middle 2 cans:
+		{
+			modelStack.PushMatrix();
+			modelStack.Translate(objInScene[CAN4]->m_transform.m_position.x, tableHeight + canHeight, objInScene[CAN4]->m_transform.m_position.z);
+			modelStack.Scale(canScale, canScale, canScale);
+			RenderMesh(meshList[GEO_CAN], enableLight);
+			modelStack.PopMatrix();
+
+			modelStack.PushMatrix();
+			modelStack.Translate(objInScene[CAN5]->m_transform.m_position.x, tableHeight + canHeight, objInScene[CAN5]->m_transform.m_position.z);
+			modelStack.Scale(canScale, canScale, canScale);
+			RenderMesh(meshList[GEO_CAN], enableLight);
+			modelStack.PopMatrix();
+		}
+
+		// Top can:
+		{
+			modelStack.PushMatrix();
+			modelStack.Translate(objInScene[CAN6]->m_transform.m_position.x, tableHeight + canHeight * 2, objInScene[CAN6]->m_transform.m_position.z);
+			modelStack.Scale(canScale, canScale, canScale);
+			RenderMesh(meshList[GEO_CAN], enableLight);
+			modelStack.PopMatrix();
+		}
 	}
 
-	// Middle 2 cans:
-	{
-		modelStack.PushMatrix();
-		modelStack.Translate(objInScene[SODACAN3]->m_transform.m_position.x, objInScene[FOLDABLE_TABLE]->m_transform.m_scale.y + objInScene[SODACAN]->m_transform.m_scale.y, objInScene[SODACAN3]->m_transform.m_position.z);
-		modelStack.Scale(0.092, 0.092, 0.092);
-		RenderMesh(meshList[CAN]);
-		modelStack.PopMatrix();
-
-		modelStack.PushMatrix();
-		modelStack.Translate(objInScene[SODACAN4]->m_transform.m_position.x, objInScene[FOLDABLE_TABLE]->m_transform.m_scale.y + objInScene[SODACAN]->m_transform.m_scale.y, objInScene[SODACAN4]->m_transform.m_position.z);
-		modelStack.Scale(0.092, 0.092, 0.092);
-		RenderMesh(meshList[CAN]);
-		modelStack.PopMatrix();
-	}
-
-	// Top can:
-	{
-		modelStack.PushMatrix();
-		modelStack.Translate(objInScene[SODACAN5]->m_transform.m_position.x, objInScene[FOLDABLE_TABLE]->m_transform.m_scale.y + objInScene[SODACAN]->m_transform.m_scale.y * 2, objInScene[SODACAN5]->m_transform.m_position.z);
-		modelStack.Scale(0.092, 0.092, 0.092);
-		RenderMesh(meshList[CAN]);
-		modelStack.PopMatrix();
-	}
-	
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	// Render hitboxes:
 	GameObjectManager::GetInstance()->RenderAll(*this);
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+#ifdef DRAW_HITBOX
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	for (btCollisionShape* shape : ColliderManager::GetInstance()->colliders)
+	{
+		modelStack.LoadIdentity();
+		GameObject* userGO = static_cast<GameObject*>(shape->getUserPointer());
+		modelStack.LoadMatrix(GetTransformMatrix(userGO->rb));
+		if (shape->getShapeType() == SPHERE_SHAPE_PROXYTYPE)
+		{
+			modelStack.PushMatrix();
+			SphereCollider* sphereCollider = static_cast<SphereCollider*>(shape);
+			float size = sphereCollider->GetRadius();
+			modelStack.Scale(size, size, size);
+			RenderMesh(hitboxMeshList[HITBOX_SPHERE]);
+			modelStack.PopMatrix();
+		}
+		else if (shape->getShapeType() == BOX_SHAPE_PROXYTYPE)
+		{
+			btTransform t;
+			userGO->rb->getMotionState()->getWorldTransform(t);
+			float mat[16]{};
+			t.getOpenGLMatrix(mat);
+			Transform newT = ConvertMatrix2Transform(mat);
+
+			BoxCollider* boxCollider = static_cast<BoxCollider*>(shape);
+			float width, height, depth;
+			boxCollider->GetDimension(width, height, depth);
+			modelStack.Scale(width, height, depth);
+			RenderMesh(hitboxMeshList[HITBOX_BOX], false, newT);
+		}
+		else if (shape->getShapeType() == CYLINDER_SHAPE_PROXYTYPE)
+		{
+			modelStack.PushMatrix();
+			CylinderCollider* cylinderCollider = static_cast<CylinderCollider*>(shape);
+			float rad, height;
+			cylinderCollider->GetDimension(rad, height);
+			modelStack.Scale(rad / 2.0f, height, rad / 2.0f);
+			RenderMesh(hitboxMeshList[HITBOX_CYLINDER]);
+			modelStack.PopMatrix();
+		}
+		else if (shape->getShapeType() == STATIC_PLANE_PROXYTYPE)
+		{
+			modelStack.PushMatrix();
+			modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
+			RenderMesh(hitboxMeshList[HITBOX_GROUND]);
+			modelStack.PopMatrix();
+		}
+
+	}
+
+	if (isFillMode)
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+#endif
 }
 
 void SceneCanKnockdown::Exit()
