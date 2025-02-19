@@ -106,7 +106,7 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\ColliderManager.cpp">
-      <Filter>Source Files\Managers</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\ScenePlinko.cpp">
       <Filter>Source Files\Scene</Filter>
@@ -120,14 +120,14 @@
     <ClCompile Include="Source\PlinkoWall.cpp">
       <Filter>Source Files\Objects</Filter>
     </ClCompile>
-    <ClCompile Include="Source\PlinkoGlass.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\PlinkoBoard.cpp">
       <Filter>Source Files\Objects</Filter>
     </ClCompile>
     <ClCompile Include="Source\PlinkoPointsWall.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\PlinkoGlass.cpp">
+      <Filter>Source Files\Objects</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -201,7 +201,7 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\ColliderManager.h">
-      <Filter>Header Files\Managers</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\ScenePlinko.h">
       <Filter>Header Files\Scene</Filter>
@@ -215,14 +215,14 @@
     <ClInclude Include="Source\PlinkoWall.h">
       <Filter>Header Files\Objects</Filter>
     </ClInclude>
-    <ClInclude Include="Source\PlinkoGlass.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Source\PlinkoBoard.h">
       <Filter>Header Files\Objects</Filter>
     </ClInclude>
     <ClInclude Include="Source\PlinkoPointsWall.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\PlinkoGlass.h">
+      <Filter>Header Files\Objects</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

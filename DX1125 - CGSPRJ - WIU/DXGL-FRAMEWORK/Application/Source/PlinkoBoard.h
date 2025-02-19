@@ -4,6 +4,7 @@
 #include "PlinkoCylinder.h"
 #include "PlinkoWall.h"
 #include "PlinkoPointsWall.h"
+#include "PlinkoGlass.h"
 
 class PlinkoBoard : public GameObject
 {
@@ -17,5 +18,6 @@ public:
 	UnorderedVector<PlinkoCylinder*> cylinders;
 	UnorderedVector<PlinkoWall*> walls;
 	UnorderedVector<PlinkoPointsWall*> pointWalls;
+	UnorderedVector<PlinkoGlass*> glassWalls;
 };
 

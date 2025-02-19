@@ -24,7 +24,7 @@
 #include "PlinkoWall.h"
 #include "PlinkoBoard.h"
 
-ScenePlinko::ScenePlinko() : numLight{ 2 }
+ScenePlinko::ScenePlinko() : numLight{ 2 }, ballZ{0.0f}
 {
 	meshList.resize(NUM_GEOMETRY);
 	lights.resize(numLight);
@@ -135,79 +135,8 @@ void ScenePlinko::Init()
 	// Create object in scene
 	objInScene[PLINKO] = new PlinkoBoard();
 	objInScene[BALL] = new PlinkoBall();
-	//objInScene[CYLINDER] = new PlinkoCylinder();
-	//objInScene[CYLINDER1] = new PlinkoCylinder();
-	//objInScene[CYLINDER2] = new PlinkoCylinder();
-	//objInScene[CYLINDER3] = new PlinkoCylinder();
-	//objInScene[CYLINDER4] = new PlinkoCylinder();
-	//objInScene[CYLINDER5] = new PlinkoCylinder();
-	//objInScene[CYLINDER6] = new PlinkoCylinder();
-	//objInScene[CYLINDER7] = new PlinkoCylinder();
-	//objInScene[CYLINDER8] = new PlinkoCylinder();
-	//objInScene[CYLINDER9] = new PlinkoCylinder();
-	//objInScene[CYLINDER10] = new PlinkoCylinder();
-	//objInScene[CYLINDER11] = new PlinkoCylinder();
-	//objInScene[CYLINDER12] = new PlinkoCylinder();
-	//objInScene[CYLINDER13] = new PlinkoCylinder();
-	//objInScene[CYLINDER14] = new PlinkoCylinder();
-	//objInScene[CYLINDER15] = new PlinkoCylinder();
-	//objInScene[CYLINDER16] = new PlinkoCylinder();
-	//objInScene[CYLINDER17] = new PlinkoCylinder();
-	//objInScene[CYLINDER18] = new PlinkoCylinder();
-	//objInScene[CYLINDER19] = new PlinkoCylinder();
-	//objInScene[CYLINDER20] = new PlinkoCylinder();
-	//objInScene[CYLINDER21] = new PlinkoCylinder();
-	//objInScene[CYLINDER22] = new PlinkoCylinder();
-	//objInScene[LWALL] = new PlinkoWall();
-	//objInScene[RWALL] = new PlinkoWall();
-	//objInScene[BOTWALL] = new PlinkoWall();
-	//objInScene[BACKWALL] = new PlinkoWall();
-	//objInScene[WALL1] = new PlinkoWall();
-	//objInScene[WALL2] = new PlinkoWall();
-	//objInScene[WALL3] = new PlinkoWall();
-	//objInScene[WALL4] = new PlinkoWall();
-
-
-	//// Translate, Rotate and Scale for objects
-	//objInScene[CYLINDER1]->m_transform.Translate(0, 0, 3);
-	//objInScene[CYLINDER2]->m_transform.Translate(0, 0, -3);
-	//objInScene[CYLINDER3]->m_transform.Translate(0, 0, 6);
-	//objInScene[CYLINDER4]->m_transform.Translate(0, 0, -6);
-	//objInScene[CYLINDER5]->m_transform.Translate(0, 3, 1.5);
-	//objInScene[CYLINDER6]->m_transform.Translate(0, 3, -1.5);
-	//objInScene[CYLINDER7]->m_transform.Translate(0, 3, 4.5);
-	//objInScene[CYLINDER8]->m_transform.Translate(0, 3, -4.5);
-	//objInScene[CYLINDER9]->m_transform.Translate(0, 6, 3);
-	//objInScene[CYLINDER10]->m_transform.Translate(0, 6, -3);
-	//objInScene[CYLINDER11]->m_transform.Translate(0, 6, 6);
-	//objInScene[CYLINDER12]->m_transform.Translate(0, 6, -6);
-	//objInScene[CYLINDER13]->m_transform.Translate(0, 6, 0);
-	//objInScene[CYLINDER14]->m_transform.Translate(0, 9, 1.5);
-	//objInScene[CYLINDER15]->m_transform.Translate(0, 9, -1.5);
-	//objInScene[CYLINDER16]->m_transform.Translate(0, 9, 4.5);
-	//objInScene[CYLINDER17]->m_transform.Translate(0, 9, -4.5);
-	//objInScene[CYLINDER18]->m_transform.Translate(0, 12, 3);
-	//objInScene[CYLINDER19]->m_transform.Translate(0, 12, -3);
-	//objInScene[CYLINDER20]->m_transform.Translate(0, 12, 6);
-	//objInScene[CYLINDER21]->m_transform.Translate(0, 12, -6);
-	//objInScene[CYLINDER22]->m_transform.Translate(0, 12, 0);
-	//objInScene[LWALL]->m_transform.Translate(0, 10, 9);
-	//objInScene[LWALL]->m_transform.Rotate(90, 0, 0);
-	//objInScene[RWALL]->m_transform.Translate(0, 10, -9);
-	//objInScene[RWALL]->m_transform.Rotate(90, 0, 0);
-	//objInScene[BACKWALL]->m_transform.Translate(-1, 10, 0);
-	//objInScene[WALL1]->m_transform.Translate(0, 1.5, 1.5);
-	//objInScene[WALL2]->m_transform.Translate(0, 1.5, -1.5);
-	//objInScene[WALL3]->m_transform.Translate(0, 1.5, 4.5);
-	//objInScene[WALL4]->m_transform.Translate(0, 1.5, -4.5);
 
 	GameObjectManager::GetInstance()->IniAll();
-
-	//objInScene[BACKWALL]->m_transform.ScaleBy(0.5, 21, 19);
-	//objInScene[WALL1]->m_transform.ScaleBy(1.5, 2.5, 0.5);
-	//objInScene[WALL2]->m_transform.ScaleBy(1.5, 2.5, 0.5);
-	//objInScene[WALL3]->m_transform.ScaleBy(1.5, 2.5, 0.5);
-	//objInScene[WALL4]->m_transform.ScaleBy(1.5, 2.5, 0.5);
 }
 
 void ScenePlinko::Update()
@@ -226,6 +155,26 @@ void ScenePlinko::Update()
 	glm::vec3 finalForce = inputMovementDir * 10.0f * Time::deltaTime;
 	mainCamera.m_transform.Translate(finalForce);
 	mainCamera.UpdateCameraRotation();
+
+	if (KeyboardController::GetInstance()->IsKeyDown(VK_LEFT))
+	{
+		ballZ += Time::deltaTime;
+	}
+	if (KeyboardController::GetInstance()->IsKeyDown(VK_RIGHT))
+	{
+		ballZ -= Time::deltaTime;
+	}
+
+	if (KeyboardController::GetInstance()->IsKeyPressed(VK_SPACE))
+	{
+
+	}
+	if (KeyboardController::GetInstance()->IsKeyPressed('R'))
+	{
+		objInScene[BALL]->SetRigidbodyPosition(0, 7, 0.0001);
+	}
+	ballZ = Math::Clamp(ballZ, -1.2f, 1.2f);
+	objInScene[BALL]->SetRigidbodyPosition(0, 0, ballZ);
 
 	GameObjectManager::GetInstance()->UpdateAll();
 }

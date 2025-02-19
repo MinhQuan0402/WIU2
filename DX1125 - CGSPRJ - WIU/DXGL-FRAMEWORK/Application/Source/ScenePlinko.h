@@ -42,6 +42,7 @@ private:
 	void RenderSkybox(void);
 	int numLight;
 	Transform player;
+	float ballZ;
 
 	enum OBJINSCENE
 	{

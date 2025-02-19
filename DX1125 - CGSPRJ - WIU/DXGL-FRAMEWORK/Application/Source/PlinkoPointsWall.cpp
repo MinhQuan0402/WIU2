@@ -16,7 +16,6 @@ void PlinkoPointsWall::Start()
 	mat.m_bounciness = 0.6f;
 	m_transform.Translate(-0.08, 1.3, 1.35);
 
-
 	rb = addBoxCollider(this, 0.15f, 1.1f, 0.05f, mat);
 }
 

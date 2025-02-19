@@ -15,7 +15,7 @@ void PlinkoBall::Start()
 	mat.m_bounciness = 0.6f;
 	mat.m_friction = 0.5f;
 
-	m_transform.Translate(-0.05, 10, 0.0001);
+	m_transform.Translate(-0.05, 7, 0.0001);
 	rb = addSphereCollider(this, 0.1f, mat);
 }
 
