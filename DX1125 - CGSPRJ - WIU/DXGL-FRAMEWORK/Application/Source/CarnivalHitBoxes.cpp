@@ -19,7 +19,7 @@ void CarnivalHitBoxes::Start()
 
 void CarnivalHitBoxes::Render(Scene& scene)
 {
-	scene.RenderMesh(scene.meshList[carnivalroaming::GEO_CUBE], false, m_transform);
+	//scene.RenderMesh(scene.meshList[carnivalroaming::GEO_CUBE], false, m_transform);
 }
 
 void CarnivalHitBoxes::Update()

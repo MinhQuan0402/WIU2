@@ -7,7 +7,16 @@ PhysicsMaterial::PhysicsMaterial(void)
 	: m_mass{ 1.0f }, m_bounciness{ 0.0f }, m_friction{ 0.0f }
 {
 }
-
+void SetObjectDynamic(btRigidBody* body, float mass) {
+	btVector3 inertia(0, 0, 0);
+	body->getCollisionShape()->calculateLocalInertia(mass, inertia); // Recalculate inertia
+	body->setMassProps(mass, inertia);
+	body->updateInertiaTensor();
+}
+void SetObjectStatic(btRigidBody* body) {
+	body->setMassProps(0, btVector3(0, 0, 0)); // Set mass to 0 (static)
+	body->updateInertiaTensor();
+}
 btRigidBody* addSphereCollider(GameObject* go, const float& rad, PhysicsMaterial& mat)
 {
 	if (!go) return nullptr;

@@ -46,3 +46,4 @@ glm::mat4 addMatrix(glm::mat4 a, glm::mat4 b)
     }
     return newMatrix;
 }
+

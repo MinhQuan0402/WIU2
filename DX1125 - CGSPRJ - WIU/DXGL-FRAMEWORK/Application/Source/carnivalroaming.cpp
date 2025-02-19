@@ -87,6 +87,8 @@ void carnivalroaming::Init()
 	m_parameters[U_TEXT_ENABLED] = glGetUniformLocation(m_programID, "textEnabled");
 	m_parameters[U_TEXT_COLOR] = glGetUniformLocation(m_programID, "textColor");
 
+	Mesh::SetMaterialLoc(m_parameters[U_MATERIAL_AMBIENT], m_parameters[U_MATERIAL_DIFFUSE], m_parameters[U_MATERIAL_SPECULAR], m_parameters[U_MATERIAL_SHININESS]); 
+
 	meshList[GEO_HITBOX] = MeshBuilder::GenerateCube("HitBox", glm::vec3(0.0f, 1.0f, 0.0f), 1.0f);
 	meshList[GEO_AXIS] = MeshBuilder::GenerateAxes("Axes", 10000.f, 10000.f, 10000.f);
 	meshList[GEO_LIGHT] = MeshBuilder::GenerateSphere("Sphere", WHITE, .05f, 180, 180);
@@ -106,11 +108,33 @@ void carnivalroaming::Init()
 	meshList[GEO_CIRCUSNAME] = MeshBuilder::GenerateOBJMTL("CircusName", "Models//circusName.obj", "Models//circusName.mtl");
 	meshList[GEO_CIRCUSNAME]->textureID = LoadPNG("Images//CircusNameTestpng.png");
 
-	
+	meshList[GEO_CANTENT] = MeshBuilder::GenerateOBJMTL("CanTent", "Models//tent.obj", "Models//tent.mtl");
+
+	meshList[GEO_TABLECAN] = MeshBuilder::GenerateOBJ("Table", "Models//simpletable.obj");
+	meshList[GEO_TABLECAN]->textureID = LoadPNG("Images//tableCan.png");
+
+	meshList[GEO_CAN] = MeshBuilder::GenerateOBJMTL("Can", "Models//Can.obj", "Models//Can.mtl");
+	meshList[GEO_CAN]->textureID = LoadPNG("Images//Can.png");
+
+
+	meshList[GEO_STRIPEWALL] = MeshBuilder::GenerateOBJMTL("Stripewall", "Models//stripedwall2.obj", "Models//stripedwall2.mtl");
+
+	meshList[GEO_COTTONCANDY] = MeshBuilder::GenerateOBJMTL("CottonCandy", "Models//cottoncandy.obj", "Models//cottoncandy.mtl");
+
+	meshList[GEO_PLINKO] = MeshBuilder::GenerateOBJMTL("Plinko", "Models//plinko.obj", "Models//plinko.mtl");
+	meshList[GEO_PLINKO]->textureID = LoadPNG("Images//plinko.png");
+
+
+	meshList[GEO_POOL] = MeshBuilder::GenerateOBJ("Table", "Models//InflatablePool.obj");
+	meshList[GEO_POOL]->textureID = LoadPNG("Images//pool.png");
+
+	meshList[GEO_POOLWATER] = MeshBuilder::GenerateCircle("Circle", WHITE, 1);
+	meshList[GEO_POOLWATER]->textureID = LoadPNG("Images//water.png");
+
 
 	meshList[GEO_SHOOTINGGAME] = MeshBuilder::GenerateQuad("Quad", WHITE, 1);
 
-	mainCamera.Init(glm::vec3(8, 6, 6), glm::vec3(0, 6, 0), VECTOR3_UP);
+	mainCamera.Init(glm::vec3(0, 6, -400), glm::vec3(0, 6, 0), VECTOR3_UP);
 	mainCamera.sensitivity = 20;
 
 	glUniform1i(m_parameters[U_NUMLIGHTS], 2);
@@ -294,69 +318,352 @@ void carnivalroaming::Render()
 	RenderMesh(meshList[GEO_CIRCUSNAME]);
 	modelStack.PopMatrix();
 
-	//shooting
 	modelStack.PushMatrix();
-	modelStack.Translate(0.0f, 0.5f, 400.0f);
-	modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
-	modelStack.Scale(350.0f, 100.f, 0.0f);
-	RenderMesh(meshList[GEO_HITBOX]);
+	modelStack.Translate(-512.5f, 0.5f, 405.0f);
+	//modelStack.Rotate(180.0f, 0.0f, 1.0f, 0.0f);
+	modelStack.Scale(20, 7, 6);
+	RenderMesh(meshList[GEO_CANTENT]);
 	modelStack.PopMatrix();
 
-	//balloon 
 	modelStack.PushMatrix();
-	modelStack.Translate(512.5f, 0.5f, 400.0f);
-	modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
-	modelStack.Scale(275.0f, 100.f, 0.0f);
-	RenderMesh(meshList[GEO_HITBOX]);
+	modelStack.Translate(-370.5f, 5.5f, 405.0f);
+	modelStack.Rotate(90.0f, 0.0f, 0.0f, 1.0f);
+	modelStack.Scale(20, 7, 6);
+	RenderMesh(meshList[GEO_STRIPEWALL]);
 	modelStack.PopMatrix();
 
-	//can
 	modelStack.PushMatrix();
-	modelStack.Translate(-512.5f, 0.5f, 400.0f);
-	modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
-	modelStack.Scale(275.0f, 100.f, 0.0f);
-	RenderMesh(meshList[GEO_HITBOX]);
+	modelStack.Translate(-370.5f, 15.5f, 405.0f);
+	modelStack.Rotate(90.0f, 0.0f, 0.0f, 1.0f);
+	modelStack.Scale(20, 7, 6);
+	RenderMesh(meshList[GEO_STRIPEWALL]);
 	modelStack.PopMatrix();
 
-	//ringtoss
 	modelStack.PushMatrix();
-	modelStack.Translate(650.5f, 0.5f, 0.0f);
-	modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
-	modelStack.Scale(100.0f, 300.f, 0.0f);
-	RenderMesh(meshList[GEO_HITBOX]);
+	modelStack.Translate(-654.5f, 11.5f, 405.0f);
+	modelStack.Rotate(-90.0f, 0.0f, 0.0f, 1.0f);
+	modelStack.Scale(20, 7, 6);
+	RenderMesh(meshList[GEO_STRIPEWALL]);
 	modelStack.PopMatrix();
 
-	//duck fishing
 	modelStack.PushMatrix();
-	modelStack.Translate(-650.5f, 0.5f, 0.0f);
-	modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
-	modelStack.Scale(100.0f, 300.f, 0.0f);
-	RenderMesh(meshList[GEO_HITBOX]);
+	modelStack.Translate(-654.5f, 11.5f, 405.0f);
+	modelStack.Rotate(-90.0f, 0.0f, 0.0f, 1.0f);
+	modelStack.Scale(20, 7, 6);
+	RenderMesh(meshList[GEO_STRIPEWALL]);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(-512.5f, 11.5f, 370.0f);
+	modelStack.Rotate(-90.0f, 0.0f, 0.0f, 1.0f);
+	modelStack.Rotate(-90.0f, 1.0f, 0.0f, 0.0f);
+	modelStack.Scale(20, 7, 6);
+	RenderMesh(meshList[GEO_STRIPEWALL]);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(-470.5f, 11.5f, 370.0f);
+	modelStack.Rotate(-90.0f, 0.0f, 0.0f, 1.0f);
+	modelStack.Rotate(-90.0f, 1.0f, 0.0f, 0.0f);
+	modelStack.Scale(20, 7, 6);
+	RenderMesh(meshList[GEO_STRIPEWALL]);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(-420.5f, 11.5f, 370.0f);
+	modelStack.Rotate(-90.0f, 0.0f, 0.0f, 1.0f);
+	modelStack.Rotate(-90.0f, 1.0f, 0.0f, 0.0f);
+	modelStack.Scale(20, 7, 6);
+	RenderMesh(meshList[GEO_STRIPEWALL]);
+	modelStack.PopMatrix();
+
+
+	modelStack.PushMatrix();
+	modelStack.Translate(-570.5f, 11.5f, 370.0f);
+	modelStack.Rotate(-90.0f, 0.0f, 0.0f, 1.0f);
+	modelStack.Rotate(-90.0f, 1.0f, 0.0f, 0.0f);
+	modelStack.Scale(20, 7, 6);
+	RenderMesh(meshList[GEO_STRIPEWALL]);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(-610.5f, 5.5f, 370.0f);
+	modelStack.Rotate(-90.0f, 0.0f, 0.0f, 1.0f);
+	modelStack.Rotate(-90.0f, 1.0f, 0.0f, 0.0f);
+	modelStack.Scale(20, 7, 6);
+	RenderMesh(meshList[GEO_STRIPEWALL]);
+	modelStack.PopMatrix();
+
+
+	modelStack.PushMatrix();
+	modelStack.Translate(-512.5f, 5.5f, 370.0f);
+	modelStack.Rotate(-90.0f, 0.0f, 0.0f, 1.0f);
+	modelStack.Rotate(-90.0f, 1.0f, 0.0f, 0.0f);
+	modelStack.Scale(20, 7, 6);
+	RenderMesh(meshList[GEO_STRIPEWALL]);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(-470.5f, 5.5f, 370.0f);
+	modelStack.Rotate(-90.0f, 0.0f, 0.0f, 1.0f);
+	modelStack.Rotate(-90.0f, 1.0f, 0.0f, 0.0f);
+	modelStack.Scale(20, 7, 6);
+	RenderMesh(meshList[GEO_STRIPEWALL]);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(-420.5f, 5.5f, 370.0f);
+	modelStack.Rotate(-90.0f, 0.0f, 0.0f, 1.0f);
+	modelStack.Rotate(-90.0f, 1.0f, 0.0f, 0.0f);
+	modelStack.Scale(20, 7, 6);
+	RenderMesh(meshList[GEO_STRIPEWALL]);
+	modelStack.PopMatrix();
+
+
+	modelStack.PushMatrix();
+	modelStack.Translate(-570.5f, 5.5f, 370.0f);
+	modelStack.Rotate(-90.0f, 0.0f, 0.0f, 1.0f);
+	modelStack.Rotate(-90.0f, 1.0f, 0.0f, 0.0f);
+	modelStack.Scale(20, 7, 6);
+	RenderMesh(meshList[GEO_STRIPEWALL]);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(-610.5f, 5.5f, 370.0f);
+	modelStack.Rotate(-90.0f, 0.0f, 0.0f, 1.0f);
+	modelStack.Rotate(-90.0f, 1.0f, 0.0f, 0.0f);
+	modelStack.Scale(20, 7, 6);
+	RenderMesh(meshList[GEO_STRIPEWALL]);
+	modelStack.PopMatrix();
+
+
+
+
+
+
+
+
+
+	modelStack.PushMatrix();
+	modelStack.Translate(-512.5f, 0.5f, 430.0f);
+	modelStack.Scale(200, 70, 20);
+	RenderMesh(meshList[GEO_TABLECAN]);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(-512.5f, 24.0f, 430.0f);
+	RenderMesh(meshList[GEO_CAN]);
+
+	modelStack.PushMatrix();
+	modelStack.Translate(-6.5f, .0f, 0.0f);
+	RenderMesh(meshList[GEO_CAN]);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(6.5f, .0f, 0.0f);
+	RenderMesh(meshList[GEO_CAN]);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(3.5f, 7.0f, 0.0f);
+	RenderMesh(meshList[GEO_CAN]);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(-3.5f, 7.0f, 0.0f);
+	RenderMesh(meshList[GEO_CAN]);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(0.0f, 14.0f, 0.0f);
+	RenderMesh(meshList[GEO_CAN]);
+	modelStack.PopMatrix();
+
+	modelStack.PopMatrix();
+
+
+
+	modelStack.PushMatrix();
+	modelStack.Translate(-450.5f, 24.0f, 430.0f);
+	RenderMesh(meshList[GEO_CAN]);
+
+	modelStack.PushMatrix();
+	modelStack.Translate(-6.5f, .0f, 0.0f);
+	RenderMesh(meshList[GEO_CAN]);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(6.5f, .0f, 0.0f);
+	RenderMesh(meshList[GEO_CAN]);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(3.5f, 7.0f, 0.0f);
+	RenderMesh(meshList[GEO_CAN]);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(-3.5f, 7.0f, 0.0f);
+	RenderMesh(meshList[GEO_CAN]);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(0.0f, 14.0f, 0.0f);
+	RenderMesh(meshList[GEO_CAN]);
+	modelStack.PopMatrix();
+
+	modelStack.PopMatrix();
+
+
+	modelStack.PushMatrix();
+	modelStack.Translate(-570.5f, 24.0f, 430.0f);
+	RenderMesh(meshList[GEO_CAN]);
+
+	modelStack.PushMatrix();
+	modelStack.Translate(-6.5f, .0f, 0.0f);
+	RenderMesh(meshList[GEO_CAN]);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(6.5f, .0f, 0.0f);
+	RenderMesh(meshList[GEO_CAN]);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(3.5f, 7.0f, 0.0f);
+	RenderMesh(meshList[GEO_CAN]);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(-3.5f, 7.0f, 0.0f);
+	RenderMesh(meshList[GEO_CAN]);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(0.0f, 14.0f, 0.0f);
+	RenderMesh(meshList[GEO_CAN]);
+	modelStack.PopMatrix();
+
+	modelStack.PopMatrix();
+
+
+	modelStack.PushMatrix();
+	modelStack.Translate(-660.5f, 10.f, -300.0f);
+	modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+	modelStack.Scale(12, 9, 9);
+	RenderMesh(meshList[GEO_COTTONCANDY]);
 	modelStack.PopMatrix();
 
 	//plinko
 	modelStack.PushMatrix();
 	modelStack.Translate(-650.5f, 0.5f, 250.0f);
-	modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
-	modelStack.Scale(50.0f, 100.f, 0.0f);
-	RenderMesh(meshList[GEO_HITBOX]);
+	modelStack.Scale(10, 10, 10);
+	RenderMesh(meshList[GEO_PLINKO]);
 	modelStack.PopMatrix();
 
-	//food 1 
 	modelStack.PushMatrix();
-	modelStack.Translate(-650.5f, 0.5f, -300.0f);
-	modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
-	modelStack.Scale(100.0f, 200.f, 0.0f);
-	RenderMesh(meshList[GEO_HITBOX]);
+	modelStack.Translate(-650.5f, 0.5f, 250.0f);
+	modelStack.Rotate(-90.0f, 0.0f, 1.0f, 0.0f);
+	modelStack.Scale(7, 7, 3);
+	RenderMesh(meshList[GEO_CANTENT]);
 	modelStack.PopMatrix();
 
-	//food 2
 	modelStack.PushMatrix();
-	modelStack.Translate(650.5f, 0.5f, -300.0f);
-	modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
-	modelStack.Scale(100.0f, 200.f, 0.0f);
-	RenderMesh(meshList[GEO_HITBOX]);
+	modelStack.Translate(-650.5f, 3.5f, 210.0f);
+	modelStack.Rotate(-90.0f, 0.0f, 0.0f, 1.0f);
+	modelStack.Rotate(-90.0f, 1.0f, 0.0f, 0.0f);
+	modelStack.Scale(5, 7, 3);
+	RenderMesh(meshList[GEO_STRIPEWALL],false);
 	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(-650.5f, 3.5f, 300.0f);
+	modelStack.Rotate(-90.0f, 0.0f, 0.0f, 1.0f);
+	modelStack.Rotate(-90.0f, 1.0f, 0.0f, 0.0f);
+	modelStack.Scale(5, 7, 3);
+	RenderMesh(meshList[GEO_STRIPEWALL], false);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(-650.5f, 10.5f, 0.0f);
+	//modelStack.Rotate(-90.0f, 0.0f, 0.0f, 1.0f);
+	//modelStack.Rotate(-90.0f, 1.0f, 0.0f, 0.0f);
+	modelStack.Scale(2, 2, 5);
+	RenderMesh(meshList[GEO_POOL], false);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(-650.5f, 10.5f, 0.0f);
+	modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
+	modelStack.Scale(40, 90, 40);
+	RenderMesh(meshList[GEO_POOLWATER]);
+	modelStack.PopMatrix();
+
+
+
+	//shooting
+	//modelStack.PushMatrix();
+	//modelStack.Translate(0.0f, 0.5f, 400.0f);
+	//modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
+	//modelStack.Scale(350.0f, 100.f, 0.0f);
+	//RenderMesh(meshList[GEO_HITBOX]);
+	//modelStack.PopMatrix();
+
+	////balloon 
+	//modelStack.PushMatrix();
+	//modelStack.Translate(512.5f, 0.5f, 400.0f);
+	//modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
+	//modelStack.Scale(275.0f, 100.f, 0.0f);
+	//RenderMesh(meshList[GEO_HITBOX]);
+	//modelStack.PopMatrix();
+
+	////can
+	//modelStack.PushMatrix();
+	//modelStack.Translate(-512.5f, 0.5f, 400.0f);
+	//modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
+	//modelStack.Scale(275.0f, 100.f, 0.0f);
+	//RenderMesh(meshList[GEO_HITBOX]);
+	//modelStack.PopMatrix();
+
+	////ringtoss
+	//modelStack.PushMatrix();
+	//modelStack.Translate(650.5f, 0.5f, 0.0f);
+	//modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
+	//modelStack.Scale(100.0f, 300.f, 0.0f);
+	//RenderMesh(meshList[GEO_HITBOX]);
+	//modelStack.PopMatrix();
+
+	////duck fishing
+	//modelStack.PushMatrix();
+	//modelStack.Translate(-650.5f, 0.5f, 0.0f);
+	//modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
+	//modelStack.Scale(100.0f, 300.f, 0.0f);
+	//RenderMesh(meshList[GEO_HITBOX]);
+	//modelStack.PopMatrix();
+
+	////plinko
+	//modelStack.PushMatrix();
+	//modelStack.Translate(-650.5f, 0.5f, 250.0f);
+	//modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
+	//modelStack.Scale(50.0f, 100.f, 0.0f);
+	//RenderMesh(meshList[GEO_HITBOX]);
+	//modelStack.PopMatrix();
+
+	////food 1 
+	//modelStack.PushMatrix();
+	//modelStack.Translate(-650.5f, 0.5f, -300.0f);
+	//modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
+	//modelStack.Scale(100.0f, 200.f, 0.0f);
+	//RenderMesh(meshList[GEO_HITBOX]);
+	//modelStack.PopMatrix();
+
+	////food 2
+	//modelStack.PushMatrix();
+	//modelStack.Translate(650.5f, 0.5f, -300.0f);
+	//modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
+	//modelStack.Scale(100.0f, 200.f, 0.0f);
+	//RenderMesh(meshList[GEO_HITBOX]);
+	//modelStack.PopMatrix();
 
 	GameObjectManager::GetInstance()->RenderAll(*this);
 
