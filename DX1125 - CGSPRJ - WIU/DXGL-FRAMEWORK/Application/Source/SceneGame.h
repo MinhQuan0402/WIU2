@@ -23,6 +23,7 @@ public:
 		GEO_SPHERE,
 		GEO_PLANE,
 		GEO_CUBE,
+		GEO_CYLINDER,
 		NUM_GEOMETRY
 	};
 

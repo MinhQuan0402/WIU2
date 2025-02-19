@@ -116,7 +116,11 @@ void Scene::RenderMesh(Mesh* mesh, bool enableLight, Transform& transform)
 }
 void Scene::RenderRigidMesh(Mesh* mesh, bool enableLight, Transform& transform, btRigidBody* body)
 {
+	modelStack.PushMatrix();
 	glm::mat4 MVP, modelView, modelView_inverse_transpose;
+	modelStack.LoadIdentity();
+	modelStack.LoadMatrix(GetTransformMatrix(body));
+	modelStack.Scale(transform.m_scale.x, transform.m_scale.y, transform.m_scale.z);
 	MVP = projectionStack.Top() * viewStack.Top() * modelStack.Top();
 	glUniformMatrix4fv(m_parameters[U_MVP], 1, GL_FALSE, glm::value_ptr(MVP));
 	modelView = viewStack.Top() * modelStack.Top();
@@ -154,6 +158,7 @@ void Scene::RenderRigidMesh(Mesh* mesh, bool enableLight, Transform& transform, 
 	{
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
+	modelStack.Clear();
 }
 void Scene::RenderMeshOnScreen(Mesh* mesh, float x, float y, float sizex, float sizey, glm::vec3 rotation)
 {

@@ -8,13 +8,19 @@ PhysicsMaterial::PhysicsMaterial(void)
 {
 }
 
-btRigidBody* addSphereCollider(GameObject* go, const float& rad, PhysicsMaterial& mat)
+btRigidBody* addSphereCollider(GameObject* go, const float& rad, PhysicsMaterial& mat, const glm::vec3& offset)
 {
 	if (!go) return nullptr;
-
+	go->colliderOffset = offset;
 	btTransform t;
 	t.setIdentity();
-	t.setOrigin(btVector3(go->m_transform.m_position.x, go->m_transform.m_position.y, go->m_transform.m_position.z));
+	btVector3 finalPosition = btVector3(go->m_transform.m_position.x + offset.x, go->m_transform.m_position.y + offset.y, go->m_transform.m_position.z + offset.z);
+	t.setOrigin(btVector3(finalPosition));
+	btQuaternion rotationX = btQuaternion(btVector3(1, 0, 0), glm::radians(go->m_transform.m_rotation.x));
+	btQuaternion rotationY = btQuaternion(btVector3(0, 1, 0), glm::radians(go->m_transform.m_rotation.y));
+	btQuaternion rotationZ = btQuaternion(btVector3(0, 0, 1), glm::radians(go->m_transform.m_rotation.z));
+	btQuaternion finalRotation = rotationX * rotationY * rotationZ;
+	t.setRotation(finalRotation);
 	btSphereShape* sphere = new SphereCollider(go, rad);
 	ColliderManager::GetInstance()->AddCollider(sphere);
 	btVector3 inertia(0.f, 0.f, 0.f);
@@ -33,13 +39,19 @@ btRigidBody* addSphereCollider(GameObject* go, const float& rad, PhysicsMaterial
 	return rb;
 }
 
-btRigidBody* addBoxCollider(GameObject* go, const float& width, const float& height, const float& depth, PhysicsMaterial& mat)
+btRigidBody* addBoxCollider(GameObject* go, const float& width, const float& height, const float& depth, PhysicsMaterial& mat, const glm::vec3& offset)
 {
 	if (!go) return nullptr;
-
+	go->colliderOffset = offset;
 	btTransform t;
 	t.setIdentity();
-	t.setOrigin(btVector3(go->m_transform.m_position.x, go->m_transform.m_position.y, go->m_transform.m_position.z));
+	btVector3 finalPosition = btVector3(go->m_transform.m_position.x + offset.x, go->m_transform.m_position.y + offset.y, go->m_transform.m_position.z + offset.z);
+	t.setOrigin(btVector3(finalPosition));
+	btQuaternion rotationX = btQuaternion(btVector3(1, 0, 0), glm::radians(go->m_transform.m_rotation.x));
+	btQuaternion rotationY = btQuaternion(btVector3(0, 1, 0), glm::radians(go->m_transform.m_rotation.y));
+	btQuaternion rotationZ = btQuaternion(btVector3(0, 0, 1), glm::radians(go->m_transform.m_rotation.z));
+	btQuaternion finalRotation = rotationX * rotationY * rotationZ;
+	t.setRotation(finalRotation);
 	btBoxShape* box = new BoxCollider(go, width, height, depth);
 	ColliderManager::GetInstance()->AddCollider(box);
 	btVector3 inertia(0.f, 0.f, 0.f);
@@ -58,13 +70,19 @@ btRigidBody* addBoxCollider(GameObject* go, const float& width, const float& hei
 	return rb;
 }
 
-btRigidBody* addCylinderCollider(GameObject* go, const float& height, const float& rad, PhysicsMaterial& mat)
+btRigidBody* addCylinderCollider(GameObject* go, const float& height, const float& rad, PhysicsMaterial& mat, const glm::vec3& offset)
 {
 	if (!go) return nullptr;
-
+	go->colliderOffset = offset;
 	btTransform t;
 	t.setIdentity();
-	t.setOrigin(btVector3(go->m_transform.m_position.x, go->m_transform.m_position.y, go->m_transform.m_position.z));
+	btVector3 finalPosition = btVector3(go->m_transform.m_position.x + offset.x, go->m_transform.m_position.y + offset.y, go->m_transform.m_position.z + offset.z);
+	t.setOrigin(btVector3(finalPosition));
+	btQuaternion rotationX = btQuaternion(btVector3(1, 0, 0), glm::radians(go->m_transform.m_rotation.x));
+	btQuaternion rotationY = btQuaternion(btVector3(0, 1, 0), glm::radians(go->m_transform.m_rotation.y));
+	btQuaternion rotationZ = btQuaternion(btVector3(0, 0, 1), glm::radians(go->m_transform.m_rotation.z));
+	btQuaternion finalRotation = rotationX * rotationY * rotationZ;
+	t.setRotation(finalRotation);
 	btCylinderShape* cylinder = new CylinderCollider(go, height, rad);
 	ColliderManager::GetInstance()->AddCollider(cylinder);
 	btVector3 inertia(0.f, 0.f, 0.f);
@@ -83,13 +101,19 @@ btRigidBody* addCylinderCollider(GameObject* go, const float& height, const floa
 	return rb;
 }
 
-btRigidBody* addStaticPlane(GameObject* go, glm::vec3 normal, PhysicsMaterial& mat)
+btRigidBody* addStaticPlane(GameObject* go, glm::vec3 normal, PhysicsMaterial& mat, const glm::vec3& offset)
 {
 	mat.m_mass = 0.0f;
-
+	go->colliderOffset = offset;
 	btTransform t;
 	t.setIdentity();
-	t.setOrigin(btVector3(0.f, 0.f, 0.f));
+	btVector3 finalPosition = btVector3(go->m_transform.m_position.x + offset.x, go->m_transform.m_position.y + offset.y, go->m_transform.m_position.z + offset.z);
+	t.setOrigin(btVector3(finalPosition));
+	btQuaternion rotationX = btQuaternion(btVector3(1, 0, 0), glm::radians(go->m_transform.m_rotation.x));
+	btQuaternion rotationY = btQuaternion(btVector3(0, 1, 0), glm::radians(go->m_transform.m_rotation.y));
+	btQuaternion rotationZ = btQuaternion(btVector3(0, 0, 1), glm::radians(go->m_transform.m_rotation.z));
+	btQuaternion finalRotation = rotationX * rotationY * rotationZ;
+	t.setRotation(finalRotation);
 	btStaticPlaneShape* plane = new btStaticPlaneShape(btVector3(normal.x, normal.y, normal.z), 0);
 	plane->setUserPointer(go);
 	ColliderManager::GetInstance()->AddCollider(plane);
