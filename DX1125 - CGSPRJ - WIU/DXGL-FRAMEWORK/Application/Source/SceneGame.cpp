@@ -126,8 +126,9 @@ void SceneGame::Init()
 	meshList[GEO_LIGHT] = MeshBuilder::GenerateSphere("Sphere", WHITE, .05f, 180, 180);
 	meshList[GEO_TEXT] = MeshBuilder::GenerateText("text", 16, 16);
 	meshList[GEO_TEXT]->textureID = LoadTGA("Images//calibri.tga");
-	meshList[GEO_SPHERE] = MeshBuilder::GenerateSphere("Sphere", WHITE, 1.0f, 100, 100);
-	meshList[GEO_CUBE] = MeshBuilder::GenerateCube("Cube", GREEN, 1.0f);
+	meshList[GEO_SPHERE] = MeshBuilder::GenerateSphere("Sphere", YELLOW, 1.0f, 100, 100);
+	meshList[GEO_CUBE] = MeshBuilder::GenerateCube("Cube", GREY, 1.0f);
+	meshList[GEO_CYLINDER] = MeshBuilder::GenerateCylinder("Cylinder", BLUE, 180, 1.0f, 1.0f);
 	meshList[GEO_PLANE] = MeshBuilder::GenerateQuad("Quad", RED, 1000.0f);
 
 	mainCamera.Init(glm::vec3(8, 6, 6), glm::vec3(0, 6, 0), VECTOR3_UP);
@@ -171,16 +172,19 @@ void SceneGame::Init()
 	mat.m_friction = 0.5f;
 	objInScene[BOX] = new GameObject();
 	objInScene[BOX]->m_transform.Translate(0.0f, 50.0f, 0.0f);
+	objInScene[BOX]->m_transform.ScaleBy(4.f, 2.5f, 4.0f);
 	objInScene[BOX]->rb = addBoxCollider(objInScene[BOX], 4.0f, 2.5f, 4.0f, mat);
 	GameObjectManager::GetInstance()->addItem(objInScene[BOX]);
 
 	objInScene[SPHERE] = new GameObject();
 	objInScene[SPHERE]->m_transform.Translate(0.0f, 20.0f, 0.0f);
+	objInScene[SPHERE]->m_transform.ScaleBy(5.0f, 5.0f, 5.0f);
 	objInScene[SPHERE]->rb = addSphereCollider(objInScene[SPHERE], 5.0f, mat);
 	GameObjectManager::GetInstance()->addItem(objInScene[SPHERE]);
 
 	objInScene[CYLINDER] = new GameObject();
 	objInScene[CYLINDER]->m_transform.Translate(0.0f, 80.0f, 0.0f);
+	objInScene[CYLINDER]->m_transform.ScaleBy(0.5f, 2.0f, 0.5f);
 	objInScene[CYLINDER]->rb = addCylinderCollider(objInScene[CYLINDER], 2.0f, 1.0f, mat);
 	GameObjectManager::GetInstance()->addItem(objInScene[CYLINDER]);
 }
@@ -201,6 +205,9 @@ void SceneGame::Update()
 	glm::vec3 finalForce = inputMovementDir * 10.0f * Time::deltaTime;
 	mainCamera.m_transform.Translate(finalForce);
 	mainCamera.UpdateCameraRotation();
+
+	glm::vec3 boxRotation = objInScene[BOX]->GetRigidbodyRotation();
+	std::cout << "X: " << boxRotation.x << " Y: " << boxRotation.y << " Z: " << boxRotation.z << std::endl;
 }
 
 void SceneGame::Render()
@@ -250,54 +257,47 @@ void SceneGame::Render()
 	RenderMesh(meshList[GEO_PLANE]);
 	modelStack.PopMatrix();
 
+	RenderRigidMesh(meshList[GEO_SPHERE], false, objInScene[SPHERE]->m_transform, objInScene[SPHERE]->rb);
+	RenderRigidMesh(meshList[GEO_CUBE], false, objInScene[BOX]->m_transform, objInScene[BOX]->rb);
+	RenderRigidMesh(meshList[GEO_CYLINDER], false, objInScene[CYLINDER]->m_transform, objInScene[CYLINDER]->rb);
+
 #ifdef DRAW_HITBOX
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	for (btCollisionShape* shape : ColliderManager::GetInstance()->colliders)
 	{
+		modelStack.PushMatrix();
 		modelStack.LoadIdentity();
 		GameObject* userGO = static_cast<GameObject*>(shape->getUserPointer());
 		modelStack.LoadMatrix(GetTransformMatrix(userGO->rb));
 		if (shape->getShapeType() == SPHERE_SHAPE_PROXYTYPE)
 		{
-			modelStack.PushMatrix();
 			SphereCollider* sphereCollider = static_cast<SphereCollider*>(shape);
 			float size = sphereCollider->GetRadius();
 			modelStack.Scale(size, size, size);
 			RenderMesh(hitboxMeshList[HITBOX_SPHERE]);
-			modelStack.PopMatrix();
 		}
 		else if (shape->getShapeType() == BOX_SHAPE_PROXYTYPE)
 		{
-			btTransform t;
-			userGO->rb->getMotionState()->getWorldTransform(t);
-			float mat[16]{};
-			t.getOpenGLMatrix(mat);
-			Transform newT = ConvertMatrix2Transform(mat);
-
 			BoxCollider* boxCollider = static_cast<BoxCollider*>(shape);
 			float width, height, depth;
 			boxCollider->GetDimension(width, height, depth);
 			modelStack.Scale(width, height, depth);
-			RenderMesh(hitboxMeshList[HITBOX_BOX], false, newT);
+			RenderMesh(hitboxMeshList[HITBOX_BOX]);
 		}
 		else if (shape->getShapeType() == CYLINDER_SHAPE_PROXYTYPE)
 		{
-			modelStack.PushMatrix();
 			CylinderCollider* cylinderCollider = static_cast<CylinderCollider*>(shape);
 			float rad, height;
 			cylinderCollider->GetDimension(rad, height);
 			modelStack.Scale(rad / 2.0f, height, rad / 2.0f);
 			RenderMesh(hitboxMeshList[HITBOX_CYLINDER]);
-			modelStack.PopMatrix();
 		}
 		else if (shape->getShapeType() == STATIC_PLANE_PROXYTYPE)
 		{
-			modelStack.PushMatrix();
 			modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
 			RenderMesh(hitboxMeshList[HITBOX_GROUND]);
-			modelStack.PopMatrix();
 		}
-		
+		modelStack.PopMatrix();
 	}
 
 	if(isFillMode) 
