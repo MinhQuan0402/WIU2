@@ -65,6 +65,11 @@ btRigidBody* addCylinderCollider(GameObject* go, const float& height, const floa
 	btTransform t;
 	t.setIdentity();
 	t.setOrigin(btVector3(go->m_transform.m_position.x, go->m_transform.m_position.y, go->m_transform.m_position.z));
+	btQuaternion rotationZ = btQuaternion(btVector3(0, 0, 1), glm::radians(go->m_transform.m_rotation.z));
+	btQuaternion rotationX = btQuaternion(btVector3(0, 1, 0), glm::radians(go->m_transform.m_rotation.y));
+	btQuaternion rotationY = btQuaternion(btVector3(1, 0, 0), glm::radians(go->m_transform.m_rotation.z));
+	btQuaternion finalRotation = rotationX * rotationY * rotationZ;
+	t.setRotation(finalRotation);
 	btCylinderShape* cylinder = new CylinderCollider(go, height, rad);
 	ColliderManager::GetInstance()->AddCollider(cylinder);
 	btVector3 inertia(0.f, 0.f, 0.f);
