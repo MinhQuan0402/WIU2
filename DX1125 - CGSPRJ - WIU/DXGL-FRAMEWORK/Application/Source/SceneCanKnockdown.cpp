@@ -105,23 +105,23 @@ void SceneCanKnockdown::Init()
 	meshList[GEO_CUBE] = MeshBuilder::GenerateCube("Cube", WHITE, 1.0f);
 
 	meshList[GEO_PLANE] = MeshBuilder::GenerateQuad("Quad", WHITE, 1000.0f);
-	meshList[GEO_PLANE]->material = Material::Metal(GREY);
+	meshList[GEO_PLANE]->material = Material::Concrete(GREY);
 
 	
 
 	meshList[GEO_BALL] = MeshBuilder::GenerateSphere("Ball", WHITE, 1.0f, 100, 100);
 	meshList[GEO_BALL]->material = Material::Plastic(BLUE);
 
-	meshList[GEO_TABLE] = MeshBuilder::GenerateOBJMTL("Table", "Models//FoldableTable.obj", "Models//FoldableTable.mtl");
-	meshList[GEO_TABLE]->textureID = LoadPNG("Images//FoldableTable.png");
+	meshList[GEO_TABLE] = MeshBuilder::GenerateOBJMTL("Table", "Models//CK_Table.obj", "Models//CK_Table.mtl");
+	meshList[GEO_TABLE]->textureID = LoadPNG("Images//CK_Table.png");
 
-	meshList[GEO_CAN] = MeshBuilder::GenerateOBJMTL("Can", "Models//Can.obj", "Models//Can.mtl");
-	meshList[GEO_CAN]->textureID = LoadPNG("Images//Can.png");
+	meshList[GEO_CAN] = MeshBuilder::GenerateOBJMTL("Can", "Models//CK_Can.obj", "Models//CK_Can.mtl");
+	meshList[GEO_CAN]->textureID = LoadPNG("Images//CK_Can.png");
 
-	meshList[GEO_TENT] = MeshBuilder::GenerateOBJMTL("Tent", "Models//Tent.obj", "Models//Tent.mtl");
+	meshList[GEO_TENT] = MeshBuilder::GenerateOBJMTL("Tent", "Models//CK_Tent.obj", "Models//CK_Tent.mtl");
 
 	meshList[GEO_COUNTER] = MeshBuilder::GenerateCube("Counter", glm::vec3(0.459, 0.302, 0), 1);
-	meshList[GEO_COUNTER]->textureID = LoadPNG("Images//Wood.png");
+	meshList[GEO_COUNTER]->textureID = LoadPNG("Images//CK_Wood.png");
 	meshList[GEO_COUNTER]->material = Material::Wood(glm::vec3(0.459, 0.302, 0));
 
 	mainCamera.Init(glm::vec3(0, 4, 6.5), glm::vec3(0, 4, 0), VECTOR3_UP);
@@ -129,17 +129,17 @@ void SceneCanKnockdown::Init()
 
 	glUniform1i(m_parameters[U_NUMLIGHTS], 1);
 
-	lights[0].m_transform.m_position = glm::vec3(0, 10, 0);
+	lights[0].m_transform.m_position = glm::vec3(3, 100, 2);
 	lights[0].color = glm::vec3(1, 1, 1);
-	lights[0].type = Light::LIGHT_SPOT;
-	lights[0].power = 1;
+	lights[0].type = Light::LIGHT_DIRECTIONAL;
+	lights[0].power = 3;
 	lights[0].kC = 1.f;
 	lights[0].kL = 0.01f;
 	lights[0].kQ = 0.001f;
 	lights[0].cosCutoff = 60.f;
 	lights[0].cosInner = 30.f;
 	lights[0].exponent = 3.f;
-	lights[0].spotDirection = glm::vec3(0.f, 1.f, 0.f);
+	lights[0].spotDirection = glm::vec3(0.f, -1.f, 0.f);
 
 	glUniform3fv(m_parameters[U_LIGHT0_COLOR], 1, &lights[0].color.r);
 	glUniform1i(m_parameters[U_LIGHT0_TYPE], lights[0].type);
@@ -223,14 +223,14 @@ void SceneCanKnockdown::Update()
 	HandleKeyPress();
 	mainCamera.Update();
 	glm::vec3 inputMovementDir{};
-	//if (KeyboardController::GetInstance()->IsKeyDown('W'))
-	//	inputMovementDir = mainCamera.view;
-	//if (KeyboardController::GetInstance()->IsKeyDown('S'))
-	//	inputMovementDir = -mainCamera.view;
-	//if (KeyboardController::GetInstance()->IsKeyDown('D'))
-	//	inputMovementDir = mainCamera.right;
-	//if (KeyboardController::GetInstance()->IsKeyDown('A'))
-	//	inputMovementDir = -mainCamera.right;
+	if (KeyboardController::GetInstance()->IsKeyDown('W'))
+		inputMovementDir = mainCamera.view;
+	if (KeyboardController::GetInstance()->IsKeyDown('S'))
+		inputMovementDir = -mainCamera.view;
+	if (KeyboardController::GetInstance()->IsKeyDown('D'))
+		inputMovementDir = mainCamera.right;
+	if (KeyboardController::GetInstance()->IsKeyDown('A'))
+		inputMovementDir = -mainCamera.right;
 
 	glm::vec3 finalForce = inputMovementDir * 10.0f * Time::deltaTime;
 	mainCamera.m_transform.Translate(finalForce);
@@ -238,23 +238,23 @@ void SceneCanKnockdown::Update()
 	mainCamera.UpdateCameraRotation();
 
 	//// stop player rotating too far:
-	{
-		glm::vec3 toObject = glm::normalize(glm::vec3(0, 3, 0) - mainCamera.m_transform.m_position);
+	//{
+	//	glm::vec3 toObject = glm::normalize(glm::vec3(0, 3, 0) - mainCamera.m_transform.m_position);
 
-		glm::vec3 lookVector = glm::normalize(mainCamera.target - mainCamera.m_transform.m_position);
+	//	glm::vec3 lookVector = glm::normalize(mainCamera.target - mainCamera.m_transform.m_position);
 
-		float dotProduct = glm::dot(lookVector, toObject);
-		float threshold = glm::cos(glm::radians(fov * 0.5));
+	//	float dotProduct = glm::dot(lookVector, toObject);
+	//	float threshold = glm::cos(glm::radians(fov * 0.5));
 
-		if (dotProduct <= threshold) // Rotated too much
-		{
-			mainCamera.target = prevTarget;
-		}
-		else {
-			float closeness = (dotProduct - threshold) / (1.0f - threshold);
-			mainCamera.sensitivity = 10 + closeness * (50 - 10);
-		}
-	}
+	//	if (dotProduct <= threshold) // Rotated too much
+	//	{
+	//		mainCamera.target = prevTarget;
+	//	}
+	//	else {
+	//		float closeness = (dotProduct - threshold) / (1.0f - threshold);
+	//		mainCamera.sensitivity = 10 + closeness * (50 - 10);
+	//	}
+	//}
 
 	float speed = 5 * Time::deltaTime;
 	if (KeyboardController::GetInstance()->IsKeyDown('I'))
@@ -270,7 +270,7 @@ void SceneCanKnockdown::Update()
 	if (KeyboardController::GetInstance()->IsKeyDown('P'))
 		devVec.y -= speed;
 
-//	lights[0].m_transform.m_position = devVec;
+	lights[0].m_transform.m_position = devVec;
 	std::cout << devVec.x << ", " << devVec.y << ", " << devVec.z << std::endl;
 
 

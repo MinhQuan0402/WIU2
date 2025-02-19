@@ -1,0 +1,25 @@
+# Adjusted MTL File
+
+newmtl Part19Mtl
+Ka 0.2 0.2 0.2  # Example ambient color (adjust as needed)
+Kd 0.941176 0.941176 0.941176
+Ks 0.058824 0.058824 0.058824
+Ns 50.0  # Example shininess value (adjust as needed)
+
+newmtl Part1Mtl
+Ka 0.2 0.2 0.2
+Kd 0.372549 0.368627 0.384314
+Ks 0.149020 0.149020 0.149020
+Ns 50.0
+
+newmtl Part2Mtl
+Ka 0.2 0.2 0.2
+Kd 0.141176 0.133333 0.105882
+Ks 0.049673 0.049673 0.049673
+Ns 50.0
+
+newmtl Union1Mtl
+Ka 0.2 0.2 0.2
+Kd 0.941176 0.941176 0.941176
+Ks 0.372549 0.372549 0.372549
+Ns 50.0
