@@ -153,6 +153,9 @@
     <ClCompile Include="Source\ColliderManager.cpp" />
     <ClCompile Include="Source\CollisionManager.cpp" />
     <ClCompile Include="Source\CQuad.cpp" />
+    <ClCompile Include="Source\DS_BoothRoof.cpp" />
+    <ClCompile Include="Source\DS_BoothWall.cpp" />
+    <ClCompile Include="Source\DS_Floor.cpp" />
     <ClCompile Include="Source\FPCamera.cpp" />
     <ClCompile Include="Source\GameObject.cpp" />
     <ClCompile Include="Source\GameObjectManager.cpp" />
@@ -166,9 +169,9 @@
     <ClCompile Include="Source\MeshBuilder.cpp" />
     <ClCompile Include="Source\RigidBody.cpp" />
     <ClCompile Include="Source\Scene.cpp" />
+    <ClCompile Include="Source\SceneDuckShooting.cpp" />
     <ClCompile Include="Source\SceneGame.cpp" />
     <ClCompile Include="Source\SceneManager.cpp" />
-    <ClCompile Include="Source\SceneRingToss.cpp" />
     <ClCompile Include="Source\shader.cpp" />
     <ClCompile Include="Source\Time.cpp" />
     <ClCompile Include="Source\Utility.cpp" />
@@ -180,6 +183,9 @@
     <ClInclude Include="Source\Camera.h" />
     <ClInclude Include="Source\ColliderManager.h" />
     <ClInclude Include="Source\CollisionManager.h" />
+    <ClInclude Include="Source\DS_BoothRoof.h" />
+    <ClInclude Include="Source\DS_BoothWall.h" />
+    <ClInclude Include="Source\DS_Floor.h" />
     <ClInclude Include="Source\FPCamera.h" />
     <ClInclude Include="Source\GameObject.h" />
     <ClInclude Include="Source\GameObjectManager.h" />
@@ -195,9 +201,9 @@
     <ClInclude Include="Source\MeshBuilder.h" />
     <ClInclude Include="Source\RigidBody.h" />
     <ClInclude Include="Source\Scene.h" />
+    <ClInclude Include="Source\SceneDuckShooting.h" />
     <ClInclude Include="Source\SceneGame.h" />
     <ClInclude Include="Source\SceneManager.h" />
-    <ClInclude Include="Source\SceneRingToss.h" />
     <ClInclude Include="Source\shader.hpp" />
     <ClInclude Include="Source\Time.h" />
     <ClInclude Include="Source\Utility.h" />
