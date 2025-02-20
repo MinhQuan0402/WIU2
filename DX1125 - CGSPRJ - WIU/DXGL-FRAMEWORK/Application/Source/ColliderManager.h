@@ -60,5 +60,6 @@ public:
 	
 	void AddCollider(btCollisionShape* collider2Add);
 	void RemoveCollider(btCollisionShape* collider2Remove);
+	void ClearAll(void);
 };
 

@@ -11,7 +11,9 @@ void CK_Table::Start()
 {
 	PhysicsMaterial mat;
 	mat.m_mass = 0;
-	rb = addBoxCollider(this, 2.6, 2.84, 1.8, mat);
+	mat.m_friction = 0.8;
+	m_transform.ScaleBy(0.0412, 0.0412, 0.0412);
+	rb = addBoxCollider(this, 2.9, 2.84, 2.05, mat);
 }
 
 void CK_Table::Update()
@@ -20,4 +22,5 @@ void CK_Table::Update()
 
 void CK_Table::Render(Scene& scene)
 {
+	scene.RenderMesh(scene.meshList[SceneCanKnockdown::GEO_TABLE], scene.enableLight, m_transform);
 }

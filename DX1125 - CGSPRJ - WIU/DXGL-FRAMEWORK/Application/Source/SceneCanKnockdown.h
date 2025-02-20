@@ -29,11 +29,16 @@ public:
 		GEO_CUBE,
 		GEO_CYLINDER,
 
+		GEO_POWERUI_FRAME,
+		GEO_POWERUI_BAR,
+
 		GEO_BALL,
 		GEO_TABLE,
 		GEO_CAN,
-		GEO_TENT,
+		GEO_BOOTHROOF,
+		GEO_BOOTHGUARDS,
 		GEO_COUNTER,
+		GEO_LIGHTBULB,
 
 		NUM_GEOMETRY
 	};
@@ -43,11 +48,14 @@ public:
 
 	virtual void Init();
 	virtual void Update();
+	virtual void LateUpdate();
 	virtual void Render();
 	virtual void Exit();
 
 private:
 	void RenderSkybox(void);
+	void RenderMeshOnScreen(Mesh* mesh, float x, float y, float width, float height, glm::vec2 anchorPoint);
+
 	int numLight;
 	Transform player;
 
@@ -66,6 +74,9 @@ private:
 		COUNTER,
 		COUNTER2,
 		COUNTER3,
+		FLOOR,
+		BOOTH_WALL,
+		BOOTH_ROOF,
 
 		NUM_OBJ
 	};
@@ -73,10 +84,13 @@ private:
 	GameObject* objInScene[NUM_OBJ];
 
 	float power;
-	bool isShooting;
-	bool onCooldown;
+	const float maxPower = 30;
 
-	glm::vec3 devVec;
+	bool isShooting;
+	float cooldownTimer;
+
+	float attemptsLeft;
+	bool gameComplete;
 };
 
 #endif

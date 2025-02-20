@@ -11,6 +11,7 @@ void CK_Counter2::Start()
 {
 	PhysicsMaterial mat;
 	mat.m_mass = 0;
+	mat.m_friction = 0.8;
 	rb = addBoxCollider(this, 1, 2.65, 11, mat);
 }
 

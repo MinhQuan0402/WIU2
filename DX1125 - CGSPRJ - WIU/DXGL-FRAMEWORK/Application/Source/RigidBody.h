@@ -17,7 +17,3 @@ btRigidBody* addSphereCollider(GameObject* go, const float& rad, PhysicsMaterial
 btRigidBody* addBoxCollider(GameObject* go, const float& width, const float& height, const float& depth, PhysicsMaterial& mat, const glm::vec3& offset = glm::vec3{});
 btRigidBody* addCylinderCollider(GameObject* go, const float& height, const float& rad, PhysicsMaterial& mat, const glm::vec3& offset = glm::vec3{});
 btRigidBody* addStaticPlane(GameObject* go, const glm::vec3 normal, PhysicsMaterial& mat, const glm::vec3& offset = glm::vec3{});
-
-void SetObjectDynamic(btRigidBody* body, float mass);
-void SetObjectStatic(btRigidBody* body);
-

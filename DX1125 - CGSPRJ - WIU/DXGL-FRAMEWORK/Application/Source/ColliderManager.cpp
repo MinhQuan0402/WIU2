@@ -7,7 +7,8 @@ ColliderManager::ColliderManager(void)
 }
 ColliderManager::~ColliderManager(void)
 {
-    for (btCollisionShape* shape : colliders) delete shape;
+    if(colliders.size() > 3)
+        for (btCollisionShape* shape : colliders) delete shape;
 }
 ColliderManager* ColliderManager::GetInstance(void)
 {
@@ -22,6 +23,18 @@ void ColliderManager::DestroyInstance(void)
 
 void ColliderManager::AddCollider(btCollisionShape* collider2Add) { colliders.push_back(collider2Add); }
 void ColliderManager::RemoveCollider(btCollisionShape* collider2Remove) { colliders.remove(collider2Remove); }
+
+void ColliderManager::ClearAll(void)
+{
+    if (colliders.size() > 0)
+    {
+        for (btCollisionShape* collider : colliders)
+        {
+            delete collider;
+        }
+    }
+    colliders.clear();
+}
 
 BoxCollider::BoxCollider(GameObject* go, float width, float height, float depth)
     : btBoxShape{ btVector3(width / 2.0f, height / 2.0f, depth / 2.0f) },

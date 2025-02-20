@@ -24,6 +24,10 @@
 #include "CK_Table.h"
 #include "CK_Counter.h"
 #include "CK_Counter2.h"
+#include "CK_Floor.h"
+#include "CK_BoothWall.h"
+#include "CK_BoothRoof.h"
+#include "SceneManager.h"
 
 SceneCanKnockdown::SceneCanKnockdown() : numLight{ 2 }
 {
@@ -82,6 +86,19 @@ void SceneCanKnockdown::Init()
 	m_parameters[U_LIGHT0_COSINNER] = glGetUniformLocation(m_programID, "lights[0].cosInner");
 	m_parameters[U_LIGHT0_EXPONENT] = glGetUniformLocation(m_programID, "lights[0].exponent");
 
+
+	m_parameters[U_LIGHT1_TYPE] = glGetUniformLocation(m_programID, "lights[1].type");
+	m_parameters[U_LIGHT1_POSITION] = glGetUniformLocation(m_programID, "lights[1].position_cameraspace");
+	m_parameters[U_LIGHT1_COLOR] = glGetUniformLocation(m_programID, "lights[1].color");
+	m_parameters[U_LIGHT1_POWER] = glGetUniformLocation(m_programID, "lights[1].power");
+	m_parameters[U_LIGHT1_KC] = glGetUniformLocation(m_programID, "lights[1].kC");
+	m_parameters[U_LIGHT1_KL] = glGetUniformLocation(m_programID, "lights[1].kL");
+	m_parameters[U_LIGHT1_KQ] = glGetUniformLocation(m_programID, "lights[1].kQ");
+	m_parameters[U_LIGHT1_SPOTDIRECTION] = glGetUniformLocation(m_programID, "lights[1].spotDirection");
+	m_parameters[U_LIGHT1_COSCUTOFF] = glGetUniformLocation(m_programID, "lights[1].cosCutoff");
+	m_parameters[U_LIGHT1_COSINNER] = glGetUniformLocation(m_programID, "lights[1].cosInner");
+	m_parameters[U_LIGHT1_EXPONENT] = glGetUniformLocation(m_programID, "lights[1].exponent");
+
 	m_parameters[U_LIGHTENABLED] = glGetUniformLocation(m_programID, "lightEnabled");
 	m_parameters[U_NUMLIGHTS] = glGetUniformLocation(m_programID, "numLights");
 	m_parameters[U_COLOR_TEXTURE_ENABLED] = glGetUniformLocation(m_programID, "colorTextureEnabled");
@@ -104,10 +121,13 @@ void SceneCanKnockdown::Init()
 	meshList[GEO_CYLINDER] = MeshBuilder::GenerateCylinder("Cylinder", WHITE, 100, 1, 1);
 	meshList[GEO_CUBE] = MeshBuilder::GenerateCube("Cube", WHITE, 1.0f);
 
-	meshList[GEO_PLANE] = MeshBuilder::GenerateQuad("Quad", WHITE, 1000.0f);
+	meshList[GEO_PLANE] = MeshBuilder::GenerateQuad("Quad", glm::vec3(0.1, 0.1, 0.1), 1000.0f);
 	meshList[GEO_PLANE]->material = Material::Concrete(GREY);
 
-	
+
+	meshList[GEO_POWERUI_FRAME] = MeshBuilder::GenerateQuad("PowerUi_Frame", glm::vec3(1, 1, 1), 1);
+	meshList[GEO_POWERUI_FRAME]->textureID = LoadPNG("Images//CK_PowerUi_Frame.png");
+	meshList[GEO_POWERUI_BAR] = MeshBuilder::GenerateQuad("PowerUi_Bar", glm::vec3(1, 1, 0), 1);
 
 	meshList[GEO_BALL] = MeshBuilder::GenerateSphere("Ball", WHITE, 1.0f, 100, 100);
 	meshList[GEO_BALL]->material = Material::Plastic(BLUE);
@@ -118,26 +138,31 @@ void SceneCanKnockdown::Init()
 	meshList[GEO_CAN] = MeshBuilder::GenerateOBJMTL("Can", "Models//CK_Can.obj", "Models//CK_Can.mtl");
 	meshList[GEO_CAN]->textureID = LoadPNG("Images//CK_Can.png");
 
-	meshList[GEO_TENT] = MeshBuilder::GenerateOBJMTL("Tent", "Models//CK_Tent.obj", "Models//CK_Tent.mtl");
+	meshList[GEO_BOOTHROOF] = MeshBuilder::GenerateOBJMTL("BoothRoof", "Models//CK_BoothRoof.obj", "Models//CK_BoothRoof.mtl");
+	meshList[GEO_BOOTHROOF]->textureID = LoadPNG("Images//CK_BoothRoof.png");
+
+	meshList[GEO_BOOTHGUARDS] = MeshBuilder::GenerateOBJMTL("BoothGuards", "Models//CK_BoothGuards.obj", "Models//CK_BoothGuards.mtl");
 
 	meshList[GEO_COUNTER] = MeshBuilder::GenerateCube("Counter", glm::vec3(0.459, 0.302, 0), 1);
 	meshList[GEO_COUNTER]->textureID = LoadPNG("Images//CK_Wood.png");
 	meshList[GEO_COUNTER]->material = Material::Wood(glm::vec3(0.459, 0.302, 0));
 
-	mainCamera.Init(glm::vec3(0, 4, 6.5), glm::vec3(0, 4, 0), VECTOR3_UP);
+	meshList[GEO_LIGHTBULB] = MeshBuilder::GenerateOBJMTL("Lamp", "Models//CK_LightBulb.obj", "Models//CK_LightBulb.mtl");
+
+	mainCamera.Init(glm::vec3(0, 4, 7.5), glm::vec3(0, 4, 0), VECTOR3_UP);
 	mainCamera.sensitivity = 50.0f;
 
-	glUniform1i(m_parameters[U_NUMLIGHTS], 1);
+	glUniform1i(m_parameters[U_NUMLIGHTS], 2);
 
 	lights[0].m_transform.m_position = glm::vec3(3, 100, 2);
 	lights[0].color = glm::vec3(1, 1, 1);
 	lights[0].type = Light::LIGHT_DIRECTIONAL;
-	lights[0].power = 3;
+	lights[0].power = 1;
 	lights[0].kC = 1.f;
 	lights[0].kL = 0.01f;
 	lights[0].kQ = 0.001f;
-	lights[0].cosCutoff = 60.f;
-	lights[0].cosInner = 30.f;
+	lights[0].cosCutoff = 90.f;
+	lights[0].cosInner = 45.f;
 	lights[0].exponent = 3.f;
 	lights[0].spotDirection = glm::vec3(0.f, -1.f, 0.f);
 
@@ -150,6 +175,28 @@ void SceneCanKnockdown::Init()
 	glUniform1f(m_parameters[U_LIGHT0_COSCUTOFF], cosf(glm::radians<float>(lights[0].cosCutoff)));
 	glUniform1f(m_parameters[U_LIGHT0_COSINNER], cosf(glm::radians<float>(lights[0].cosInner)));
 	glUniform1f(m_parameters[U_LIGHT0_EXPONENT], lights[0].exponent);
+
+	lights[1].m_transform.m_position = glm::vec3(0.0866777, 10.987, 0.0397956);
+	lights[1].color = glm::vec3(1, 1, 1);
+	lights[1].type = Light::LIGHT_POINT;
+	lights[1].power = 1;
+	lights[1].kC = 1.f;
+	lights[1].kL = 0.01f;
+	lights[1].kQ = 0.001f;
+	lights[1].cosCutoff = 60.f;
+	lights[1].cosInner = 30.f;
+	lights[1].exponent = 3.f;
+	lights[1].spotDirection = glm::vec3(0.f, -1.f, 0.f);
+
+	glUniform3fv(m_parameters[U_LIGHT1_COLOR], 1, &lights[1].color.r);
+	glUniform1i(m_parameters[U_LIGHT1_TYPE], lights[1].type);
+	glUniform1f(m_parameters[U_LIGHT1_POWER], lights[1].power);
+	glUniform1f(m_parameters[U_LIGHT1_KC], lights[1].kC);
+	glUniform1f(m_parameters[U_LIGHT1_KL], lights[1].kL);
+	glUniform1f(m_parameters[U_LIGHT1_KQ], lights[1].kQ);
+	glUniform1f(m_parameters[U_LIGHT1_COSCUTOFF], cosf(glm::radians<float>(lights[1].cosCutoff)));
+	glUniform1f(m_parameters[U_LIGHT1_COSINNER], cosf(glm::radians<float>(lights[1].cosInner)));
+	glUniform1f(m_parameters[U_LIGHT1_EXPONENT], lights[1].exponent);
 
 	enableLight = true;
 
@@ -177,22 +224,26 @@ void SceneCanKnockdown::Init()
 		objInScene[COUNTER] = new CK_Counter;
 		objInScene[COUNTER2] = new CK_Counter2;
 		objInScene[COUNTER3] = new CK_Counter2;
+		objInScene[FLOOR] = new CK_Floor;
+		objInScene[BOOTH_WALL] = new CK_BoothWall;
+		objInScene[BOOTH_ROOF] = new CK_BoothRoof;
 	}
 
 	// Modify objects in scene:
 	{
 		// Ball:
 		objInScene[BALL]->m_transform.ScaleBy(0.25, 0.25, 0.25);
+		
 
 		// Counters:
 		{
-			objInScene[COUNTER]->m_transform.Translate(0, 2.65 * 0.5, 3.84);
+			objInScene[COUNTER]->m_transform.Translate(0, 2.65 * 0.5, 4.84);
 			objInScene[COUNTER]->m_transform.ScaleBy(11.4612, 2.65, 1);
 
-			objInScene[COUNTER2]->m_transform.Translate(5.25, 2.65 * 0.5, -1.31);
+			objInScene[COUNTER2]->m_transform.Translate(5.25, 2.65 * 0.5, -0.4);
 			objInScene[COUNTER2]->m_transform.ScaleBy(1, 2.65, 11);
 
-			objInScene[COUNTER3]->m_transform.Translate(-5.25, 2.65 * 0.5, -1.31);
+			objInScene[COUNTER3]->m_transform.Translate(-5.25, 2.65 * 0.5, -0.4);
 			objInScene[COUNTER3]->m_transform.ScaleBy(1, 2.65, 11);
 		}
 
@@ -213,9 +264,11 @@ void SceneCanKnockdown::Init()
 
 	GameObjectManager::GetInstance()->IniAll();
 
-	power = 1;
+	power = 5;
 	isShooting = false;
-	onCooldown = false;
+	cooldownTimer = 0;
+	attemptsLeft = 2;
+	gameComplete = false;
 }
 
 void SceneCanKnockdown::Update()
@@ -223,73 +276,119 @@ void SceneCanKnockdown::Update()
 	HandleKeyPress();
 	mainCamera.Update();
 	glm::vec3 inputMovementDir{};
-	if (KeyboardController::GetInstance()->IsKeyDown('W'))
-		inputMovementDir = mainCamera.view;
-	if (KeyboardController::GetInstance()->IsKeyDown('S'))
-		inputMovementDir = -mainCamera.view;
-	if (KeyboardController::GetInstance()->IsKeyDown('D'))
-		inputMovementDir = mainCamera.right;
-	if (KeyboardController::GetInstance()->IsKeyDown('A'))
-		inputMovementDir = -mainCamera.right;
+	//if (KeyboardController::GetInstance()->IsKeyDown('W'))
+	//	inputMovementDir = mainCamera.view;
+	//if (KeyboardController::GetInstance()->IsKeyDown('S'))
+	//	inputMovementDir = -mainCamera.view;
+	//if (KeyboardController::GetInstance()->IsKeyDown('D'))
+	//	inputMovementDir = mainCamera.right;
+	//if (KeyboardController::GetInstance()->IsKeyDown('A'))
+	//	inputMovementDir = -mainCamera.right;
 
 	glm::vec3 finalForce = inputMovementDir * 10.0f * Time::deltaTime;
 	mainCamera.m_transform.Translate(finalForce);
 	glm::vec3 prevTarget = mainCamera.target;
 	mainCamera.UpdateCameraRotation();
 
-	//// stop player rotating too far:
-	//{
-	//	glm::vec3 toObject = glm::normalize(glm::vec3(0, 3, 0) - mainCamera.m_transform.m_position);
+	// stop player rotating too far:
+	{
+		glm::vec3 toObject = glm::normalize(glm::vec3(0, 3, 0) - mainCamera.m_transform.m_position);
 
-	//	glm::vec3 lookVector = glm::normalize(mainCamera.target - mainCamera.m_transform.m_position);
+		glm::vec3 lookVector = glm::normalize(mainCamera.target - mainCamera.m_transform.m_position);
 
-	//	float dotProduct = glm::dot(lookVector, toObject);
-	//	float threshold = glm::cos(glm::radians(fov * 0.5));
+		float dotProduct = glm::dot(lookVector, toObject);
+		float threshold = glm::cos(glm::radians(fov * 0.5));
 
-	//	if (dotProduct <= threshold) // Rotated too much
-	//	{
-	//		mainCamera.target = prevTarget;
-	//	}
-	//	else {
-	//		float closeness = (dotProduct - threshold) / (1.0f - threshold);
-	//		mainCamera.sensitivity = 10 + closeness * (50 - 10);
-	//	}
-	//}
+		if (dotProduct <= threshold) // Rotated too much
+		{
+			mainCamera.target = prevTarget;
+		}
+		else {
+			float closeness = (dotProduct - threshold) / (1.0f - threshold);
+			mainCamera.sensitivity = 10 + closeness * (50 - 10);
+		}
+	}
 
-	float speed = 5 * Time::deltaTime;
-	if (KeyboardController::GetInstance()->IsKeyDown('I'))
-		devVec.z += speed;
-	if (KeyboardController::GetInstance()->IsKeyDown('K'))
-		devVec.z -= speed;
-	if (KeyboardController::GetInstance()->IsKeyDown('J'))
-		devVec.x += speed;
-	if (KeyboardController::GetInstance()->IsKeyDown('L'))
-		devVec.x -= speed;
-	if (KeyboardController::GetInstance()->IsKeyDown('O'))
-		devVec.y += speed;
-	if (KeyboardController::GetInstance()->IsKeyDown('P'))
-		devVec.y -= speed;
+	//float speed = 2 * Time::deltaTime;
+	//if (KeyboardController::GetInstance()->IsKeyDown('I'))
+	//	devVec.z += speed;
+	//if (KeyboardController::GetInstance()->IsKeyDown('K'))
+	//	devVec.z -= speed;
+	//if (KeyboardController::GetInstance()->IsKeyDown('J'))
+	//	devVec.x += speed;
+	//if (KeyboardController::GetInstance()->IsKeyDown('L'))
+	//	devVec.x -= speed;
+	//if (KeyboardController::GetInstance()->IsKeyDown('O'))
+	//	devVec.y += speed;
+	//if (KeyboardController::GetInstance()->IsKeyDown('P'))
+	//	devVec.y -= speed;
 
-	lights[0].m_transform.m_position = devVec;
-	std::cout << devVec.x << ", " << devVec.y << ", " << devVec.z << std::endl;
+	//lights[0].m_transform.m_position = devVec;
+	//std::cout << devVec.x << ", " << devVec.y << ", " << devVec.z << std::endl;
 
 
 
-	// Game:
-	float powerIncreaseSpeed = 5;
-	if (isShooting == false && onCooldown == false) {
-		if (MouseController::GetInstance()->IsButtonDown(0)) {
-			power += powerIncreaseSpeed * Time::deltaTime;
+	// Checking if can has fallen off the table:
+	{
+		int cansFallen = 0;
+		for (GameObject* obj : objInScene) {
+			CK_Can* can = dynamic_cast<CK_Can*>(obj);
+			if (can) 
+			{
+				if (can->GetRigidbodyPosition().y < 3) {
+					cansFallen++;
+				}
+			}
+			else continue;
 		}
 
-		if (MouseController::GetInstance()->IsButtonPressed(0)) {
-			// shoot:
-			isShooting = true;
-			onCooldown = true;
-			glm::vec3 look = mainCamera.view * 5.0f;
-			SetObjectDynamic(objInScene[BALL]->rb, 1.0f);
-			objInScene[BALL]->rb->setLinearVelocity(btVector3(look.x, look.y, look.z));
+		if (cansFallen == 6) {
+			std::cout << "Game complete" << std::endl;
+			gameComplete = true;
+		}
+	}
 
+	GameObjectManager::GetInstance()->UpdateAll();
+}
+
+void SceneCanKnockdown::LateUpdate()
+{
+	if (cooldownTimer > 0) {
+		cooldownTimer -= Time::deltaTime;
+	}
+	else if (isShooting == true) {
+		isShooting = false;
+		cooldownTimer = 0;
+		attemptsLeft--;
+
+		if (attemptsLeft < 0 && gameComplete == false) {
+			SceneManager::GetInstance()->PopState();
+			SceneManager::GetInstance()->PushState(new SceneCanKnockdown);
+		}
+	}
+
+	float powerIncreaseSpeed = maxPower;
+	if (isShooting == false && cooldownTimer <= 0 && attemptsLeft >= 0 && gameComplete == false) 
+	{
+		if (MouseController::GetInstance()->IsButtonDown(0)) 
+		{
+			if (power < maxPower) {
+				power += powerIncreaseSpeed * Time::deltaTime;
+			}
+			else {
+				power = maxPower;
+			}
+		}
+
+		if (MouseController::GetInstance()->IsButtonReleased(0)) 
+		{
+			isShooting = true;
+			cooldownTimer = 3;
+			glm::vec3 look = mainCamera.view * power;
+			objInScene[BALL]->rb->setSleepingThresholds(0.8, 1);
+			objInScene[BALL]->rb->setLinearVelocity(btVector3(look.x - 3, look.y + 3, look.z));
+			objInScene[BALL]->rb->activate();
+			power = 0;
 		}
 	}
 
@@ -302,12 +401,11 @@ void SceneCanKnockdown::Update()
 
 		// Calculate world position of the ball
 		glm::vec3 newPos = cameraPos + (forward * 2.f) + (right * 1.f) + (up * -1.f);
-		
-		objInScene[BALL]->SetRigidbodyPosition(newPos);
-		SetObjectStatic(objInScene[BALL]->rb);
-	}
 
-	GameObjectManager::GetInstance()->UpdateAll();
+		objInScene[BALL]->SetRigidbodyPosition(newPos);
+		objInScene[BALL]->rb->clearGravity();
+		objInScene[BALL]->rb->setSleepingThresholds(0, 0);
+	}
 }
 
 void SceneCanKnockdown::Render()
@@ -349,14 +447,27 @@ void SceneCanKnockdown::Render()
 			glUniform3fv(m_parameters[U_LIGHT0_POSITION], 1, glm::value_ptr(lightPosition_cameraspace));
 		}
 
+		if (lights[1].type == Light::LIGHT_DIRECTIONAL)
+		{
+			glm::vec3 lightDir(lights[1].m_transform.m_position.x, lights[1].m_transform.m_position.y, lights[1].m_transform.m_position.z);
+			glm::vec3 lightDirection_cameraspace = viewStack.Top() * glm::vec4(lightDir, 0);
+			glUniform3fv(m_parameters[U_LIGHT1_POSITION], 1, glm::value_ptr(lightDirection_cameraspace));
+		}
+		else if (lights[1].type == Light::LIGHT_SPOT)
+		{
+			glm::vec3 lightPosition_cameraspace = viewStack.Top() * glm::vec4(lights[1].m_transform.m_position, 1);
+			glUniform3fv(m_parameters[U_LIGHT1_POSITION], 1, glm::value_ptr(lightPosition_cameraspace));
+			glm::vec3 spotDirection_cameraspace = viewStack.Top() * glm::vec4(lights[1].spotDirection, 0);
+			glUniform3fv(m_parameters[U_LIGHT1_SPOTDIRECTION], 1, glm::value_ptr(spotDirection_cameraspace));
+		}
+		else {
+			// Calculate the light position in camera space
+			glm::vec3 lightPosition_cameraspace = viewStack.Top() * glm::vec4(lights[1].m_transform.m_position, 1);
+			glUniform3fv(m_parameters[U_LIGHT1_POSITION], 1, glm::value_ptr(lightPosition_cameraspace));
+		}
+
 		modelStack.PushMatrix();
 		RenderMesh(meshList[GEO_AXIS]);
-		modelStack.PopMatrix();
-
-
-		modelStack.PushMatrix();
-		modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
-		RenderMesh(meshList[GEO_PLANE], enableLight);
 		modelStack.PopMatrix();
 	}
 
@@ -367,6 +478,11 @@ void SceneCanKnockdown::Render()
 		modelStack.Translate(lights[0].m_transform.m_position.x, lights[0].m_transform.m_position.y, lights[0].m_transform.m_position.z);
 		RenderMesh(meshList[GEO_LIGHT], !enableLight);
 		modelStack.PopMatrix();
+
+		modelStack.PushMatrix();
+		modelStack.Translate(lights[1].m_transform.m_position.x, lights[1].m_transform.m_position.y, lights[1].m_transform.m_position.z);
+		//RenderMesh(meshList[GEO_LIGHT], !enableLight);
+		modelStack.PopMatrix();
 	}
 
 	
@@ -374,74 +490,45 @@ void SceneCanKnockdown::Render()
 	{
 		modelStack.PushMatrix();
 		modelStack.Translate(0,0,0);
-		RenderMesh(meshList[GEO_TENT], enableLight);
+		RenderMesh(meshList[GEO_BOOTHROOF], enableLight);
+		RenderMesh(meshList[GEO_BOOTHGUARDS], enableLight);
 		modelStack.PopMatrix();
 	}
-	
-	// Table:
+
+	// Render lamp:
 	{
 		modelStack.PushMatrix();
-		modelStack.Translate(0, 0.0367 * 0.5, 0);
-		modelStack.Scale(0.0367, 0.0367, 0.0367);
-		RenderMesh(meshList[GEO_TABLE], enableLight);
+		modelStack.Translate(0.102714, 11.9211, 0.0587656);
+		modelStack.Rotate(180, 1, 0, 0);
+		modelStack.Scale(7, 7, 7);
+		RenderMesh(meshList[GEO_LIGHTBULB], enableLight);
 		modelStack.PopMatrix();
 	}
 
-	// Cans:
+	// Attempt Balls:
 	{
-		float canScale = 0.092;
-		float tableHeight = 2.84;
-		float canHeight = 0.67;
-
-		//// Bottom 3 cans:
-		//{
-		//	modelStack.PushMatrix();
-		//	modelStack.Translate(objInScene[CAN]->m_transform.m_position.x, tableHeight, objInScene[CAN]->m_transform.m_position.z);
-		//	modelStack.Scale(canScale, canScale, canScale);
-		//	RenderMesh(meshList[GEO_CAN], enableLight);
-		//	modelStack.PopMatrix();
-
-		//	modelStack.PushMatrix();
-		//	modelStack.Translate(objInScene[CAN2]->m_transform.m_position.x, tableHeight, objInScene[CAN2]->m_transform.m_position.z);
-		//	modelStack.Scale(canScale, canScale, canScale);
-		//	RenderMesh(meshList[GEO_CAN], enableLight);
-		//	modelStack.PopMatrix();
-
-		//	modelStack.PushMatrix();
-		//	modelStack.Translate(objInScene[CAN3]->m_transform.m_position.x, tableHeight, objInScene[CAN3]->m_transform.m_position.z);
-		//	modelStack.Scale(canScale, canScale, canScale);
-		//	RenderMesh(meshList[GEO_CAN], enableLight);
-		//	modelStack.PopMatrix();
-		//}
-
-		//// Middle 2 cans:
-		//{
-		//	modelStack.PushMatrix();
-		//	modelStack.Translate(objInScene[CAN4]->m_transform.m_position.x, tableHeight + canHeight, objInScene[CAN4]->m_transform.m_position.z);
-		//	modelStack.Scale(canScale, canScale, canScale);
-		//	RenderMesh(meshList[GEO_CAN], enableLight);
-		//	modelStack.PopMatrix();
-
-		//	modelStack.PushMatrix();
-		//	modelStack.Translate(objInScene[CAN5]->m_transform.m_position.x, tableHeight + canHeight, objInScene[CAN5]->m_transform.m_position.z);
-		//	modelStack.Scale(canScale, canScale, canScale);
-		//	RenderMesh(meshList[GEO_CAN], enableLight);
-		//	modelStack.PopMatrix();
-		//}
-
-		//// Top can:
-		//{
-		//	modelStack.PushMatrix();
-		//	modelStack.Translate(objInScene[CAN6]->m_transform.m_position.x, tableHeight + canHeight * 2, objInScene[CAN6]->m_transform.m_position.z);
-		//	modelStack.Scale(canScale, canScale, canScale);
-		//	RenderMesh(meshList[GEO_CAN], enableLight);
-		//	modelStack.PopMatrix();
-		//}
+		for (int i = 0; i < attemptsLeft; i++) {
+			modelStack.PushMatrix();
+			modelStack.Translate(0 - objInScene[BALL]->m_transform.m_scale.x * 2.5 * i, 2.8615, 4.83625);
+			modelStack.Scale(objInScene[BALL]->m_transform.m_scale.x, objInScene[BALL]->m_transform.m_scale.y, objInScene[BALL]->m_transform.m_scale.z);
+			RenderMesh(meshList[GEO_BALL], enableLight);
+			modelStack.PopMatrix();
+		}
+		
 	}
 
 	// Render hitboxes:
 	GameObjectManager::GetInstance()->RenderAll(*this);
 
+	// Render ui:
+	{
+		if (power > 5) {
+			RenderMeshOnScreen(meshList[GEO_POWERUI_FRAME], 0.5, 0.3, 100 * 1.25, 25 * 1.25, glm::vec2(0, 0));
+			RenderMeshOnScreen(meshList[GEO_POWERUI_BAR], 0.425, 0.3, power / maxPower * 120, 25, glm::vec2(-0.5, 0));
+		}
+	}
+
+#ifdef DRAW_HITBOX
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	for (btCollisionShape* shape : ColliderManager::GetInstance()->colliders)
 	{
@@ -482,6 +569,7 @@ void SceneCanKnockdown::Render()
 
 	if (isFillMode)
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+#endif
 }
 
 void SceneCanKnockdown::Exit()
@@ -490,6 +578,7 @@ void SceneCanKnockdown::Exit()
 	for (int i = 0; i < NUM_GEOMETRY; ++i) { if (meshList[i]) delete meshList[i]; }
 	meshList.clear();
 	GameObjectManager::GetInstance()->clearGOs();
+	ColliderManager::GetInstance()->ClearAll();
 
 	glDeleteVertexArrays(1, &m_vertexArrayID);
 	glDeleteProgram(m_programID);
@@ -550,4 +639,27 @@ void SceneCanKnockdown::RenderSkybox(void)
 	// Skybox should be rendered without light
 	RenderMesh(meshList[GEO_BOTTOM], false);
 	modelStack.PopMatrix();
+}
+
+void SceneCanKnockdown::RenderMeshOnScreen(Mesh* mesh, float x, float y, float width, float height, glm::vec2 anchorPoint)
+{
+	glDisable(GL_DEPTH_TEST);
+	glm::mat4 ortho = glm::ortho(0.f, 800.f, 0.f, 600.f, -
+		1000.f, 1000.f); // dimension of screen UI
+	projectionStack.PushMatrix();
+	projectionStack.LoadMatrix(ortho);
+	viewStack.PushMatrix();
+	viewStack.LoadIdentity(); //No need camera for ortho mode
+	modelStack.PushMatrix();
+	modelStack.LoadIdentity();
+
+	// To do: Use modelStack to position GUI on screen
+	modelStack.Translate(x * 800 - width * anchorPoint.x, y * 600 - height * anchorPoint.y, 0);
+	// To do: Use modelStack to scale the GUI
+	modelStack.Scale(width, height, 1);
+	RenderMesh(mesh, false); //UI should not have light
+	projectionStack.PopMatrix();
+	viewStack.PopMatrix();
+	modelStack.PopMatrix();
+	glEnable(GL_DEPTH_TEST);
 }
