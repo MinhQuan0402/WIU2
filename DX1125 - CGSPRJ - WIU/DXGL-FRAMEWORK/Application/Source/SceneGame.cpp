@@ -31,44 +31,6 @@ SceneGame::~SceneGame()
 {
 }
 
-std::vector<btRigidBody*> bodies;
-
-btRigidBody* addSphere(float rad, float x, float y, float z, float mass)
-{
-	btTransform t;
-	t.setIdentity();
-	t.setOrigin(btVector3(x, y, z));
-	btSphereShape* sphere = new btSphereShape(rad);
-	btVector3 inertia(0.f, 0.f, 0.f);
-	if (mass != 0.0f) sphere->calculateLocalInertia(mass, inertia);
-	btMotionState* motion = new btDefaultMotionState(t);
-	btRigidBody::btRigidBodyConstructionInfo info(mass, motion, sphere, inertia);
-	info.m_restitution = 0.8f;
-	info.m_friction = 0.8f;
-	btRigidBody* rb = new btRigidBody(info);
-	CollisionManager::GetInstance()->GetDynamicsWorld()->addRigidBody(rb);
-	bodies.push_back(rb);
-	return rb;
-}
-
-btRigidBody* addBox(float size_x, float size_y, float size_z, float x, float y, float z, float mass)
-{
-	btTransform t;
-	t.setIdentity();
-	t.setOrigin(btVector3(x, y, z));
-	btBoxShape* box = new btBoxShape(btVector3(size_x / 2.0f, size_y / 2.0f, size_z / 2.0f));
-	btVector3 inertia(0.f, 0.f, 0.f);
-	if (mass != 0.0f) box->calculateLocalInertia(mass, inertia);
-	btMotionState* motion = new btDefaultMotionState(t);
-	btRigidBody::btRigidBodyConstructionInfo info(mass, motion, box, inertia);
-	info.m_restitution = 0.8f;
-	info.m_friction = 0.8f;
-	btRigidBody* rb = new btRigidBody(info);
-	CollisionManager::GetInstance()->GetDynamicsWorld()->addRigidBody(rb);
-	bodies.push_back(rb);
-	return rb;
-}
-
 void SceneGame::Init()
 {
 	Scene::Init();
