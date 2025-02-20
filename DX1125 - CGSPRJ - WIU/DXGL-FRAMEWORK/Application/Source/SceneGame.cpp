@@ -186,10 +186,7 @@ void SceneGame::Init()
 	objInScene[CYLINDER]->m_transform.Translate(0.0f, 80.0f, 0.0f);
 	objInScene[CYLINDER]->m_transform.ScaleBy(0.5f, 2.0f, 0.5f);
 	objInScene[CYLINDER]->rb = addCylinderCollider(objInScene[CYLINDER], 2.0f, 1.0f, mat);
-	objInScene[BOX]->rb->setSleepingThresholds(0.0f, 0.0f);
 	GameObjectManager::GetInstance()->addItem(objInScene[CYLINDER]);
-
-
 }
 
 void SceneGame::Update()
@@ -224,10 +221,6 @@ void SceneGame::LateUpdate()
 		objInScene[BOX]->rb->clearGravity();
 	}
 
-	if (KeyboardController::GetInstance()->IsKeyReleased(VK_SPACE) && objInScene[BOX]->rb->getActivationState() == ISLAND_SLEEPING)
-	{
-		objInScene[BOX]->rb->activate();
-	}
 
 	std::cout << "X: " << boxPosition.x << " Y: " << boxPosition.y << " Z: " << boxPosition.z << std::endl;
 }
