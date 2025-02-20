@@ -24,7 +24,7 @@
 #include "PlinkoWall.h"
 #include "PlinkoBoard.h"
 
-ScenePlinko::ScenePlinko() : numLight{ 2 }, ballZ{0.0f}
+ScenePlinko::ScenePlinko() : numLight{ 2 }, ballZ{ 0.0f }, currentBallIndex{ BALL1 }, plinkoScore{ 0 }
 {
 	meshList.resize(NUM_GEOMETRY);
 	lights.resize(numLight);
@@ -87,6 +87,8 @@ void ScenePlinko::Init()
 	m_parameters[U_TEXT_ENABLED] = glGetUniformLocation(m_programID, "textEnabled");
 	m_parameters[U_TEXT_COLOR] = glGetUniformLocation(m_programID, "textColor");
 
+	Mesh::SetMaterialLoc(m_parameters[U_MATERIAL_AMBIENT], m_parameters[U_MATERIAL_DIFFUSE], m_parameters[U_MATERIAL_SPECULAR], m_parameters[U_MATERIAL_SHININESS]);
+
 	meshList[GEO_HITBOX] = MeshBuilder::GenerateCube("HitBox", glm::vec3(0.0f, 1.0f, 0.0f), 1.0f);
 	meshList[GEO_AXIS] = MeshBuilder::GenerateAxes("Axes", 10000.f, 10000.f, 10000.f);
 	meshList[GEO_LIGHT] = MeshBuilder::GenerateSphere("Sphere", WHITE, .05f, 180, 180);
@@ -94,23 +96,40 @@ void ScenePlinko::Init()
 	meshList[GEO_TEXT]->textureID = LoadTGA("Images//calibri.tga");
 	meshList[GEO_MODEL1] = MeshBuilder::GenerateOBJ("Doorman", "Models//doorman.obj");
 	meshList[GEO_MODEL1]->textureID = LoadPNG("Images//doorman.png");
-	meshList[GEO_SPHERE] = MeshBuilder::GenerateSphere("Sphere", WHITE, 1.0f, 100, 100);
+	meshList[GEO_SPHERE] = MeshBuilder::GenerateSphere("Sphere", YELLOW, 0.1f, 100, 100);
+	meshList[GEO_SPHERE]->material.kDiffuse = YELLOW;
+	meshList[GEO_SPHERE]->material.kAmbient = GREY;
+	meshList[GEO_SPHERE]->material.kSpecular = glm::vec3(0.1, 0.1, 0.1);
+	meshList[GEO_SPHERE]->material.kShininess = 1;
+
 	meshList[GEO_CUBE] = MeshBuilder::GenerateCube("Cube", WHITE, 1.0f);
 	meshList[GEO_PLANE] = MeshBuilder::GenerateQuad("Quad", GREY, 1000.0f);
-	meshList[GEO_CYLINDER] = MeshBuilder::GenerateCylinder("Cylinder", WHITE, 100, 1.f, 2.f);
-	meshList[GEO_PLINKO] = MeshBuilder::GenerateOBJMTL("Plinko", "Models//plinko.obj", "Models//plinko.mtl");
-	meshList[GEO_PLINKO]->textureID = LoadPNG("Images//Atlas_1_baseColor.png");
+	meshList[GEO_PLANE]->material.kDiffuse = WHITE;
+	meshList[GEO_PLANE]->material.kAmbient = GREY;
+	meshList[GEO_PLANE]->material.kSpecular = glm::vec3(0.1, 0.1, 0.1);
+	meshList[GEO_PLANE]->material.kShininess = 1;
 
-	mainCamera.Init(glm::vec3(10, 3, 0), glm::vec3(0, 3, 0), VECTOR3_UP);
+	meshList[GEO_CYLINDER] = MeshBuilder::GenerateCylinder("Cylinder", WHITE, 100, 1.f, 2.f);
+	meshList[GEO_PLINKO] = MeshBuilder::GenerateOBJ("Plinko", "Models//plinko.obj");
+	meshList[GEO_PLINKO]->material.kDiffuse = WHITE;
+	meshList[GEO_PLINKO]->material.kAmbient = GREY;
+	meshList[GEO_PLINKO]->material.kSpecular = glm::vec3(0.1, 0.1, 0.1);
+	meshList[GEO_PLINKO]->material.kShininess = 1;
+
+	meshList[GEO_PLINKO]->textureID = LoadPNG("Images//Atlas_1_baseColor.png");
+	meshList[GEO_BOOTHROOF] = MeshBuilder::GenerateOBJMTL("BoothRoof", "Models//Plinko_BoothRoof.obj", "Models//Plinko_BoothRoof.mtl");
+	meshList[GEO_BOOTHROOF]->textureID = LoadPNG("Images//Plinko_BoothRoof.png");
+	meshList[GEO_BOOTHGUARDS] = MeshBuilder::GenerateOBJMTL("BoothGuards", "Models//Plinko_BoothGuards.obj", "Models//Plinko_BoothGuards.mtl");
+	mainCamera.Init(glm::vec3(7, 4, 0), glm::vec3(0, 4, 0), VECTOR3_UP);
 	
 	mainCamera.sensitivity = 15.f;
 
 	glUniform1i(m_parameters[U_NUMLIGHTS], 2);
 
-	lights[0].m_transform.m_position = glm::vec3{};
-	lights[0].m_transform.m_position = glm::vec3(0, 5, 0);
+	//lights[0].m_transform.m_position = glm::vec3{};
+	lights[0].m_transform.m_position = glm::vec3(1, 9, 0);
 	lights[0].color = glm::vec3(1, 1, 1);
-	lights[0].type = Light::LIGHT_SPOT;
+	lights[0].type = Light::LIGHT_POINT;
 	lights[0].power = 1;
 	lights[0].kC = 1.f;
 	lights[0].kL = 0.01f;
@@ -134,7 +153,7 @@ void ScenePlinko::Init()
 
 	// Create object in scene
 	objInScene[PLINKO] = new PlinkoBoard();
-	objInScene[BALL] = new PlinkoBall();
+	objInScene[BALL1] = new PlinkoBall();
 
 	GameObjectManager::GetInstance()->IniAll();
 }
@@ -156,27 +175,123 @@ void ScenePlinko::Update()
 	mainCamera.m_transform.Translate(finalForce);
 	mainCamera.UpdateCameraRotation();
 
-	if (KeyboardController::GetInstance()->IsKeyDown(VK_LEFT))
-	{
-		ballZ += Time::deltaTime;
-	}
-	if (KeyboardController::GetInstance()->IsKeyDown(VK_RIGHT))
-	{
-		ballZ -= Time::deltaTime;
-	}
-
-	if (KeyboardController::GetInstance()->IsKeyPressed(VK_SPACE))
-	{
-
-	}
-	if (KeyboardController::GetInstance()->IsKeyPressed('R'))
-	{
-		objInScene[BALL]->SetRigidbodyPosition(0, 7, 0.0001);
-	}
-	ballZ = Math::Clamp(ballZ, -1.2f, 1.2f);
-	objInScene[BALL]->SetRigidbodyPosition(0, 0, ballZ);
-
 	GameObjectManager::GetInstance()->UpdateAll();
+}
+
+void ScenePlinko::LateUpdate()
+{
+	mainCamera.Update();
+	glm::vec3 ballPosition = objInScene[currentBallIndex]->GetRigidbodyPosition();
+
+	// Drop ball
+	if (isOnHold)
+	{
+		if (KeyboardController::GetInstance()->IsKeyDown('J')) // Left
+		{
+			ballZ += Time::deltaTime * 2.f;
+		}
+		if (KeyboardController::GetInstance()->IsKeyDown('L')) // Right
+		{
+			ballZ -= Time::deltaTime * 2.f;
+		}
+
+		if (KeyboardController::GetInstance()->IsKeyDown(VK_SPACE))
+		{
+			objInScene[currentBallIndex]->rb->activate();
+			isOnHold = false;
+			cameraFollow = true;
+			addScore = true;
+		}
+
+		ballZ = Math::Clamp(ballZ, -1.2f, 1.2f);
+		objInScene[currentBallIndex]->SetRigidbodyPosition(0.0f, 6.0f, ballZ);
+		objInScene[currentBallIndex]->rb->clearGravity();
+	}
+	else
+	{
+		if (cameraFollow) {
+			mainCamera.target = ballPosition;
+			mainCamera.UpdateCameraPosition(2.5, ballPosition.y, ballPosition.z);
+		}
+
+		if (objInScene[currentBallIndex]->rb->getActivationState() == ISLAND_SLEEPING && currentBallIndex <= 2)
+		{
+			cameraFollow = false;
+			mainCamera.target = glm::vec3(0, 4, 0);
+			mainCamera.UpdateCameraPosition(7, 4, 0);
+
+			// Win
+			if (currentBallIndex == BALL3) {
+				if (plinkoScore >= 100) {
+					gameEnd = true;
+				}
+			}
+
+			if (currentBallIndex < 2) {
+				isOnHold = true;
+				objInScene[++currentBallIndex] = new PlinkoBall();
+				objInScene[currentBallIndex]->Start();
+			}
+		}
+	}
+
+	// Score counter
+	if (ballPosition.y < 1.6) {
+		if (ballPosition.z > 1.35 && ballPosition.z < 1.05) { // 10 points
+			if (addScore) {
+				plinkoScore += 10;
+				addScore = false;
+			}
+		}
+		else if (ballPosition.z < 1.05 && ballPosition.z > 0.75) { // 20 points
+			if (addScore) {
+				plinkoScore += 20;
+				addScore = false;
+			}
+		}
+		else if (ballPosition.z < 0.75 && ballPosition.z > 0.45) { // 30 points
+			if (addScore) {
+				plinkoScore += 30;
+				addScore = false;
+			}
+		}
+		else if (ballPosition.z < 0.45 && ballPosition.z > 0.15) { // 50 points
+			if (addScore) {
+				plinkoScore += 50;
+				addScore = false;
+			}
+		}
+		else if (ballPosition.z < 0.15 && ballPosition.z > -0.15) { // 100 points
+			if (addScore) {
+				plinkoScore += 100;
+				addScore = false;
+			}
+		}
+		else if (ballPosition.z < -0.15 && ballPosition.z > -0.45) { // 50 points
+			if (addScore) {
+				plinkoScore += 50;
+				addScore = false;
+			}
+		}
+		else if (ballPosition.z < -0.45 && ballPosition.z > -0.75) { // 30 points
+			if (addScore) {
+				plinkoScore += 30;
+				addScore = false;
+			}
+		}
+		else if (ballPosition.z < -0.75 && ballPosition.z > -1.05) { // 20 points
+			if (addScore) {
+				plinkoScore += 20;
+				addScore = false;
+			}
+		}
+		else if (ballPosition.z < -1.05 && ballPosition.z > -1.35) { // 10 points
+			if (addScore) {
+				plinkoScore += 10;
+				addScore = false;
+			}
+		}
+	}
 }
 
 void ScenePlinko::Render()
@@ -223,58 +338,65 @@ void ScenePlinko::Render()
 
 	modelStack.PushMatrix();
 	modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
-	RenderMesh(meshList[GEO_PLANE]);
+	RenderMesh(meshList[GEO_PLANE], true);
 	modelStack.PopMatrix();
 
-	//modelStack.PushMatrix();
-	//modelStack.Translate(0, 0.2, 0);
-	//RenderMesh(meshList[GEO_PLINKO]);
-	//modelStack.PopMatrix();
+	GameObjectManager::GetInstance()->RenderAll(*this); 
 
-	GameObjectManager::GetInstance()->RenderAll(*this);
+	modelStack.PushMatrix();
+	modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+	RenderMesh(meshList[GEO_BOOTHROOF], enableLight);
+	RenderMesh(meshList[GEO_BOOTHGUARDS], enableLight);
+	modelStack.PopMatrix();
 
-#ifdef DRAW_HITBOX
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	for (btCollisionShape* shape : ColliderManager::GetInstance()->colliders)
-	{
-		modelStack.PushMatrix();
-		modelStack.LoadIdentity();
-		GameObject* userGO = static_cast<GameObject*>(shape->getUserPointer());
-		modelStack.LoadMatrix(GetTransformMatrix(userGO->rb));
-		if (shape->getShapeType() == SPHERE_SHAPE_PROXYTYPE)
-		{
-			SphereCollider* sphereCollider = static_cast<SphereCollider*>(shape);
-			float size = sphereCollider->GetRadius();
-			modelStack.Scale(size, size, size);
-			RenderMesh(hitboxMeshList[HITBOX_SPHERE]);
-		}
-		else if (shape->getShapeType() == BOX_SHAPE_PROXYTYPE)
-		{
-			BoxCollider* boxCollider = static_cast<BoxCollider*>(shape);
-			float width, height, depth;
-			boxCollider->GetDimension(width, height, depth);
-			modelStack.Scale(width, height, depth);
-			RenderMesh(hitboxMeshList[HITBOX_BOX]);
-		}
-		else if (shape->getShapeType() == CYLINDER_SHAPE_PROXYTYPE)
-		{
-			CylinderCollider* cylinderCollider = static_cast<CylinderCollider*>(shape);
-			float rad, height;
-			cylinderCollider->GetDimension(rad, height);
-			modelStack.Scale(rad / 2.0f, height, rad / 2.0f);
-			RenderMesh(hitboxMeshList[HITBOX_CYLINDER]);
-		}
-		else if (shape->getShapeType() == STATIC_PLANE_PROXYTYPE)
-		{
-			modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
-			RenderMesh(hitboxMeshList[HITBOX_GROUND]);
-		}
-		modelStack.PopMatrix();
+	RenderTextOnScreen(meshList[GEO_TEXT], "Score:" + std::to_string(plinkoScore), RED, 40, 980, 600);
+
+	if (gameEnd) {
+		RenderTextOnScreen(meshList[GEO_TEXT], "YOU WIN!!!", GREEN, 80, 400, 400);
 	}
 
-	if (isFillMode)
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-#endif
+//#ifdef DRAW_HITBOX
+//	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+//	for (btCollisionShape* shape : ColliderManager::GetInstance()->colliders)
+//	{
+//		modelStack.PushMatrix();
+//		modelStack.LoadIdentity();
+//		GameObject* userGO = static_cast<GameObject*>(shape->getUserPointer());
+//		modelStack.LoadMatrix(GetTransformMatrix(userGO->rb));
+//		if (shape->getShapeType() == SPHERE_SHAPE_PROXYTYPE)
+//		{
+//			SphereCollider* sphereCollider = static_cast<SphereCollider*>(shape);
+//			float size = sphereCollider->GetRadius();
+//			modelStack.Scale(size, size, size);
+//			RenderMesh(hitboxMeshList[HITBOX_SPHERE]);
+//		}
+//		else if (shape->getShapeType() == BOX_SHAPE_PROXYTYPE)
+//		{
+//			BoxCollider* boxCollider = static_cast<BoxCollider*>(shape);
+//			float width, height, depth;
+//			boxCollider->GetDimension(width, height, depth);
+//			modelStack.Scale(width, height, depth);
+//			RenderMesh(hitboxMeshList[HITBOX_BOX]);
+//		}
+//		else if (shape->getShapeType() == CYLINDER_SHAPE_PROXYTYPE)
+//		{
+//			CylinderCollider* cylinderCollider = static_cast<CylinderCollider*>(shape);
+//			float rad, height;
+//			cylinderCollider->GetDimension(rad, height);
+//			modelStack.Scale(rad / 2.0f, height, rad / 2.0f);
+//			RenderMesh(hitboxMeshList[HITBOX_CYLINDER]);
+//		}
+//		else if (shape->getShapeType() == STATIC_PLANE_PROXYTYPE)
+//		{
+//			modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
+//			RenderMesh(hitboxMeshList[HITBOX_GROUND]);
+//		}
+//		modelStack.PopMatrix();
+//	}
+//
+//	if (isFillMode)
+//		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+//#endif
 }
 
 void ScenePlinko::Exit()

@@ -146,5 +146,5 @@ void PlinkoBoard::Update()
 
 void PlinkoBoard::Render(Scene& scene)
 {
-	scene.RenderMesh(scene.meshList[ScenePlinko::GEO_PLINKO], false, m_transform);
+	scene.RenderMesh(scene.meshList[ScenePlinko::GEO_PLINKO], true, m_transform);
 }

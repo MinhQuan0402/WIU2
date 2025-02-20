@@ -28,4 +28,5 @@ void PlinkoBall::Render(Scene& scene)
 {
 	// Render model
 	//scene.RenderMesh(scene.meshList[ScenePlinko::GEO_SPHERE], false, m_transform);
+	scene.RenderRigidMesh(scene.meshList[ScenePlinko::GEO_SPHERE], scene.enableLight, m_transform, rb);
 }

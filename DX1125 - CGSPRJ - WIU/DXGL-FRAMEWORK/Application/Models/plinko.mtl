@@ -2,23 +2,13 @@
 # www.blender.org
 
 newmtl mat0
-Ka 1.000000 1.000000 1.000000
-Ks 0.500000 0.500000 0.500000
-Ke 0.000000 0.000000 0.000000
-Ni 1.000000
-d 1.000000
-illum 2
-map_Kd Atlas_1_baseColor.jpg
-map_Ns Atlas_1_metallicRoughness.png
-map_refl Atlas_1_metallicRoughness.png
-map_Bump Atlas_1_normal.png
+Ka 1 1 1  # Ambient color (diffuse lighting influence)
+Kd 1.000000 1.000000 1.000000  # Diffuse color (base color)
+Ks 0.500000 0.500000 0.500000  # Specular reflection
+Ns 1
 
 newmtl mat1
-Ns 250.000000
-Ka 1.000000 1.000000 1.000000
-Kd 1.000000 1.000000 1.000000
-Ks 0.500000 0.500000 0.500000
-Ke 0.000000 0.000000 0.000000
-Ni 1.000000
-d 1.000000
-illum 2
+Ka 1 1 1  # Ambient color
+Kd 1.000000 1.000000 1.000000  # Diffuse color
+Ks 0.500000 0.500000 0.500000  # Specular reflection
+Ns 1.000000  # Specular exponent (shininess)

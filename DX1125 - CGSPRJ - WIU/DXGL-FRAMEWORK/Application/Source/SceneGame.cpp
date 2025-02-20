@@ -186,9 +186,9 @@ void SceneGame::Init()
 	objInScene[CYLINDER]->m_transform.Translate(0.0f, 80.0f, 0.0f);
 	objInScene[CYLINDER]->m_transform.ScaleBy(0.5f, 2.0f, 0.5f);
 	objInScene[CYLINDER]->rb = addCylinderCollider(objInScene[CYLINDER], 2.0f, 1.0f, mat);
-	objInScene[BOX]->rb->setSleepingThresholds(0.0f, 0.0f);
 	GameObjectManager::GetInstance()->addItem(objInScene[CYLINDER]);
 
+	objInScene[BOX]->rb->setSleepingThresholds(0.0f, 0.0f);
 
 }
 
@@ -208,26 +208,17 @@ void SceneGame::Update()
 	glm::vec3 finalForce = inputMovementDir * 10.0f * Time::deltaTime;
 	mainCamera.m_transform.Translate(finalForce);
 	mainCamera.UpdateCameraRotation();
-
-	
-
-	
-	
 }
 
 void SceneGame::LateUpdate()
 {
 	glm::vec3 boxPosition = objInScene[BOX]->GetRigidbodyPosition();
-	if (boxPosition.y <= 10.0f && KeyboardController::GetInstance()->IsKeyDown(VK_SPACE))
+	if (boxPosition.y <= 10.0f && KeyboardController::GetInstance()->IsKeyDown(VK_SPACE)) //when the ball is on hold 
 	{
 		objInScene[BOX]->SetRigidbodyPosition(boxPosition.x, 10.0f, boxPosition.z);
 		objInScene[BOX]->rb->clearGravity();
 	}
-
-	if (KeyboardController::GetInstance()->IsKeyReleased(VK_SPACE) && objInScene[BOX]->rb->getActivationState() == ISLAND_SLEEPING)
-	{
-		objInScene[BOX]->rb->activate();
-	}
+	//bool isOnhold = true;
 
 	std::cout << "X: " << boxPosition.x << " Y: " << boxPosition.y << " Z: " << boxPosition.z << std::endl;
 }

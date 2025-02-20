@@ -27,6 +27,8 @@ public:
 		GEO_CUBE,
 		GEO_CYLINDER,
 		GEO_PLINKO,
+		GEO_BOOTHROOF,
+		GEO_BOOTHGUARDS,
 		NUM_GEOMETRY
 	};
 
@@ -35,6 +37,7 @@ public:
 
 	virtual void Init();
 	virtual void Update();
+	virtual void LateUpdate();
 	virtual void Render();
 	virtual void Exit();
 
@@ -43,46 +46,24 @@ private:
 	int numLight;
 	Transform player;
 	float ballZ;
+	int plinkoScore;
+	bool isOnHold = true;
+	bool cameraFollow = false;
+	bool addScore = true;
+	bool gameEnd = false;
 
 	enum OBJINSCENE
 	{
-		BALL,
-		CYLINDER,
-		CYLINDER1,
-		CYLINDER2,
-		CYLINDER3,
-		CYLINDER4,
-		CYLINDER5,
-		CYLINDER6,
-		CYLINDER7,
-		CYLINDER8,
-		CYLINDER9,
-		CYLINDER10,
-		CYLINDER11,
-		CYLINDER12,
-		CYLINDER13,
-		CYLINDER14,
-		CYLINDER15,
-		CYLINDER16,
-		CYLINDER17,
-		CYLINDER18,
-		CYLINDER19,
-		CYLINDER20,
-		CYLINDER21,
-		CYLINDER22,
-		LWALL,
-		RWALL,
-		BOTWALL,
-		BACKWALL,
-		WALL1,
-		WALL2,
-		WALL3,
-		WALL4,
+		BALL1,
+		BALL2,
+		BALL3,
 		PLINKO,
 
 		NUM_OBJ
 	};
 	GameObject* objInScene[NUM_OBJ];
+
+	int currentBallIndex;
 };
 
 #endif
