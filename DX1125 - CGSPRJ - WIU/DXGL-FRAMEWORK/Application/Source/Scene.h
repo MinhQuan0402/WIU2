@@ -99,6 +99,7 @@ protected:
 		HITBOX_BOX,
 		HITBOX_CYLINDER,
 		HITBOX_GROUND,
+		HITBOX_TORUS,
 		HITBOX_SHAPE
 	};
 	UnorderedVector<Mesh*> hitboxMeshList;

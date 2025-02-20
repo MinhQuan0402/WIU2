@@ -26,6 +26,7 @@ void Scene::Init()
 	hitboxMeshList[HITBOX_SPHERE] = MeshBuilder::GenerateSphere("Sphere", GREEN, 1.0f, 25, 25);
 	hitboxMeshList[HITBOX_BOX] = MeshBuilder::GenerateCube("Cube", GREEN, 1.0f);
 	hitboxMeshList[HITBOX_CYLINDER] = MeshBuilder::GenerateCylinder("Cylinder", GREEN, 25, 1.0f, 1.0f);
+	hitboxMeshList[HITBOX_TORUS] = MeshBuilder::GenerateTorus("Torus", GREEN, 1.0f, 2.0f, 50.0f, 50.0f);
 	hitboxMeshList[HITBOX_GROUND] = MeshBuilder::GenerateQuad("Quad", GREEN, 1000.0f);
 }
 
