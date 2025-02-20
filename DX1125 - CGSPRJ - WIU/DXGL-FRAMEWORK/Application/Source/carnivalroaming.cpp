@@ -109,59 +109,85 @@ void carnivalroaming::Init()
 	//meshList[GEO_CIRCUSTENT] = MeshBuilder::GenerateCircle("Circle", WHITE, 200);
 	meshList[GEO_CIRCUSNAME] = MeshBuilder::GenerateOBJMTL("CircusName", "Models//circusName.obj", "Models//circusName.mtl");
 	meshList[GEO_CIRCUSNAME]->textureID = LoadPNG("Images//CircusNameTestpng.png");
+	meshList[GEO_CIRCUSNAME]->material = Material::Wood(WHITE);
 
-	meshList[GEO_CANTENT] = MeshBuilder::GenerateOBJMTL("CanTent", "Models//tent.obj", "Models//tent.mtl");
+
+	meshList[GEO_CANTENT] = MeshBuilder::GenerateOBJMTL("CanTent", "Models//CK_BoothGuards.obj", "Models//CK_BoothGuards.mtl");
+	meshList[GEO_CANTENT]->material = Material::Wood(WHITE);
+	meshList[GEO_CANTENTROOF] = MeshBuilder::GenerateOBJMTL("CanTent", "Models//CK_BoothRoof.obj", "Models//CK_BoothRoof.mtl");
+	meshList[GEO_CANTENTROOF]->textureID = LoadPNG("Images//CK_BoothRoof.png");
+	meshList[GEO_CANTENTROOF]->material = Material::Wood(WHITE);
+
 
 	meshList[GEO_TABLECAN] = MeshBuilder::GenerateOBJ("Table", "Models//simpletable.obj");
 	meshList[GEO_TABLECAN]->textureID = LoadPNG("Images//tableCan.png");
+	meshList[GEO_TABLECAN]->material = Material::Wood(WHITE);
+
 
 	meshList[GEO_CAN] = MeshBuilder::GenerateOBJMTL("Can", "Models//Can.obj", "Models//Can.mtl");
 	meshList[GEO_CAN]->textureID = LoadPNG("Images//Can.png");
+	meshList[GEO_CAN]->material = Material::Wood(WHITE);
 
 
 	meshList[GEO_STRIPEWALL] = MeshBuilder::GenerateOBJMTL("Stripewall", "Models//stripedwall2.obj", "Models//stripedwall2.mtl");
+	meshList[GEO_STRIPEWALL]->material = Material::Wood(WHITE);
 
 	meshList[GEO_TOPCOTTONCANDY] = MeshBuilder::GenerateOBJ("CottonCandy", "Models//top_cottoncandy.obj");
 	meshList[GEO_TOPCOTTONCANDY]->textureID = LoadPNG("Images//top_cotton_candy.png");
+	meshList[GEO_TOPCOTTONCANDY]->material = Material::Wood(WHITE);
 
 	meshList[GEO_MIDDLECOTTONCANDY] = MeshBuilder::GenerateOBJ("Middle CottonCandy", "Models//middle_cottoncandy.obj");
 	meshList[GEO_MIDDLECOTTONCANDY]->textureID = LoadPNG("Images//middle_cottoncandy.png");
+	meshList[GEO_MIDDLECOTTONCANDY]->material = Material::Wood(WHITE);
 
 	meshList[GEO_INNERMIDDLECOTTONCANDY] = MeshBuilder::GenerateOBJ("Inner Middle CottonCandy", "Models//innermiddle_cottoncandy.obj");
-	
+	meshList[GEO_INNERMIDDLECOTTONCANDY]->material = Material::Wood(WHITE);
+
 	meshList[GEO_COTTONCANDYS] = MeshBuilder::GenerateOBJ("CottonCandy", "Models//cottoncandys.obj");
 	meshList[GEO_COTTONCANDYS]->textureID = LoadPNG("Images//cottoncandys.png");
+	meshList[GEO_COTTONCANDYS]->material = Material::Wood(WHITE);
 
 	meshList[GEO_COTTONCANDYMACHINE] = MeshBuilder::GenerateOBJ("CottonCandymachines", "Models//cottoncandymachine.obj");
 	meshList[GEO_COTTONCANDYMACHINE]->textureID = LoadPNG("Images//cottoncandymachine.png");
+	meshList[GEO_COTTONCANDYMACHINE]->material = Material::Wood(WHITE);
 
 	meshList[GEO_CARAMELAPPLE] = MeshBuilder::GenerateOBJ("CaramelApple", "Models//caramelapple_cottoncandy.obj");
 	meshList[GEO_CARAMELAPPLE]->textureID = LoadPNG("Images//caramelapple_cottoncandy.png");
+	meshList[GEO_CARAMELAPPLE]->material = Material::Wood(WHITE);
 
 	meshList[GEO_CARAMELAPPLESTAND] = MeshBuilder::GenerateOBJ("CaramelAppleStand", "Models//caramelapplestand_cottoncandy.obj");
 	meshList[GEO_CARAMELAPPLESTAND]->textureID = LoadPNG("Images//caramelapplestands_cottoncandy.png");
+	meshList[GEO_CARAMELAPPLESTAND]->material = Material::Wood(WHITE);
 
 	meshList[GEO_BOTTOMCOTTONCANDY] = MeshBuilder::GenerateOBJ("BottomCottonCandy", "Models//bottom_cottoncandy.obj");
 	meshList[GEO_BOTTOMCOTTONCANDY]->textureID = LoadPNG("Images//bottom_cottoncandy.png");
+	meshList[GEO_BOTTOMCOTTONCANDY]->material = Material::Wood(WHITE);
 
 
 	meshList[GEO_PLINKO] = MeshBuilder::GenerateOBJMTL("Plinko", "Models//plinko.obj", "Models//plinko.mtl");
 	meshList[GEO_PLINKO]->textureID = LoadPNG("Images//plinko.png");
+	meshList[GEO_PLINKO]->material = Material::Wood(WHITE);
 
 
 	meshList[GEO_POOL] = MeshBuilder::GenerateOBJ("Table", "Models//InflatablePool.obj");
 	meshList[GEO_POOL]->textureID = LoadPNG("Images//pool.png");
+	meshList[GEO_POOL]->material = Material::Wood(WHITE);
 
 	meshList[GEO_POOLWATER] = MeshBuilder::GenerateCircle("Circle", WHITE, 1);
 	meshList[GEO_POOLWATER]->textureID = LoadPNG("Images//water.png");
+	meshList[GEO_POOLWATER]->material = Material::Wood(WHITE);
 
 	meshList[GEO_DUCKY] = MeshBuilder::GenerateOBJMTL("duck", "Models//ducky.obj", "Models//ducky.mtl");
+	meshList[GEO_DUCKY]->material = Material::Wood(WHITE);
 
 	meshList[GEO_SHOOTINGDUCK] = MeshBuilder::GenerateOBJMTL("duckpewpew", "Models//duckshooting.obj", "Models//duckshooting.mtl");
+	meshList[GEO_SHOOTINGDUCK]->material = Material::Wood(WHITE);
 
 	meshList[GEO_TARGET] = MeshBuilder::GenerateOBJMTL("target", "Models//target.obj", "Models//target.mtl");
+	meshList[GEO_TARGET]->material = Material::Wood(WHITE);
 
 	meshList[GEO_CONVEYER] = MeshBuilder::GenerateOBJMTL("conveyer", "Models//conveyer.obj", "Models//conveyer.mtl");
+	meshList[GEO_CONVEYER]->material = Material::Wood(WHITE);
 
 
 	mainCamera.Init(glm::vec3(0, 6, -400), glm::vec3(0, 6, 0), VECTOR3_UP);
@@ -378,20 +404,16 @@ void carnivalroaming::Render()
 		modelStack.PopMatrix();
 	}
 
-	/*meshList[GEO_PLANE]->material = Material::Wood(RED);
+	meshList[GEO_PLANE]->material = Material::Wood(RED);
 	modelStack.PushMatrix();
 	modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
 	modelStack.Scale(1500.0f, 1000.0f, 0.0f);
 	RenderMesh(meshList[GEO_PLANE], true);
-	modelStack.PopMatrix();*/
-
-	meshList[GEO_PLANE]->material = Material::Wood(RED);
-	modelStack.PushMatrix();
-	modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
-	modelStack.Scale(1000, 1000, 0.0f);
-	RenderMesh(meshList[GEO_PLANE], true);
 	modelStack.PopMatrix();
 
+	
+
+	meshList[GEO_CIRCUSTENT]->material = Material::Wood(WHITE);
 	modelStack.PushMatrix();
 	modelStack.Translate(0.0f, 0.5f, 0.0f);
 	modelStack.Scale(45, 45, 45);
@@ -407,10 +429,19 @@ void carnivalroaming::Render()
 	//can game
 	modelStack.PushMatrix();
 	modelStack.Translate(-512.5f, 0.5f, 405.0f);
-	//modelStack.Rotate(180.0f, 0.0f, 1.0f, 0.0f);
+	modelStack.Rotate(180.0f, 0.0f, 1.0f, 0.0f);
 	modelStack.Scale(20, 7, 6);
 	RenderMesh(meshList[GEO_CANTENT],true);
+
+	modelStack.PushMatrix();
+	//modelStack.Translate(-512.5f, 0.5f, 405.0f);
+	//modelStack.Rotate(180.0f, 0.0f, 1.0f, 0.0f);
+	//modelStack.Scale(20, 7, 6);
+	RenderMesh(meshList[GEO_CANTENTROOF], true);
 	modelStack.PopMatrix();
+
+	modelStack.PopMatrix();
+
 
 	modelStack.PushMatrix();
 	modelStack.Translate(-370.5f, 5.5f, 405.0f);
@@ -630,9 +661,16 @@ void carnivalroaming::Render()
 	//duck shooting
 	modelStack.PushMatrix();
 	modelStack.Translate(0.0f, 0.5f, 400.0f);
-	//modelStack.Rotate(180.0f, 0.0f, 1.0f, 0.0f);
+	modelStack.Rotate(180.0f, 0.0f, 1.0f, 0.0f);
 	modelStack.Scale(20, 7, 6);
 	RenderMesh(meshList[GEO_CANTENT], true);
+
+	modelStack.PushMatrix();
+	//modelStack.Translate(-512.5f, 0.5f, 405.0f);
+	//modelStack.Rotate(180.0f, 0.0f, 1.0f, 0.0f);
+	//modelStack.Scale(20, 7, 6);
+	RenderMesh(meshList[GEO_CANTENTROOF], true);
+	modelStack.PopMatrix(); 
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
@@ -875,9 +913,15 @@ void carnivalroaming::Render()
 
 	modelStack.PushMatrix();
 	modelStack.Translate(-650.5f, 0.5f, 250.0f);
-	modelStack.Rotate(-90.0f, 0.0f, 1.0f, 0.0f);
+	modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
 	modelStack.Scale(7, 7, 3);
 	RenderMesh(meshList[GEO_CANTENT], true);
+	modelStack.PushMatrix();
+	//modelStack.Translate(-512.5f, 0.5f, 405.0f);
+	//modelStack.Rotate(180.0f, 0.0f, 1.0f, 0.0f);
+	//modelStack.Scale(20, 7, 6);
+	RenderMesh(meshList[GEO_CANTENTROOF], true);
+	modelStack.PopMatrix();
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
@@ -900,9 +944,15 @@ void carnivalroaming::Render()
 
 	modelStack.PushMatrix();
 	modelStack.Translate(-650.5f, 0.5f, 0.0f);
-	modelStack.Rotate(-90.0f, 0.0f, 1.0f, 0.0f);
+	modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
 	modelStack.Scale(20, 7, 7);
 	RenderMesh(meshList[GEO_CANTENT], true);
+	modelStack.PushMatrix();
+	//modelStack.Translate(-512.5f, 0.5f, 405.0f);
+	//modelStack.Rotate(180.0f, 0.0f, 1.0f, 0.0f);
+	//modelStack.Scale(20, 7, 6);
+	RenderMesh(meshList[GEO_CANTENTROOF], true);
+	modelStack.PopMatrix();
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
