@@ -134,20 +134,25 @@ void SceneCanKnockdown::Init()
 
 	meshList[GEO_TABLE] = MeshBuilder::GenerateOBJMTL("Table", "Models//CK_Table.obj", "Models//CK_Table.mtl");
 	meshList[GEO_TABLE]->textureID = LoadPNG("Images//CK_Table.png");
+	meshList[GEO_TABLE]->material = Material::Wood(WHITE);
 
 	meshList[GEO_CAN] = MeshBuilder::GenerateOBJMTL("Can", "Models//CK_Can.obj", "Models//CK_Can.mtl");
 	meshList[GEO_CAN]->textureID = LoadPNG("Images//CK_Can.png");
+	meshList[GEO_CAN]->material = Material::Wood(WHITE);
 
 	meshList[GEO_BOOTHROOF] = MeshBuilder::GenerateOBJMTL("BoothRoof", "Models//CK_BoothRoof.obj", "Models//CK_BoothRoof.mtl");
 	meshList[GEO_BOOTHROOF]->textureID = LoadPNG("Images//CK_BoothRoof.png");
+	meshList[GEO_BOOTHROOF]->material = Material::Wood(WHITE);
 
 	meshList[GEO_BOOTHGUARDS] = MeshBuilder::GenerateOBJMTL("BoothGuards", "Models//CK_BoothGuards.obj", "Models//CK_BoothGuards.mtl");
+	meshList[GEO_BOOTHGUARDS]->material = Material::Metal(GREY);
 
 	meshList[GEO_COUNTER] = MeshBuilder::GenerateCube("Counter", glm::vec3(0.459, 0.302, 0), 1);
 	meshList[GEO_COUNTER]->textureID = LoadPNG("Images//CK_Wood.png");
 	meshList[GEO_COUNTER]->material = Material::Wood(glm::vec3(0.459, 0.302, 0));
 
 	meshList[GEO_LIGHTBULB] = MeshBuilder::GenerateOBJMTL("Lamp", "Models//CK_LightBulb.obj", "Models//CK_LightBulb.mtl");
+	meshList[GEO_LIGHTBULB]->material = Material::Wood(WHITE);
 
 	mainCamera.Init(glm::vec3(0, 4, 7.5), glm::vec3(0, 4, 0), VECTOR3_UP);
 	mainCamera.sensitivity = 50.0f;
@@ -186,7 +191,7 @@ void SceneCanKnockdown::Init()
 	lights[1].cosCutoff = 60.f;
 	lights[1].cosInner = 30.f;
 	lights[1].exponent = 3.f;
-	lights[1].spotDirection = glm::vec3(0.f, -1.f, 0.f);
+	lights[1].spotDirection = glm::vec3(0.f, 1.f, 0.f);
 
 	glUniform3fv(m_parameters[U_LIGHT1_COLOR], 1, &lights[1].color.r);
 	glUniform1i(m_parameters[U_LIGHT1_TYPE], lights[1].type);
@@ -368,31 +373,7 @@ void SceneCanKnockdown::LateUpdate()
 	}
 
 	float powerIncreaseSpeed = maxPower;
-	if (isShooting == false && cooldownTimer <= 0 && attemptsLeft >= 0 && gameComplete == false) 
-	{
-		if (MouseController::GetInstance()->IsButtonDown(0)) 
-		{
-			if (power < maxPower) {
-				power += powerIncreaseSpeed * Time::deltaTime;
-			}
-			else {
-				power = maxPower;
-			}
-		}
-
-		if (MouseController::GetInstance()->IsButtonReleased(0)) 
-		{
-			isShooting = true;
-			cooldownTimer = 3;
-			glm::vec3 look = mainCamera.view * power;
-			objInScene[BALL]->rb->setSleepingThresholds(0.8, 1);
-			objInScene[BALL]->rb->setLinearVelocity(btVector3(look.x - 3, look.y + 3, look.z));
-			objInScene[BALL]->rb->activate();
-			power = 0;
-		}
-	}
-
-	if (isShooting == false) // Ball locked at player's camera if the player is currently shooting:
+	if (isShooting == false && attemptsLeft >= 0 && gameComplete == false) 
 	{
 		glm::vec3 cameraPos = mainCamera.m_transform.m_position;
 		glm::vec3 forward = mainCamera.view;
@@ -402,9 +383,35 @@ void SceneCanKnockdown::LateUpdate()
 		// Calculate world position of the ball
 		glm::vec3 newPos = cameraPos + (forward * 2.f) + (right * 1.f) + (up * -1.f);
 
-		objInScene[BALL]->SetRigidbodyPosition(newPos);
-		objInScene[BALL]->rb->clearGravity();
-		objInScene[BALL]->rb->setSleepingThresholds(0, 0);
+		if (objInScene[BALL] != nullptr && attemptsLeft >= 0) {
+			objInScene[BALL]->SetRigidbodyPosition(newPos);
+			objInScene[BALL]->rb->clearGravity();
+			objInScene[BALL]->rb->setSleepingThresholds(0, 0);
+		}
+		
+		
+		if (cooldownTimer <= 0) {
+			if (MouseController::GetInstance()->IsButtonDown(0))
+			{
+				if (power < maxPower) {
+					power += powerIncreaseSpeed * Time::deltaTime;
+				}
+				else {
+					power = maxPower;
+				}
+			}
+
+			if (MouseController::GetInstance()->IsButtonReleased(0))
+			{
+				isShooting = true;
+				cooldownTimer = 3;
+				glm::vec3 look = mainCamera.view * power;
+				objInScene[BALL]->rb->setSleepingThresholds(0.8, 1);
+				objInScene[BALL]->rb->setLinearVelocity(btVector3(look.x - 3, look.y + 3, look.z));
+				objInScene[BALL]->rb->activate();
+				power = 0;
+			}
+		}
 	}
 }
 
