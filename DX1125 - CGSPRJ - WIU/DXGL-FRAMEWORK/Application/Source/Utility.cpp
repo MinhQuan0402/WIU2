@@ -4,7 +4,7 @@ glm::mat4 GetTransformMatrix(btRigidBody* body)
 {
     glm::mat4 mat{};
     btTransform t;
-    body->getMotionState()->getWorldTransform(t);
+    t = body->getWorldTransform();
     float tempMat[16];
     t.getOpenGLMatrix(tempMat);
     unsigned index = 0;
@@ -47,3 +47,8 @@ glm::mat4 addMatrix(glm::mat4 a, glm::mat4 b)
     return newMatrix;
 }
 
+btVector3 QuaternionToEuler(btQuaternion quat) {
+    btScalar roll, pitch, yaw;
+    btMatrix3x3(quat).getEulerZYX(yaw, pitch, roll); // Convert quaternion to Euler angles (ZYX order)
+    return btVector3(roll, pitch, yaw); // Angles in radians
+}

@@ -26,6 +26,7 @@ public:
 	btRigidBody* rb;
 	std::string m_name; //Store its name
 	std::string m_tag; //Store its tag/categories
+	glm::vec3 colliderOffset;
 
 	RB_TYPE rbGOType;
 
@@ -51,6 +52,7 @@ public:
 	virtual void Start(void) {};
 	virtual void Update(void) {};
 	virtual void Render(Scene& scene) {};
+	virtual void LateUpdate(void) {};
 
 	/******************************************************************************/
 		/*!
@@ -111,6 +113,14 @@ public:
 	*/
 	/******************************************************************************/
 	void RemoveChild(GameObject* child2Remove);
+
+	void SetRigidbodyPosition(const glm::vec3& newPos);
+	void SetRigidbodyPosition(const float& x, const float& y, const float& z);
+	glm::vec3 GetRigidbodyPosition(void) const;
+
+	void SetRigidbodyRotation(const glm::vec3& newRotation);
+	void SetRigidbodyRotation(const float& x, const float& y, const float& z);
+	glm::vec3 GetRigidbodyRotation(void) const;
 	
 	bool operator==(const GameObject& rhs);
 

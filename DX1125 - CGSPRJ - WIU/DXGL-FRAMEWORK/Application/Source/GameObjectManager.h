@@ -31,7 +31,7 @@ public:
 	static CQuad* GetRoot(void);
 
 	static void addItem(GameObject* obj);
-	void removeItem(GameObject* obj);
+	static void removeItem(GameObject* obj);
 	static bool findObjInList(const GameObject& value, int& index);
 	static void DivideQuad(void);
 
