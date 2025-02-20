@@ -80,8 +80,9 @@ public:
 
 	virtual void Init();
 	virtual void Update() = 0;
+	virtual void LateUpdate() = 0;
 	virtual void Render() = 0;
-	virtual void Exit() = 0;
+	virtual void Exit();
 
 	void RenderMesh(Mesh* mesh, bool enableLight = false);
 	void RenderMesh(Mesh* mesh, bool enableLight, Transform& transform);

@@ -52,6 +52,7 @@ public:
 	virtual void Start(void) {};
 	virtual void Update(void) {};
 	virtual void Render(Scene& scene) {};
+	virtual void LateUpdate(void) {};
 
 	/******************************************************************************/
 		/*!

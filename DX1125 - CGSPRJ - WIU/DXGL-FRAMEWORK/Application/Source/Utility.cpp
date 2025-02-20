@@ -4,7 +4,7 @@ glm::mat4 GetTransformMatrix(btRigidBody* body)
 {
     glm::mat4 mat{};
     btTransform t;
-    body->getMotionState()->getWorldTransform(t);
+    t = body->getWorldTransform();
     float tempMat[16];
     t.getOpenGLMatrix(tempMat);
     unsigned index = 0;

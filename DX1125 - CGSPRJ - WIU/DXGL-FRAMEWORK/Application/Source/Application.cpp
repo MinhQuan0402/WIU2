@@ -14,10 +14,10 @@
 #include "MouseController.h"
 #include "GameObjectManager.h"
 #include "Time.h"
-#include "ScenePlinko.h"
 #include "SceneGame.h"
 #include "SceneManager.h"
 #include "CollisionManager.h"
+#include "ColliderManager.h"
 
 GLFWmonitor* primaryMonitor;
 const GLFWvidmode* videoMode;
@@ -148,9 +148,8 @@ void Application::Run()
 {
 	//Main Loop
 	CollisionManager::GetInstance()->SetUpDynamicWorld(10.0f);
-	SceneManager::GetInstance()->PushState(new ScenePlinko);
+	SceneManager::GetInstance()->PushState(new SceneGame);
 	Time::fixedDeltaTime = FIXED_TIME_STEP;
-
 	m_timer.startTimer();    // Start timer to calculate how long it takes to render this frame
 	while (!glfwWindowShouldClose(m_window) && !IsKeyPressed(VK_ESCAPE))
 	{
@@ -166,6 +165,7 @@ void Application::Run()
 
 		SceneManager::GetInstance()->Update();
 		CollisionManager::GetInstance()->UpdateCollision();
+		SceneManager::GetInstance()->LateUpdate();
 		SceneManager::GetInstance()->Render();
 		//Swap buffers
 		glfwSwapBuffers(m_window);
@@ -191,6 +191,7 @@ void Application::Exit()
 	MouseController::DestroyInstance();
 	GameObjectManager::DestroyInstance();
 	SceneManager::DestroyInstance();
+	ColliderManager::DestroyInstance();
 	CollisionManager::DestroyInstance();
 
 	//Close OpenGL window and terminate GLFW
