@@ -18,6 +18,7 @@
 #include "SceneCanKnockdown.h"
 #include "SceneManager.h"
 #include "CollisionManager.h"
+#include "ColliderManager.h"
 
 GLFWmonitor* primaryMonitor;
 const GLFWvidmode* videoMode;
@@ -165,7 +166,7 @@ void Application::Run()
 
 		SceneManager::GetInstance()->Update();
 		CollisionManager::GetInstance()->UpdateCollision();
-
+		SceneManager::GetInstance()->LateUpdate();
 		SceneManager::GetInstance()->Render();
 		//Swap buffers
 		glfwSwapBuffers(m_window);
@@ -191,6 +192,7 @@ void Application::Exit()
 	MouseController::DestroyInstance();
 	GameObjectManager::DestroyInstance();
 	SceneManager::DestroyInstance();
+	ColliderManager::DestroyInstance();
 	CollisionManager::DestroyInstance();
 
 	//Close OpenGL window and terminate GLFW

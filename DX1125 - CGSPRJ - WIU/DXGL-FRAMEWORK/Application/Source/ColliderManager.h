@@ -53,7 +53,7 @@ private:
 public:
 	UnorderedVector<btCollisionShape*> colliders;
 
-	~ColliderManager(void) = default;
+	~ColliderManager(void);
 
 	static ColliderManager* GetInstance(void);
 	static void DestroyInstance(void);

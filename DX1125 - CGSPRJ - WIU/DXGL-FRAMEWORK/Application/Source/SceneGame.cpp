@@ -186,7 +186,10 @@ void SceneGame::Init()
 	objInScene[CYLINDER]->m_transform.Translate(0.0f, 80.0f, 0.0f);
 	objInScene[CYLINDER]->m_transform.ScaleBy(0.5f, 2.0f, 0.5f);
 	objInScene[CYLINDER]->rb = addCylinderCollider(objInScene[CYLINDER], 2.0f, 1.0f, mat);
+	objInScene[BOX]->rb->setSleepingThresholds(0.0f, 0.0f);
 	GameObjectManager::GetInstance()->addItem(objInScene[CYLINDER]);
+
+
 }
 
 void SceneGame::Update()
@@ -206,8 +209,27 @@ void SceneGame::Update()
 	mainCamera.m_transform.Translate(finalForce);
 	mainCamera.UpdateCameraRotation();
 
-	glm::vec3 boxRotation = objInScene[BOX]->GetRigidbodyRotation();
-	std::cout << "X: " << boxRotation.x << " Y: " << boxRotation.y << " Z: " << boxRotation.z << std::endl;
+	
+
+	
+	
+}
+
+void SceneGame::LateUpdate()
+{
+	glm::vec3 boxPosition = objInScene[BOX]->GetRigidbodyPosition();
+	if (boxPosition.y <= 10.0f && KeyboardController::GetInstance()->IsKeyDown(VK_SPACE))
+	{
+		objInScene[BOX]->SetRigidbodyPosition(boxPosition.x, 10.0f, boxPosition.z);
+		objInScene[BOX]->rb->clearGravity();
+	}
+
+	if (KeyboardController::GetInstance()->IsKeyReleased(VK_SPACE) && objInScene[BOX]->rb->getActivationState() == ISLAND_SLEEPING)
+	{
+		objInScene[BOX]->rb->activate();
+	}
+
+	std::cout << "X: " << boxPosition.x << " Y: " << boxPosition.y << " Z: " << boxPosition.z << std::endl;
 }
 
 void SceneGame::Render()
@@ -307,6 +329,7 @@ void SceneGame::Render()
 
 void SceneGame::Exit()
 {
+	Scene::Exit();
 	// Cleanup VBO here
 	for (int i = 0; i < NUM_GEOMETRY; ++i) { if (meshList[i]) delete meshList[i]; }
 	meshList.clear();

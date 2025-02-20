@@ -5,6 +5,10 @@ ColliderManager* ColliderManager::m_instance = nullptr;
 ColliderManager::ColliderManager(void)
 {
 }
+ColliderManager::~ColliderManager(void)
+{
+    for (btCollisionShape* shape : colliders) delete shape;
+}
 ColliderManager* ColliderManager::GetInstance(void)
 {
     if (!m_instance) m_instance = new ColliderManager();

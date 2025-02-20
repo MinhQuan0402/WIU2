@@ -29,6 +29,11 @@ void Scene::Init()
 	hitboxMeshList[HITBOX_GROUND] = MeshBuilder::GenerateQuad("Quad", GREEN, 1000.0f);
 }
 
+void Scene::Exit()
+{
+	for (Mesh* mesh : hitboxMeshList) delete mesh;
+}
+
 void Scene::RenderMesh(Mesh* mesh, bool enableLight)
 {
 	glm::mat4 MVP, modelView, modelView_inverse_transpose;

@@ -17,6 +17,7 @@ public:
 	void PopState();
 
 	void Update(void);
+	void LateUpdate(void);
 	void Render();
 
 private:

@@ -24,10 +24,8 @@ GameObject::~GameObject(void)
 	{
 		CollisionManager::GetInstance()->GetDynamicsWorld()->removeRigidBody(rb);
 		btMotionState* motion = rb->getMotionState();
-		btCollisionShape* shape = rb->getCollisionShape();
-		delete rb;
-		delete shape;
 		delete motion;
+		delete rb;
 	}
 }
 
@@ -80,7 +78,7 @@ void GameObject::SetRigidbodyPosition(const float& x, const float& y, const floa
 	t.setIdentity();
 	rb->getMotionState()->getWorldTransform(t);
 	t.setOrigin(btVector3(x, y, z));
-	rb->getMotionState()->setWorldTransform(t);
+	rb->setWorldTransform(t);
 }
 
 glm::vec3 GameObject::GetRigidbodyPosition(void) const

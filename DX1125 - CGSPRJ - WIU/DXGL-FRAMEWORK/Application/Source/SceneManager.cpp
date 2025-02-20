@@ -58,6 +58,15 @@ void SceneManager::Update(void)
 	m_scenes[size - 1]->Update();
 }
 
+void SceneManager::LateUpdate(void)
+{
+	size_t size = m_scenes.size();
+	if (size == 0)
+		return; //no scenes to update
+
+	m_scenes[size - 1]->LateUpdate();
+}
+
 void SceneManager::Render()
 {
 	//draw all scenes from bottom to top
