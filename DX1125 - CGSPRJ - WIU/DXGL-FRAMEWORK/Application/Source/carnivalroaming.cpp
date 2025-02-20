@@ -100,7 +100,7 @@ void carnivalroaming::Init()
 	meshList[GEO_MODEL1]->textureID = LoadPNG("Images//doorman.png");
 	meshList[GEO_SPHERE] = MeshBuilder::GenerateSphere("Sphere", WHITE, 1.0f, 100, 100);
 	meshList[GEO_CUBE] = MeshBuilder::GenerateCube("Cube", YELLOW, 1.0f);
-	meshList[GEO_PLANE] = MeshBuilder::GenerateQuad("Quad", RED, 1.0f);
+	meshList[GEO_PLANE] = MeshBuilder::GenerateQuad("Quad", WHITE, 1.0f);
 
 	meshList[GEO_CIRCUSTENT] = MeshBuilder::GenerateCircle("Circle", WHITE, 200);
 	meshList[GEO_CIRCUSTENT] = MeshBuilder::GenerateOBJMTL("CircusTent", "Models//circusTentTest.obj", "Models//circusTentTest.mtl");
@@ -167,18 +167,17 @@ void carnivalroaming::Init()
 	mainCamera.Init(glm::vec3(0, 6, -400), glm::vec3(0, 6, 0), VECTOR3_UP);
 	mainCamera.sensitivity = 20;
 
-	glUniform1i(m_parameters[U_NUMLIGHTS], 2);
+	glUniform1i(m_parameters[U_NUMLIGHTS], 1);
 
-	lights[0].m_transform.m_position = glm::vec3{};
-	lights[0].m_transform.m_position = glm::vec3(0, 0, 0);
+	lights[0].m_transform.m_position = devVec;
 	lights[0].color = glm::vec3(1, 1, 1);
-	lights[0].type = Light::LIGHT_SPOT;
-	lights[0].power = 10;
+	lights[0].type = Light::LIGHT_DIRECTIONAL;
+	lights[0].power = 2.0f;
 	lights[0].kC = 1.f;
 	lights[0].kL = 0.01f;
 	lights[0].kQ = 0.001f;
-	lights[0].cosCutoff = 45.f;
-	lights[0].cosInner = 30.f;
+	lights[0].cosCutoff = 90.f;
+	lights[0].cosInner = 45.f;
 	lights[0].exponent = 3.f;
 	lights[0].spotDirection = glm::vec3(0.f, 1.f, 0.f);
 
@@ -231,8 +230,6 @@ void carnivalroaming::Init()
 	objInscene[BOX4]->m_transform.ScaleBy(100.0f, 100.f, 300.0f);
 	objInscene[BOX4]->rb = addBoxCollider(objInscene[BOX4], 100.0f, 100.f, 300.0f, mat);
 
-
-
 	objInscene[BOX5]->m_transform.Translate(-650.5f, 0.5f, 0.0f);
 	objInscene[BOX5]->m_transform.ScaleBy(100.0f, 100.f, 300.0f);
 	objInscene[BOX5]->rb = addBoxCollider(objInscene[BOX5], 100.0f, 100.f, 300.0f, mat);
@@ -268,9 +265,9 @@ void carnivalroaming::Init()
 		ducksX[i] = x;
 		ducksY[i] = y;
 
-		std::cout << "RandomPoint in circle: (" << x << ", " << y << ")\n";
-		std::cout << ducksX[i] << std::endl; 
-		std::cout << ducksY[i] << std::endl;
+		//std::cout << "RandomPoint in circle: (" << x << ", " << y << ")\n";
+		//std::cout << ducksX[i] << std::endl; 
+		//std::cout << ducksY[i] << std::endl;
 	}
 	
 
@@ -309,63 +306,90 @@ void carnivalroaming::Update()
 
 void carnivalroaming::LateUpdate()
 {
+	// Developer Controls:
+	{
+		float speed = 20;
+		if (KeyboardController::GetInstance()->IsKeyDown('Y')) {
+			devVec.y += speed * Time::deltaTime;
+		}
+		if (KeyboardController::GetInstance()->IsKeyDown('U')) {
+			devVec.y -= speed * Time::deltaTime;
+		}
+		if (KeyboardController::GetInstance()->IsKeyDown('T')) {
+			devVec.z += speed * Time::deltaTime;
+		}
+		if (KeyboardController::GetInstance()->IsKeyDown('G')) {
+			devVec.z -= speed * Time::deltaTime;
+		}
+		if (KeyboardController::GetInstance()->IsKeyDown('F')) {
+			devVec.x += speed * Time::deltaTime;
+		}
+		if (KeyboardController::GetInstance()->IsKeyDown('H')) {
+			devVec.x -= speed * Time::deltaTime;
+		}
+
+		lights[0].m_transform.m_position = devVec;
+		std::cout << devVec.x << ", " << devVec.y << ", " << devVec.z << std::endl;
+	}
 }
 
 void carnivalroaming::Render()
 {
-	// Clear color buffer every frame
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glm::mat4 model = glm::mat4(1.0f);
-	// Setup Model View Projection matrix
-	projectionStack.LoadMatrix(glm::perspective(45.0f,
-		Application::m_consoleWidth / (float)Application::m_consoleHeight,
-		0.1f, 1000.0f));
 
-	viewStack.LoadIdentity();
-	viewStack.LookAt(
-		mainCamera.m_transform.m_position,
-		mainCamera.target,
-		mainCamera.up
-	);
-	// Load identity matrix into the model stack
-	modelStack.LoadIdentity();
-
-	if (lights[0].type == Light::LIGHT_DIRECTIONAL)
 	{
-		glm::vec3 lightDir(lights[0].m_transform.m_position.x, lights[0].m_transform.m_position.y, lights[0].m_transform.m_position.z);
-		glm::vec3 lightDirection_cameraspace = viewStack.Top() * glm::vec4(lightDir, 0);
-		glUniform3fv(m_parameters[U_LIGHT0_POSITION], 1, glm::value_ptr(lightDirection_cameraspace));
-	}
-	else if (lights[0].type == Light::LIGHT_SPOT)
-	{
-		glm::vec3 lightPosition_cameraspace = viewStack.Top() * glm::vec4(lights[0].m_transform.m_position, 1);
-		glUniform3fv(m_parameters[U_LIGHT0_POSITION], 1, glm::value_ptr(lightPosition_cameraspace));
-		glm::vec3 spotDirection_cameraspace = viewStack.Top() * glm::vec4(lights[0].spotDirection, 0);
-		glUniform3fv(m_parameters[U_LIGHT0_SPOTDIRECTION], 1, glm::value_ptr(spotDirection_cameraspace));
-	}
-	else {
-		// Calculate the light position in camera space
-		glm::vec3 lightPosition_cameraspace = viewStack.Top() * glm::vec4(lights[0].m_transform.m_position, 1);
-		glUniform3fv(m_parameters[U_LIGHT0_POSITION], 1, glm::value_ptr(lightPosition_cameraspace));
-	}
+		// Clear color buffer every frame
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glm::mat4 model = glm::mat4(1.0f);
+		// Setup Model View Projection matrix
+		projectionStack.LoadMatrix(glm::perspective(45.0f,
+			Application::m_consoleWidth / (float)Application::m_consoleHeight,
+			0.1f, 1000.0f));
 
-	modelStack.PushMatrix();
-	RenderMesh(meshList[GEO_AXIS]);
-	modelStack.PopMatrix();
+		viewStack.LoadIdentity();
+		viewStack.LookAt(
+			mainCamera.m_transform.m_position,
+			mainCamera.target,
+			mainCamera.up
+		);
+		// Load identity matrix into the model stack
+		modelStack.LoadIdentity();
 	
-	modelStack.PushMatrix();
-	modelStack.Translate(0.0f, lights[0].m_transform.m_position.y , 0.0f);
-	//modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
-	modelStack.Scale(100.0f, 100.0f, 100.0f);
-	RenderMesh(meshList[GEO_LIGHT]);
-	modelStack.PopMatrix();
+		if (lights[0].type == Light::LIGHT_DIRECTIONAL)
+		{
+			glm::vec3 lightDir(lights[0].m_transform.m_position.x, lights[0].m_transform.m_position.y, lights[0].m_transform.m_position.z);
+			glm::vec3 lightDirection_cameraspace = viewStack.Top() * glm::vec4(lightDir, 0);
+			glUniform3fv(m_parameters[U_LIGHT0_POSITION], 1, glm::value_ptr(lightDirection_cameraspace));
+		}
+		else if (lights[0].type == Light::LIGHT_SPOT)
+		{
+			glm::vec3 lightPosition_cameraspace = viewStack.Top() * glm::vec4(lights[0].m_transform.m_position, 1);
+			glUniform3fv(m_parameters[U_LIGHT0_POSITION], 1, glm::value_ptr(lightPosition_cameraspace));
+			glm::vec3 spotDirection_cameraspace = viewStack.Top() * glm::vec4(lights[0].spotDirection, 0);
+			glUniform3fv(m_parameters[U_LIGHT0_SPOTDIRECTION], 1, glm::value_ptr(spotDirection_cameraspace));
+		}
+		else {
+			// Calculate the light position in camera space
+			glm::vec3 lightPosition_cameraspace = viewStack.Top() * glm::vec4(lights[0].m_transform.m_position, 1);
+			glUniform3fv(m_parameters[U_LIGHT0_POSITION], 1, glm::value_ptr(lightPosition_cameraspace));
+		}
 
+		modelStack.PushMatrix();
+		RenderMesh(meshList[GEO_AXIS]);
+		modelStack.PopMatrix();
+	}
 
+	/*meshList[GEO_PLANE]->material = Material::Wood(RED);
 	modelStack.PushMatrix();
-	
 	modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
 	modelStack.Scale(1500.0f, 1000.0f, 0.0f);
-	RenderMesh(meshList[GEO_PLANE]);
+	RenderMesh(meshList[GEO_PLANE], true);
+	modelStack.PopMatrix();*/
+
+	meshList[GEO_PLANE]->material = Material::Wood(RED);
+	modelStack.PushMatrix();
+	modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
+	modelStack.Scale(1000, 1000, 0.0f);
+	RenderMesh(meshList[GEO_PLANE], true);
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
@@ -1028,6 +1052,12 @@ void carnivalroaming::Render()
 	//modelStack.Scale(100.0f, 200.f, 0.0f);
 	//RenderMesh(meshList[GEO_HITBOX]);
 	//modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(devVec.x, devVec.y, devVec.z);
+	modelStack.Scale(1, 1, 1);
+	RenderMesh(meshList[GEO_CUBE]);
+	modelStack.PopMatrix();
 
 	GameObjectManager::GetInstance()->RenderAll(*this);
 

@@ -94,6 +94,8 @@ private:
 	};
 
 	GameObject* objInscene[NUM_OBJ];
+
+	glm::vec3 devVec = glm::vec3{ 253.615, 38.3301, -7.17231 };
 };
 
 #endif
