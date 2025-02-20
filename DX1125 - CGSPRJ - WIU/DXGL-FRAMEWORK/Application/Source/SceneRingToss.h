@@ -41,10 +41,7 @@ private:
 	enum OBJINSCENE
 	{
 		GROUND,
-		BOX, 
-		SPHERE,
-		CYLINDER,
-		TORUS,
+		BOARD,
 		NUMOBJ
 	};
 

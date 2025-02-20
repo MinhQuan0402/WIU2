@@ -20,6 +20,7 @@
 #include "Utility.h"
 #include "RigidBody.h"
 #include "ColliderManager.h"
+#include "TossBoard.h"
 
 SceneRingToss::SceneRingToss() : numLight{ 2 }
 {
@@ -89,6 +90,8 @@ void SceneRingToss::Init()
 	meshList[GEO_TEXT] = MeshBuilder::GenerateText("text", 16, 16);
 	meshList[GEO_TEXT]->textureID = LoadTGA("Images//calibri.tga");
 	meshList[GEO_PLANE] = MeshBuilder::GenerateQuad("Quad", RED, 1000.0f);
+	meshList[GEO_BOARD] = MeshBuilder::GenerateOBJ("board", "ring_toss_rack.obj");
+	meshList[GEO_BOARD]->textureID = LoadPNG("wood.png");
 
 	mainCamera.Init(glm::vec3(8, 6, 6), glm::vec3(0, 6, 0), VECTOR3_UP);
 	
@@ -131,29 +134,9 @@ void SceneRingToss::Init()
 	mat.m_bounciness = 0.5f;
 	mat.m_friction = 0.5f;
 
-	objInScene[TORUS] = new GameObject();
-	objInScene[TORUS]->m_transform.Translate(0.0f, 80.0f, 0.0f);
-	objInScene[TORUS]->m_transform.ScaleBy(0.5f, 2.0f, 0.5f);
-	objInScene[TORUS]->rb = addTorusCollider(objInScene[TORUS], 0.8f, 1.0f, 100, mat);
-	GameObjectManager::GetInstance()->addItem(objInScene[TORUS]);
+	objInScene[BOARD] = new TossBoard();
 
-	objInScene[BOX] = new GameObject();
-	objInScene[BOX]->m_transform.Translate(0.0f, 50.0f, 0.0f);
-	objInScene[BOX]->m_transform.ScaleBy(4.f, 2.5f, 4.0f);
-	objInScene[BOX]->rb = addBoxCollider(objInScene[BOX], 4.0f, 2.5f, 4.0f, mat);
-	GameObjectManager::GetInstance()->addItem(objInScene[BOX]);
-
-	objInScene[SPHERE] = new GameObject();
-	objInScene[SPHERE]->m_transform.Translate(0.0f, 20.0f, 0.0f);
-	objInScene[SPHERE]->m_transform.ScaleBy(5.0f, 5.0f, 5.0f);
-	objInScene[SPHERE]->rb = addSphereCollider(objInScene[SPHERE], 5.0f, mat);
-	GameObjectManager::GetInstance()->addItem(objInScene[SPHERE]);
-
-	objInScene[CYLINDER] = new GameObject();
-	objInScene[CYLINDER]->m_transform.Translate(0.0f, 80.0f, 0.0f);
-	objInScene[CYLINDER]->m_transform.ScaleBy(0.5f, 2.0f, 0.5f);
-	objInScene[CYLINDER]->rb = addCylinderCollider(objInScene[CYLINDER], 2.0f, 1.0f, mat);
-	GameObjectManager::GetInstance()->addItem(objInScene[CYLINDER]);
+	GameObjectManager::IniAll();
 }
 
 void SceneRingToss::Update()
@@ -172,6 +155,8 @@ void SceneRingToss::Update()
 	glm::vec3 finalForce = inputMovementDir * 10.0f * Time::deltaTime;
 	mainCamera.m_transform.Translate(finalForce);
 	mainCamera.UpdateCameraRotation();
+
+	GameObjectManager::UpdateAll();
 }
 
 void SceneRingToss::LateUpdate()
@@ -224,6 +209,8 @@ void SceneRingToss::Render()
 	modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
 	RenderMesh(meshList[GEO_PLANE]);
 	modelStack.PopMatrix();
+
+	GameObjectManager::RenderAll(*this);
 
 #ifdef DRAW_HITBOX
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);

@@ -171,6 +171,7 @@
     <ClCompile Include="Source\SceneRingToss.cpp" />
     <ClCompile Include="Source\shader.cpp" />
     <ClCompile Include="Source\Time.cpp" />
+    <ClCompile Include="Source\TossBoard.cpp" />
     <ClCompile Include="Source\Utility.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -200,6 +201,7 @@
     <ClInclude Include="Source\SceneRingToss.h" />
     <ClInclude Include="Source\shader.hpp" />
     <ClInclude Include="Source\Time.h" />
+    <ClInclude Include="Source\TossBoard.h" />
     <ClInclude Include="Source\Utility.h" />
     <ClInclude Include="Source\Vertex.h" />
   </ItemGroup>
