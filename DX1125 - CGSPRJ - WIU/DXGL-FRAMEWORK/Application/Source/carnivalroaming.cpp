@@ -6,6 +6,8 @@
 #include "Application.h"
 #include "MeshBuilder.h"
 #include "cmath"
+#include <cstdlib>
+#include <ctime>
 #include "KeyboardController.h"
 #include "MouseController.h"
 #include "GameObjectManager.h"
@@ -119,7 +121,29 @@ void carnivalroaming::Init()
 
 	meshList[GEO_STRIPEWALL] = MeshBuilder::GenerateOBJMTL("Stripewall", "Models//stripedwall2.obj", "Models//stripedwall2.mtl");
 
-	meshList[GEO_COTTONCANDY] = MeshBuilder::GenerateOBJMTL("CottonCandy", "Models//cottoncandy.obj", "Models//cottoncandy.mtl");
+	meshList[GEO_TOPCOTTONCANDY] = MeshBuilder::GenerateOBJ("CottonCandy", "Models//top_cottoncandy.obj");
+	meshList[GEO_TOPCOTTONCANDY]->textureID = LoadPNG("Images//top_cotton_candy.png");
+
+	meshList[GEO_MIDDLECOTTONCANDY] = MeshBuilder::GenerateOBJ("Middle CottonCandy", "Models//middle_cottoncandy.obj");
+	meshList[GEO_MIDDLECOTTONCANDY]->textureID = LoadPNG("Images//middle_cottoncandy.png");
+
+	meshList[GEO_INNERMIDDLECOTTONCANDY] = MeshBuilder::GenerateOBJ("Inner Middle CottonCandy", "Models//innermiddle_cottoncandy.obj");
+	
+	meshList[GEO_COTTONCANDYS] = MeshBuilder::GenerateOBJ("CottonCandy", "Models//cottoncandys.obj");
+	meshList[GEO_COTTONCANDYS]->textureID = LoadPNG("Images//cottoncandys.png");
+
+	meshList[GEO_COTTONCANDYMACHINE] = MeshBuilder::GenerateOBJ("CottonCandymachines", "Models//cottoncandymachine.obj");
+	meshList[GEO_COTTONCANDYMACHINE]->textureID = LoadPNG("Images//cottoncandymachine.png");
+
+	meshList[GEO_CARAMELAPPLE] = MeshBuilder::GenerateOBJ("CaramelApple", "Models//caramelapple_cottoncandy.obj");
+	meshList[GEO_CARAMELAPPLE]->textureID = LoadPNG("Images//caramelapple_cottoncandy.png");
+
+	meshList[GEO_CARAMELAPPLESTAND] = MeshBuilder::GenerateOBJ("CaramelAppleStand", "Models//caramelapplestand_cottoncandy.obj");
+	meshList[GEO_CARAMELAPPLESTAND]->textureID = LoadPNG("Images//caramelapplestands_cottoncandy.png");
+
+	meshList[GEO_BOTTOMCOTTONCANDY] = MeshBuilder::GenerateOBJ("BottomCottonCandy", "Models//bottom_cottoncandy.obj");
+	meshList[GEO_BOTTOMCOTTONCANDY]->textureID = LoadPNG("Images//bottom_cottoncandy.png");
+
 
 	meshList[GEO_PLINKO] = MeshBuilder::GenerateOBJMTL("Plinko", "Models//plinko.obj", "Models//plinko.mtl");
 	meshList[GEO_PLINKO]->textureID = LoadPNG("Images//plinko.png");
@@ -131,8 +155,14 @@ void carnivalroaming::Init()
 	meshList[GEO_POOLWATER] = MeshBuilder::GenerateCircle("Circle", WHITE, 1);
 	meshList[GEO_POOLWATER]->textureID = LoadPNG("Images//water.png");
 
+	meshList[GEO_DUCKY] = MeshBuilder::GenerateOBJMTL("duck", "Models//ducky.obj", "Models//ducky.mtl");
 
-	meshList[GEO_SHOOTINGGAME] = MeshBuilder::GenerateQuad("Quad", WHITE, 1);
+	meshList[GEO_SHOOTINGDUCK] = MeshBuilder::GenerateOBJMTL("duckpewpew", "Models//duckshooting.obj", "Models//duckshooting.mtl");
+
+	meshList[GEO_TARGET] = MeshBuilder::GenerateOBJMTL("target", "Models//target.obj", "Models//target.mtl");
+
+	meshList[GEO_CONVEYER] = MeshBuilder::GenerateOBJMTL("conveyer", "Models//conveyer.obj", "Models//conveyer.mtl");
+
 
 	mainCamera.Init(glm::vec3(0, 6, -400), glm::vec3(0, 6, 0), VECTOR3_UP);
 	mainCamera.sensitivity = 20;
@@ -140,10 +170,10 @@ void carnivalroaming::Init()
 	glUniform1i(m_parameters[U_NUMLIGHTS], 2);
 
 	lights[0].m_transform.m_position = glm::vec3{};
-	lights[0].m_transform.m_position = glm::vec3(0, 5, 0);
+	lights[0].m_transform.m_position = glm::vec3(0, 0, 0);
 	lights[0].color = glm::vec3(1, 1, 1);
 	lights[0].type = Light::LIGHT_SPOT;
-	lights[0].power = 1;
+	lights[0].power = 10;
 	lights[0].kC = 1.f;
 	lights[0].kL = 0.01f;
 	lights[0].kQ = 0.001f;
@@ -224,6 +254,26 @@ void carnivalroaming::Init()
 
 	GameObjectManager::GetInstance()->IniAll();
 
+	std::srand(std::time(0));
+	
+	float maxRadius = 30.0f;
+	for (int i = 0; i < 10; i++)
+	{
+		float theta = (std::rand() / (float)RAND_MAX) * 2 * M_PI;
+
+		float r = std::sqrt((std::rand() / (float)RAND_MAX)) * maxRadius;
+		float x = r * std::cos(theta);
+		float y = r * std::sin(theta);
+
+		ducksX[i] = x;
+		ducksY[i] = y;
+
+		std::cout << "RandomPoint in circle: (" << x << ", " << y << ")\n";
+		std::cout << ducksX[i] << std::endl; 
+		std::cout << ducksY[i] << std::endl;
+	}
+	
+
 }
 
 void carnivalroaming::Update()
@@ -255,6 +305,10 @@ void carnivalroaming::Update()
 
 	
 	GameObjectManager::GetInstance()->UpdateAll();
+}
+
+void carnivalroaming::LateUpdate()
+{
 }
 
 void carnivalroaming::Render()
@@ -298,6 +352,14 @@ void carnivalroaming::Render()
 	modelStack.PushMatrix();
 	RenderMesh(meshList[GEO_AXIS]);
 	modelStack.PopMatrix();
+	
+	modelStack.PushMatrix();
+	modelStack.Translate(0.0f, lights[0].m_transform.m_position.y , 0.0f);
+	//modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
+	modelStack.Scale(100.0f, 100.0f, 100.0f);
+	RenderMesh(meshList[GEO_LIGHT]);
+	modelStack.PopMatrix();
+
 
 	modelStack.PushMatrix();
 	
@@ -309,48 +371,49 @@ void carnivalroaming::Render()
 	modelStack.PushMatrix();
 	modelStack.Translate(0.0f, 0.5f, 0.0f);
 	modelStack.Scale(45, 45, 45);
-	RenderMesh(meshList[GEO_CIRCUSTENT]);
+	RenderMesh(meshList[GEO_CIRCUSTENT], true);
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
 	modelStack.Translate(0.0f, 0.5f, 0.0f);
 	modelStack.Scale(45, 45, 45);
-	RenderMesh(meshList[GEO_CIRCUSNAME]);
+	RenderMesh(meshList[GEO_CIRCUSNAME],true);
 	modelStack.PopMatrix();
 
+	//can game
 	modelStack.PushMatrix();
 	modelStack.Translate(-512.5f, 0.5f, 405.0f);
 	//modelStack.Rotate(180.0f, 0.0f, 1.0f, 0.0f);
 	modelStack.Scale(20, 7, 6);
-	RenderMesh(meshList[GEO_CANTENT]);
+	RenderMesh(meshList[GEO_CANTENT],true);
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
 	modelStack.Translate(-370.5f, 5.5f, 405.0f);
 	modelStack.Rotate(90.0f, 0.0f, 0.0f, 1.0f);
 	modelStack.Scale(20, 7, 6);
-	RenderMesh(meshList[GEO_STRIPEWALL]);
+	RenderMesh(meshList[GEO_STRIPEWALL], true);
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
 	modelStack.Translate(-370.5f, 15.5f, 405.0f);
 	modelStack.Rotate(90.0f, 0.0f, 0.0f, 1.0f);
 	modelStack.Scale(20, 7, 6);
-	RenderMesh(meshList[GEO_STRIPEWALL]);
+	RenderMesh(meshList[GEO_STRIPEWALL], true);
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
 	modelStack.Translate(-654.5f, 11.5f, 405.0f);
 	modelStack.Rotate(-90.0f, 0.0f, 0.0f, 1.0f);
 	modelStack.Scale(20, 7, 6);
-	RenderMesh(meshList[GEO_STRIPEWALL]);
+	RenderMesh(meshList[GEO_STRIPEWALL], true);
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
 	modelStack.Translate(-654.5f, 11.5f, 405.0f);
 	modelStack.Rotate(-90.0f, 0.0f, 0.0f, 1.0f);
 	modelStack.Scale(20, 7, 6);
-	RenderMesh(meshList[GEO_STRIPEWALL]);
+	RenderMesh(meshList[GEO_STRIPEWALL], true);
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
@@ -358,7 +421,7 @@ void carnivalroaming::Render()
 	modelStack.Rotate(-90.0f, 0.0f, 0.0f, 1.0f);
 	modelStack.Rotate(-90.0f, 1.0f, 0.0f, 0.0f);
 	modelStack.Scale(20, 7, 6);
-	RenderMesh(meshList[GEO_STRIPEWALL]);
+	RenderMesh(meshList[GEO_STRIPEWALL], true);
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
@@ -366,7 +429,7 @@ void carnivalroaming::Render()
 	modelStack.Rotate(-90.0f, 0.0f, 0.0f, 1.0f);
 	modelStack.Rotate(-90.0f, 1.0f, 0.0f, 0.0f);
 	modelStack.Scale(20, 7, 6);
-	RenderMesh(meshList[GEO_STRIPEWALL]);
+	RenderMesh(meshList[GEO_STRIPEWALL], true);
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
@@ -374,7 +437,7 @@ void carnivalroaming::Render()
 	modelStack.Rotate(-90.0f, 0.0f, 0.0f, 1.0f);
 	modelStack.Rotate(-90.0f, 1.0f, 0.0f, 0.0f);
 	modelStack.Scale(20, 7, 6);
-	RenderMesh(meshList[GEO_STRIPEWALL]);
+	RenderMesh(meshList[GEO_STRIPEWALL], true);
 	modelStack.PopMatrix();
 
 
@@ -383,7 +446,7 @@ void carnivalroaming::Render()
 	modelStack.Rotate(-90.0f, 0.0f, 0.0f, 1.0f);
 	modelStack.Rotate(-90.0f, 1.0f, 0.0f, 0.0f);
 	modelStack.Scale(20, 7, 6);
-	RenderMesh(meshList[GEO_STRIPEWALL]);
+	RenderMesh(meshList[GEO_STRIPEWALL], true);
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
@@ -391,7 +454,7 @@ void carnivalroaming::Render()
 	modelStack.Rotate(-90.0f, 0.0f, 0.0f, 1.0f);
 	modelStack.Rotate(-90.0f, 1.0f, 0.0f, 0.0f);
 	modelStack.Scale(20, 7, 6);
-	RenderMesh(meshList[GEO_STRIPEWALL]);
+	RenderMesh(meshList[GEO_STRIPEWALL], true);
 	modelStack.PopMatrix();
 
 
@@ -400,7 +463,7 @@ void carnivalroaming::Render()
 	modelStack.Rotate(-90.0f, 0.0f, 0.0f, 1.0f);
 	modelStack.Rotate(-90.0f, 1.0f, 0.0f, 0.0f);
 	modelStack.Scale(20, 7, 6);
-	RenderMesh(meshList[GEO_STRIPEWALL]);
+	RenderMesh(meshList[GEO_STRIPEWALL], true);
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
@@ -408,7 +471,7 @@ void carnivalroaming::Render()
 	modelStack.Rotate(-90.0f, 0.0f, 0.0f, 1.0f);
 	modelStack.Rotate(-90.0f, 1.0f, 0.0f, 0.0f);
 	modelStack.Scale(20, 7, 6);
-	RenderMesh(meshList[GEO_STRIPEWALL]);
+	RenderMesh(meshList[GEO_STRIPEWALL], true);
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
@@ -416,7 +479,7 @@ void carnivalroaming::Render()
 	modelStack.Rotate(-90.0f, 0.0f, 0.0f, 1.0f);
 	modelStack.Rotate(-90.0f, 1.0f, 0.0f, 0.0f);
 	modelStack.Scale(20, 7, 6);
-	RenderMesh(meshList[GEO_STRIPEWALL]);
+	RenderMesh(meshList[GEO_STRIPEWALL], true);
 	modelStack.PopMatrix();
 
 
@@ -425,7 +488,7 @@ void carnivalroaming::Render()
 	modelStack.Rotate(-90.0f, 0.0f, 0.0f, 1.0f);
 	modelStack.Rotate(-90.0f, 1.0f, 0.0f, 0.0f);
 	modelStack.Scale(20, 7, 6);
-	RenderMesh(meshList[GEO_STRIPEWALL]);
+	RenderMesh(meshList[GEO_STRIPEWALL], true);
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
@@ -433,50 +496,43 @@ void carnivalroaming::Render()
 	modelStack.Rotate(-90.0f, 0.0f, 0.0f, 1.0f);
 	modelStack.Rotate(-90.0f, 1.0f, 0.0f, 0.0f);
 	modelStack.Scale(20, 7, 6);
-	RenderMesh(meshList[GEO_STRIPEWALL]);
+	RenderMesh(meshList[GEO_STRIPEWALL], true);
 	modelStack.PopMatrix();
-
-
-
-
-
-
-
 
 
 	modelStack.PushMatrix();
 	modelStack.Translate(-512.5f, 0.5f, 430.0f);
 	modelStack.Scale(200, 70, 20);
-	RenderMesh(meshList[GEO_TABLECAN]);
+	RenderMesh(meshList[GEO_TABLECAN], true);
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
 	modelStack.Translate(-512.5f, 24.0f, 430.0f);
-	RenderMesh(meshList[GEO_CAN]);
+	RenderMesh(meshList[GEO_CAN], true);
 
 	modelStack.PushMatrix();
 	modelStack.Translate(-6.5f, .0f, 0.0f);
-	RenderMesh(meshList[GEO_CAN]);
+	RenderMesh(meshList[GEO_CAN], true);
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
 	modelStack.Translate(6.5f, .0f, 0.0f);
-	RenderMesh(meshList[GEO_CAN]);
+	RenderMesh(meshList[GEO_CAN], true);
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
 	modelStack.Translate(3.5f, 7.0f, 0.0f);
-	RenderMesh(meshList[GEO_CAN]);
+	RenderMesh(meshList[GEO_CAN], true);
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
 	modelStack.Translate(-3.5f, 7.0f, 0.0f);
-	RenderMesh(meshList[GEO_CAN]);
+	RenderMesh(meshList[GEO_CAN], true);
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
 	modelStack.Translate(0.0f, 14.0f, 0.0f);
-	RenderMesh(meshList[GEO_CAN]);
+	RenderMesh(meshList[GEO_CAN], true);
 	modelStack.PopMatrix();
 
 	modelStack.PopMatrix();
@@ -485,31 +541,31 @@ void carnivalroaming::Render()
 
 	modelStack.PushMatrix();
 	modelStack.Translate(-450.5f, 24.0f, 430.0f);
-	RenderMesh(meshList[GEO_CAN]);
+	RenderMesh(meshList[GEO_CAN], true);
 
 	modelStack.PushMatrix();
 	modelStack.Translate(-6.5f, .0f, 0.0f);
-	RenderMesh(meshList[GEO_CAN]);
+	RenderMesh(meshList[GEO_CAN], true);
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
 	modelStack.Translate(6.5f, .0f, 0.0f);
-	RenderMesh(meshList[GEO_CAN]);
+	RenderMesh(meshList[GEO_CAN], true);
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
 	modelStack.Translate(3.5f, 7.0f, 0.0f);
-	RenderMesh(meshList[GEO_CAN]);
+	RenderMesh(meshList[GEO_CAN], true);
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
 	modelStack.Translate(-3.5f, 7.0f, 0.0f);
-	RenderMesh(meshList[GEO_CAN]);
+	RenderMesh(meshList[GEO_CAN], true);
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
 	modelStack.Translate(0.0f, 14.0f, 0.0f);
-	RenderMesh(meshList[GEO_CAN]);
+	RenderMesh(meshList[GEO_CAN], true);
 	modelStack.PopMatrix();
 
 	modelStack.PopMatrix();
@@ -517,55 +573,287 @@ void carnivalroaming::Render()
 
 	modelStack.PushMatrix();
 	modelStack.Translate(-570.5f, 24.0f, 430.0f);
-	RenderMesh(meshList[GEO_CAN]);
+	RenderMesh(meshList[GEO_CAN], true);
 
 	modelStack.PushMatrix();
 	modelStack.Translate(-6.5f, .0f, 0.0f);
-	RenderMesh(meshList[GEO_CAN]);
+	RenderMesh(meshList[GEO_CAN], true);
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
 	modelStack.Translate(6.5f, .0f, 0.0f);
-	RenderMesh(meshList[GEO_CAN]);
+	RenderMesh(meshList[GEO_CAN], true);
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
 	modelStack.Translate(3.5f, 7.0f, 0.0f);
-	RenderMesh(meshList[GEO_CAN]);
+	RenderMesh(meshList[GEO_CAN], true);
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
 	modelStack.Translate(-3.5f, 7.0f, 0.0f);
-	RenderMesh(meshList[GEO_CAN]);
+	RenderMesh(meshList[GEO_CAN], true);
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
 	modelStack.Translate(0.0f, 14.0f, 0.0f);
-	RenderMesh(meshList[GEO_CAN]);
+	RenderMesh(meshList[GEO_CAN], true);
 	modelStack.PopMatrix();
 
+	modelStack.PopMatrix();
+
+
+	//duck shooting
+	modelStack.PushMatrix();
+	modelStack.Translate(0.0f, 0.5f, 400.0f);
+	//modelStack.Rotate(180.0f, 0.0f, 1.0f, 0.0f);
+	modelStack.Scale(20, 7, 6);
+	RenderMesh(meshList[GEO_CANTENT], true);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(-142.f, 5.5f, 405.0f);
+	modelStack.Rotate(90.0f, 0.0f, 0.0f, 1.0f);
+	modelStack.Scale(20, 7, 6);
+	RenderMesh(meshList[GEO_STRIPEWALL], true);
+	modelStack.PopMatrix();
+	
+	modelStack.PushMatrix();
+	modelStack.Translate(-142.f, 15.5f, 405.0f);
+	modelStack.Rotate(90.0f, 0.0f, 0.0f, 1.0f);
+	modelStack.Scale(20, 7, 6);
+	RenderMesh(meshList[GEO_STRIPEWALL], true);
+	modelStack.PopMatrix();
+	
+	modelStack.PushMatrix();
+	modelStack.Translate(142.f, 11.5f, 405.0f);
+	modelStack.Rotate(-90.0f, 0.0f, 0.0f, 1.0f);
+	modelStack.Scale(20, 7, 6);
+	RenderMesh(meshList[GEO_STRIPEWALL], true);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(142.f, 11.5f, 405.0f);
+	modelStack.Rotate(-90.0f, 0.0f, 0.0f, 1.0f);
+	modelStack.Scale(20, 7, 6);
+	RenderMesh(meshList[GEO_STRIPEWALL], true);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(0.0f, 11.5f, 370.0f);
+	modelStack.Rotate(-90.0f, 0.0f, 0.0f, 1.0f);
+	modelStack.Rotate(-90.0f, 1.0f, 0.0f, 0.0f);
+	modelStack.Scale(20, 7, 6);
+	RenderMesh(meshList[GEO_STRIPEWALL], true);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(-42.f, 11.5f, 370.0f);
+	modelStack.Rotate(-90.0f, 0.0f, 0.0f, 1.0f);
+	modelStack.Rotate(-90.0f, 1.0f, 0.0f, 0.0f);
+	modelStack.Scale(20, 7, 6);
+	RenderMesh(meshList[GEO_STRIPEWALL], true);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(-92.f, 11.5f, 370.0f);
+	modelStack.Rotate(-90.0f, 0.0f, 0.0f, 1.0f);
+	modelStack.Rotate(-90.0f, 1.0f, 0.0f, 0.0f);
+	modelStack.Scale(20, 7, 6);
+	RenderMesh(meshList[GEO_STRIPEWALL], true);
 	modelStack.PopMatrix();
 
 
 	modelStack.PushMatrix();
-	modelStack.Translate(-660.5f, 10.f, -300.0f);
-	modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
-	modelStack.Scale(12, 9, 9);
-	RenderMesh(meshList[GEO_COTTONCANDY]);
+	modelStack.Translate(58.f, 11.5f, 370.0f);
+	modelStack.Rotate(-90.0f, 0.0f, 0.0f, 1.0f);
+	modelStack.Rotate(-90.0f, 1.0f, 0.0f, 0.0f);
+	modelStack.Scale(20, 7, 6);
+	RenderMesh(meshList[GEO_STRIPEWALL], true);
 	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(98.f, 5.5f, 370.0f);
+	modelStack.Rotate(-90.0f, 0.0f, 0.0f, 1.0f);
+	modelStack.Rotate(-90.0f, 1.0f, 0.0f, 0.0f);
+	modelStack.Scale(20, 7, 6);
+	RenderMesh(meshList[GEO_STRIPEWALL], true);
+	modelStack.PopMatrix();
+
+
+	modelStack.PushMatrix();
+	modelStack.Translate(0.f, 5.5f, 370.0f);
+	modelStack.Rotate(-90.0f, 0.0f, 0.0f, 1.0f);
+	modelStack.Rotate(-90.0f, 1.0f, 0.0f, 0.0f);
+	modelStack.Scale(20, 7, 6);
+	RenderMesh(meshList[GEO_STRIPEWALL], true);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(-42.f, 5.5f, 370.0f);
+	modelStack.Rotate(-90.0f, 0.0f, 0.0f, 1.0f);
+	modelStack.Rotate(-90.0f, 1.0f, 0.0f, 0.0f);
+	modelStack.Scale(20, 7, 6);
+	RenderMesh(meshList[GEO_STRIPEWALL], true);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(-92.f, 5.5f, 370.0f);
+	modelStack.Rotate(-90.0f, 0.0f, 0.0f, 1.0f);
+	modelStack.Rotate(-90.0f, 1.0f, 0.0f, 0.0f);
+	modelStack.Scale(20, 7, 6);
+	RenderMesh(meshList[GEO_STRIPEWALL], true);
+	modelStack.PopMatrix();
+
+
+	modelStack.PushMatrix();
+	modelStack.Translate(58.f, 5.5f, 370.0f);
+	modelStack.Rotate(-90.0f, 0.0f, 0.0f, 1.0f);
+	modelStack.Rotate(-90.0f, 1.0f, 0.0f, 0.0f);
+	modelStack.Scale(20, 7, 6);
+	RenderMesh(meshList[GEO_STRIPEWALL], true);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(98.f, 5.5f, 370.0f);
+	modelStack.Rotate(-90.0f, 0.0f, 0.0f, 1.0f);
+	modelStack.Rotate(-90.0f, 1.0f, 0.0f, 0.0f);
+	modelStack.Scale(20, 7, 6);
+	RenderMesh(meshList[GEO_STRIPEWALL], true);
+	modelStack.PopMatrix();
+
+
+
+
+	//food1
+	modelStack.PushMatrix();
+	modelStack.Translate(-660.5f, 30.f, -300.0f);
+	modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+	modelStack.Scale(6, 5, 5);
+	RenderMesh(meshList[GEO_TOPCOTTONCANDY], true);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(-660.5f, 30.f, -300.0f);
+	modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+	modelStack.Scale(6, 5, 5);
+	RenderMesh(meshList[GEO_MIDDLECOTTONCANDY], true);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(-660.5f, 30.f, -300.0f);
+	modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+	modelStack.Scale(6, 5, 5);
+	RenderMesh(meshList[GEO_INNERMIDDLECOTTONCANDY], true);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(-660.5f, 30.f, -300.0f);
+	modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+	modelStack.Scale(6, 5, 5);
+	RenderMesh(meshList[GEO_COTTONCANDYS], true);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(-660.5f, 30.f, -300.0f);
+	modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+	modelStack.Scale(6, 5, 5);
+	RenderMesh(meshList[GEO_COTTONCANDYMACHINE], true);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(-660.5f, 30.f, -300.0f);
+	modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+	modelStack.Scale(6, 5, 5);
+	RenderMesh(meshList[GEO_CARAMELAPPLE], true);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(-660.5f, 30.f, -300.0f);
+	modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+	modelStack.Scale(6, 5, 5);
+	RenderMesh(meshList[GEO_CARAMELAPPLESTAND],true);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(-660.5f, 30.f, -300.0f);
+	modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+	modelStack.Scale(6, 5, 5);
+	RenderMesh(meshList[GEO_BOTTOMCOTTONCANDY], true);
+	modelStack.PopMatrix();
+
+	//food2
+	modelStack.PushMatrix();
+	modelStack.Translate(660.5f, 30.f, -300.0f);
+	modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+	modelStack.Scale(6, 5, 5);
+	RenderMesh(meshList[GEO_TOPCOTTONCANDY], true);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(660.5f, 30.f, -300.0f);
+	modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+	modelStack.Scale(6, 5, 5);
+	RenderMesh(meshList[GEO_MIDDLECOTTONCANDY], true);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(660.5f, 30.f, -300.0f);
+	modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+	modelStack.Scale(6, 5, 5);
+	RenderMesh(meshList[GEO_INNERMIDDLECOTTONCANDY], true);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(660.5f, 30.f, -300.0f);
+	modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+	modelStack.Scale(6, 5, 5);
+	RenderMesh(meshList[GEO_COTTONCANDYS], true);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(660.5f, 30.f, -300.0f);
+	modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+	modelStack.Scale(6, 5, 5);
+	RenderMesh(meshList[GEO_COTTONCANDYMACHINE], true);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(660.5f, 30.f, -300.0f);
+	modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+	modelStack.Scale(6, 5, 5);
+	RenderMesh(meshList[GEO_CARAMELAPPLE], true);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(660.5f, 30.f, -300.0f);
+	modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+	modelStack.Scale(6, 5, 5);
+	RenderMesh(meshList[GEO_CARAMELAPPLESTAND], true);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(660.5f, 30.f, -300.0f);
+	modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+	modelStack.Scale(6, 5, 5);
+	RenderMesh(meshList[GEO_BOTTOMCOTTONCANDY], true);
+	modelStack.PopMatrix();
+
+
+
 
 	//plinko
 	modelStack.PushMatrix();
 	modelStack.Translate(-650.5f, 0.5f, 250.0f);
 	modelStack.Scale(10, 10, 10);
-	RenderMesh(meshList[GEO_PLINKO]);
+	RenderMesh(meshList[GEO_PLINKO], true);
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
 	modelStack.Translate(-650.5f, 0.5f, 250.0f);
 	modelStack.Rotate(-90.0f, 0.0f, 1.0f, 0.0f);
 	modelStack.Scale(7, 7, 3);
-	RenderMesh(meshList[GEO_CANTENT]);
+	RenderMesh(meshList[GEO_CANTENT], true);
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
@@ -573,7 +861,7 @@ void carnivalroaming::Render()
 	modelStack.Rotate(-90.0f, 0.0f, 0.0f, 1.0f);
 	modelStack.Rotate(-90.0f, 1.0f, 0.0f, 0.0f);
 	modelStack.Scale(5, 7, 3);
-	RenderMesh(meshList[GEO_STRIPEWALL],false);
+	RenderMesh(meshList[GEO_STRIPEWALL],true);
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
@@ -581,7 +869,32 @@ void carnivalroaming::Render()
 	modelStack.Rotate(-90.0f, 0.0f, 0.0f, 1.0f);
 	modelStack.Rotate(-90.0f, 1.0f, 0.0f, 0.0f);
 	modelStack.Scale(5, 7, 3);
-	RenderMesh(meshList[GEO_STRIPEWALL], false);
+	RenderMesh(meshList[GEO_STRIPEWALL], true);
+	modelStack.PopMatrix();
+
+	//duckfishing
+
+	modelStack.PushMatrix();
+	modelStack.Translate(-650.5f, 0.5f, 0.0f);
+	modelStack.Rotate(-90.0f, 0.0f, 1.0f, 0.0f);
+	modelStack.Scale(20, 7, 7);
+	RenderMesh(meshList[GEO_CANTENT], true);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(-650.5f, 3.5f, 140.0f);
+	modelStack.Rotate(-90.0f, 0.0f, 0.0f, 1.0f);
+	modelStack.Rotate(-90.0f, 1.0f, 0.0f, 0.0f);
+	modelStack.Scale(7, 7, 7);
+	RenderMesh(meshList[GEO_STRIPEWALL], true);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(-650.5f, 3.5f,-140.0f);
+	modelStack.Rotate(-90.0f, 0.0f, 0.0f, 1.0f);
+	modelStack.Rotate(-90.0f, 1.0f, 0.0f, 0.0f);
+	modelStack.Scale(7, 7, 7);
+	RenderMesh(meshList[GEO_STRIPEWALL], true);
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
@@ -589,17 +902,68 @@ void carnivalroaming::Render()
 	//modelStack.Rotate(-90.0f, 0.0f, 0.0f, 1.0f);
 	//modelStack.Rotate(-90.0f, 1.0f, 0.0f, 0.0f);
 	modelStack.Scale(2, 2, 5);
-	RenderMesh(meshList[GEO_POOL], false);
+	RenderMesh(meshList[GEO_POOL], true);
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
 	modelStack.Translate(-650.5f, 10.5f, 0.0f);
 	modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
 	modelStack.Scale(40, 90, 40);
-	RenderMesh(meshList[GEO_POOLWATER]);
+	RenderMesh(meshList[GEO_POOLWATER], true);
 	modelStack.PopMatrix();
 
+	for (int i = 0; i < 10; i++)
+	{
+		modelStack.PushMatrix();
+		modelStack.Translate(-650.5f + ducksX[i], 13.5f, -45.0f + ducksY[i]);
+		//modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
+		modelStack.Scale(2, 2, 2);
+		RenderMesh(meshList[GEO_DUCKY], true);
+		modelStack.PopMatrix();
+	}
+	
+	for (int i = 0; i < 10; i++)
+	{
+		modelStack.PushMatrix();
+		modelStack.Translate(-650.5f + ducksX[i], 13.5f, 45.0f + ducksY[i]);
+		modelStack.Rotate(60.0f, 0.0f, 1.0f, 0.0f);
+		modelStack.Scale(2, 2, 2);
+		RenderMesh(meshList[GEO_DUCKY], true);
+		modelStack.PopMatrix();
+	}
+	
+	for (int i = 0; i < 10; i++)
+	{
+		modelStack.PushMatrix();
+		modelStack.Translate(-650.5f + ducksX[i], 13.5f, 0.0f + ducksY[i]);
+		modelStack.Rotate(60.0f, 0.0f, 1.0f, 0.0f);
+		modelStack.Scale(2, 2, 2);
+		RenderMesh(meshList[GEO_DUCKY], true);
+		modelStack.PopMatrix();
+	}
 
+	//duckshooting
+
+	modelStack.PushMatrix();
+	modelStack.Translate(0.0f, 27.5f, 415.0f);
+	modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+	modelStack.Scale(0.1, 0.1, 0.1);
+	RenderMesh(meshList[GEO_SHOOTINGDUCK], true);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(0.0f, 25.5f, 414.5f);
+	modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+	modelStack.Scale(0.2, 0.2, 0.2);
+	RenderMesh(meshList[GEO_TARGET], true);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(-13.0f, 0.5f, 420.0f);
+	modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+	modelStack.Scale(25, 20, 27);
+	RenderMesh(meshList[GEO_CONVEYER], true);
+	modelStack.PopMatrix();
 
 	//shooting
 	//modelStack.PushMatrix();

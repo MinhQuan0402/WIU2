@@ -35,13 +35,27 @@ public:
 
 		GEO_TABLECAN,
 		GEO_CAN, 
-		GEO_SHOOTINGGAME,
-		GEO_COTTONCANDY,
+
+
+		GEO_TOPCOTTONCANDY,
+		GEO_MIDDLECOTTONCANDY,
+		GEO_INNERMIDDLECOTTONCANDY,
+		GEO_COTTONCANDYS,
+		GEO_COTTONCANDYMACHINE,
+		GEO_CARAMELAPPLE,
+		GEO_CARAMELAPPLESTAND,
+		GEO_BOTTOMCOTTONCANDY,
 
 		GEO_PLINKO,
 
 		GEO_POOL,
 		GEO_POOLWATER, 
+		GEO_DUCKY,
+
+		GEO_SHOOTINGDUCK,
+		GEO_TARGET,
+		GEO_CONVEYER,
+
 
 		NUM_GEOMETRY
 	};
@@ -51,6 +65,7 @@ public:
 
 	virtual void Init();
 	virtual void Update();
+	virtual void LateUpdate();
 	virtual void Render();
 	virtual void Exit();
 
@@ -58,6 +73,9 @@ private:
 	void RenderSkybox(void);
 	int numLight;
 	Transform player;
+
+	float ducksX[10];
+	float ducksY[10];
 
 	enum OBJSCENE
 	{
@@ -73,7 +91,6 @@ private:
 
 
 		NUM_OBJ
-
 	};
 
 	GameObject* objInscene[NUM_OBJ];
