@@ -33,6 +33,7 @@ public:
 		GEO_CANTENTROOF, 
 		GEO_STRIPEWALL,
 
+		GEO_GRASS,
 
 		GEO_TABLECAN,
 		GEO_CAN, 
@@ -56,6 +57,17 @@ public:
 		GEO_SHOOTINGDUCK,
 		GEO_TARGET,
 		GEO_CONVEYER,
+		GEO_GUN,
+
+		GEO_BOARD, 
+		GEO_BALLOON,
+
+		GEO_BOTTLES,
+		GEO_RACK,
+		GEO_COUNTER,
+		GEO_RING,
+
+
 
 
 		NUM_GEOMETRY
@@ -78,6 +90,7 @@ private:
 	float ducksX[10];
 	float ducksY[10];
 
+
 	enum OBJSCENE
 	{
 		CIRCLE,
@@ -96,7 +109,7 @@ private:
 
 	GameObject* objInscene[NUM_OBJ];
 
-	glm::vec3 devVec = glm::vec3{ 253.615, 38.3301, -7.17231 };
+	glm::vec3 devVec = glm::vec3{ 0, 4000, 0 };
 };
 
 #endif
