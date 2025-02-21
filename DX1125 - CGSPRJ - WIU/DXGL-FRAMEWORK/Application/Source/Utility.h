@@ -9,4 +9,6 @@ Transform ConvertMatrix2Transform(float mat[16]);
 
 glm::mat4 addMatrix(glm::mat4 a, glm::mat4 b);
 
+btQuaternion SetRotation(const glm::vec3& rotation);
+btQuaternion SetRotation(const float& x, const float& y, const float& z);
 btVector3 QuaternionToEuler(btQuaternion quat);

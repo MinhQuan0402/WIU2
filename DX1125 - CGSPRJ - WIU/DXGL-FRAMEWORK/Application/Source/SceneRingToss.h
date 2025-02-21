@@ -21,6 +21,9 @@ public:
 		GEO_LEFT,
 		GEO_TEXT,
 		GEO_BOARD,
+		GEO_BOTTLE,
+		GEO_RING, 
+		GEO_TIE,
 		GEO_PLANE,
 		NUM_GEOMETRY
 	};
@@ -42,6 +45,7 @@ private:
 	{
 		GROUND,
 		BOARD,
+		RING,
 		NUMOBJ
 	};
 

@@ -7,15 +7,7 @@ glm::mat4 GetTransformMatrix(btRigidBody* body)
     t = body->getWorldTransform();
     float tempMat[16];
     t.getOpenGLMatrix(tempMat);
-    unsigned index = 0;
-    for (unsigned i = 0; i < 4; ++i)
-    {
-        for (unsigned j = 0; j < 4; ++j)
-        {
-            mat[i][j] = tempMat[index++];
-        }
-    }
-    return mat;
+    return GetTransformMatrix(tempMat);
 }
 
 glm::mat4 GetTransformMatrix(float tempMat[16])
@@ -55,6 +47,24 @@ glm::mat4 addMatrix(glm::mat4 a, glm::mat4 b)
         }
     }
     return newMatrix;
+}
+
+btQuaternion SetRotation(const glm::vec3& rotation)
+{
+    btQuaternion rotationX = btQuaternion(btVector3(1, 0, 0), glm::radians(rotation.x));
+    btQuaternion rotationY = btQuaternion(btVector3(0, 1, 0), glm::radians(rotation.y));
+    btQuaternion rotationZ = btQuaternion(btVector3(0, 0, 1), glm::radians(rotation.z));
+    btQuaternion finalRotation = rotationX * rotationY * rotationZ;
+    return finalRotation;
+}
+
+btQuaternion SetRotation(const float& x, const float& y, const float& z)
+{
+    btQuaternion rotationX = btQuaternion(btVector3(1, 0, 0), glm::radians(x));
+    btQuaternion rotationY = btQuaternion(btVector3(0, 1, 0), glm::radians(y));
+    btQuaternion rotationZ = btQuaternion(btVector3(0, 0, 1), glm::radians(z));
+    btQuaternion finalRotation = rotationX * rotationY * rotationZ;
+    return finalRotation;
 }
 
 btVector3 QuaternionToEuler(btQuaternion quat) {

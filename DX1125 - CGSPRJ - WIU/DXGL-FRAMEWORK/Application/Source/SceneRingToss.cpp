@@ -90,10 +90,15 @@ void SceneRingToss::Init()
 	meshList[GEO_TEXT] = MeshBuilder::GenerateText("text", 16, 16);
 	meshList[GEO_TEXT]->textureID = LoadTGA("Images//calibri.tga");
 	meshList[GEO_PLANE] = MeshBuilder::GenerateQuad("Quad", RED, 1000.0f);
-	meshList[GEO_BOARD] = MeshBuilder::GenerateOBJ("board", "ring_toss_rack.obj");
-	meshList[GEO_BOARD]->textureID = LoadPNG("wood.png");
+	meshList[GEO_BOARD] = MeshBuilder::GenerateOBJ("board", "Models//ring_toss_rack.obj");
+	meshList[GEO_BOARD]->textureID = LoadPNG("Images//wood.png");
+	meshList[GEO_BOTTLE] = MeshBuilder::GenerateOBJ("Bottle", "Models//ring_toss_bottle.obj");
+	meshList[GEO_RING] = MeshBuilder::GenerateOBJ("Ring", "Models//ring_toss_rope.obj");
+	meshList[GEO_RING]->textureID = LoadPNG("Images//rope.png");
+	meshList[GEO_TIE] = MeshBuilder::GenerateOBJ("Tie", "Models//ring_toss_tie.obj");
+	meshList[GEO_TIE]->textureID = LoadPNG("Images//tie.png");
 
-	mainCamera.Init(glm::vec3(8, 6, 6), glm::vec3(0, 6, 0), VECTOR3_UP);
+	mainCamera.Init(glm::vec3(0, 6, 10), glm::vec3(0, 6, 0), VECTOR3_UP);
 	
 	glUniform1i(m_parameters[U_NUMLIGHTS], 2);
 
@@ -135,7 +140,8 @@ void SceneRingToss::Init()
 	mat.m_friction = 0.5f;
 
 	objInScene[BOARD] = new TossBoard();
-
+	objInScene[RING] = new Ring(RED);
+	objInScene[RING]->m_transform.Translate(0.0f, 5.0f);
 	GameObjectManager::IniAll();
 }
 
@@ -248,39 +254,12 @@ void SceneRingToss::Render()
 			btCompoundShape* compoundShape = static_cast<btCompoundShape*>(shape);
 			for (unsigned i = 0; i < compoundShape->getNumChildShapes(); ++i)
 			{
-				modelStack.PushMatrix();
 				btCollisionShape* childShape = compoundShape->getChildShape(i);
 				btTransform childTransform = compoundShape->getChildTransform(i);
 				float mat[16];
 				childTransform.getOpenGLMatrix(mat);
 
-				if (childShape->getShapeType() == SPHERE_SHAPE_PROXYTYPE)
-				{
-					SphereCollider* sphereCollider = static_cast<SphereCollider*>(childShape);
-					float size = sphereCollider->GetRadius();
-					modelStack.MultMatrix(GetTransformMatrix(mat));
-					modelStack.Scale(size, size, size);
-					RenderMesh(hitboxMeshList[HITBOX_SPHERE]);
-				}
-				else if (childShape->getShapeType() == BOX_SHAPE_PROXYTYPE)
-				{
-					BoxCollider* boxCollider = static_cast<BoxCollider*>(childShape);
-					float width, height, depth;
-					boxCollider->GetDimension(width, height, depth);
-					modelStack.MultMatrix(GetTransformMatrix(mat));
-					modelStack.Scale(width, height, depth);
-					RenderMesh(hitboxMeshList[HITBOX_BOX]);
-				}
-				else if (childShape->getShapeType() == CYLINDER_SHAPE_PROXYTYPE)
-				{
-					CylinderCollider* cylinderCollider = static_cast<CylinderCollider*>(childShape);
-					float rad, height;
-					cylinderCollider->GetDimension(rad, height);
-					modelStack.MultMatrix(GetTransformMatrix(mat));
-					modelStack.Scale(rad / 2.0f, height, rad / 2.0f);
-					RenderMesh(hitboxMeshList[HITBOX_CYLINDER]);
-				}
-				modelStack.PopMatrix();
+				RenderChildCollider(childShape, mat);
 			}
 		}
 		else if (shape->getShapeType() == STATIC_PLANE_PROXYTYPE)
@@ -291,8 +270,7 @@ void SceneRingToss::Render()
 		modelStack.PopMatrix();
 	}
 
-	if(isFillMode) 
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	if(isFillMode) glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 #endif
 }
 
