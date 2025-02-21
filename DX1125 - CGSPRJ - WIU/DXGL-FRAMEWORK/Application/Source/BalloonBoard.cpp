@@ -5,6 +5,18 @@
 
 BalloonBoard::BalloonBoard()
 {
+	float start = 5;
+	float dist = 1.5;
+
+	for (unsigned i = 0; i < 10; i++)
+	{
+		Balloon* balloon = new Balloon();
+		balloon->m_transform.Translate(-5.2, 3, start);
+		balloons.push_back(balloon);
+
+		start -= dist;
+	}
+
 	GameObjectManager::GetInstance()->addItem(this);
 }
 
