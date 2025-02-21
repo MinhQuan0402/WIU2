@@ -1,5 +1,5 @@
 #define _USE_MATH_DEFINES
-#include "SceneDuckShooting.h"
+#include "SceneCanKnockdown.h"
 #include "GL\glew.h"
 
 #include "shader.hpp"
@@ -12,32 +12,34 @@
 #include <glm/gtc/matrix_inverse.hpp>
 #include "LoadTGA.h"
 #include <GLFW/glfw3.h>
+#include "Time.h"
 #include "LoadPNG.h"
 #include <btBulletDynamicsCommon.h>
 #include "ColliderManager.h"
 #include <MyMath.h>
 #include "Utility.h"
 
-#include "DS_Floor.h"
-#include "DS_BoothWall.h"
-#include "DS_BoothRoof.h"
-#include "DS_Conveyor.h"
-#include "DS_Pillar.h"
-#include "DS_Duck.h"
-#include "DS_Bullet.h"
+#include "CK_Ball.h"
+#include "CK_Can.h"
+#include "CK_Table.h"
+#include "CK_Counter.h"
+#include "CK_Counter2.h"
+#include "CK_Floor.h"
+#include "CK_BoothWall.h"
+#include "CK_BoothRoof.h"
 #include "SceneManager.h"
 
-SceneDuckShooting::SceneDuckShooting() : numLight{ 2 }
+SceneCanKnockdown::SceneCanKnockdown() : numLight{ 2 }
 {
 	meshList.resize(NUM_GEOMETRY);
 	lights.resize(numLight);
 }
 
-SceneDuckShooting::~SceneDuckShooting()
+SceneCanKnockdown::~SceneCanKnockdown()
 {
 }
 
-void SceneDuckShooting::Init()
+void SceneCanKnockdown::Init()
 {
 	Scene::Init();
 
@@ -62,49 +64,47 @@ void SceneDuckShooting::Init()
 		"Shader//MainShader.fragmentshader");
 	glUseProgram(m_programID);
 
-	// Parameters:
-	{
-		// Get a handle for our "MVP" uniform
-		m_parameters[U_MVP] = glGetUniformLocation(m_programID, "MVP");
-		m_parameters[U_MODELVIEW] = glGetUniformLocation(m_programID, "MV");
-		m_parameters[U_MODELVIEW_INVERSE_TRANSPOSE] = glGetUniformLocation(m_programID, "MV_inverse_transpose");
-		m_parameters[U_MATERIAL_AMBIENT] = glGetUniformLocation(m_programID, "material.kAmbient");
-		m_parameters[U_MATERIAL_DIFFUSE] = glGetUniformLocation(m_programID, "material.kDiffuse");
-		m_parameters[U_MATERIAL_SPECULAR] = glGetUniformLocation(m_programID, "material.kSpecular");
-		m_parameters[U_MATERIAL_SHININESS] = glGetUniformLocation(m_programID, "material.kShininess");
+	
+	// Get a handle for our "MVP" uniform
+	m_parameters[U_MVP] = glGetUniformLocation(m_programID, "MVP");
+	m_parameters[U_MODELVIEW] = glGetUniformLocation(m_programID, "MV");
+	m_parameters[U_MODELVIEW_INVERSE_TRANSPOSE] = glGetUniformLocation(m_programID, "MV_inverse_transpose");
+	m_parameters[U_MATERIAL_AMBIENT] = glGetUniformLocation(m_programID, "material.kAmbient");
+	m_parameters[U_MATERIAL_DIFFUSE] = glGetUniformLocation(m_programID, "material.kDiffuse");
+	m_parameters[U_MATERIAL_SPECULAR] = glGetUniformLocation(m_programID, "material.kSpecular");
+	m_parameters[U_MATERIAL_SHININESS] = glGetUniformLocation(m_programID, "material.kShininess");
 
-		m_parameters[U_LIGHT0_TYPE] = glGetUniformLocation(m_programID, "lights[0].type");
-		m_parameters[U_LIGHT0_POSITION] = glGetUniformLocation(m_programID, "lights[0].position_cameraspace");
-		m_parameters[U_LIGHT0_COLOR] = glGetUniformLocation(m_programID, "lights[0].color");
-		m_parameters[U_LIGHT0_POWER] = glGetUniformLocation(m_programID, "lights[0].power");
-		m_parameters[U_LIGHT0_KC] = glGetUniformLocation(m_programID, "lights[0].kC");
-		m_parameters[U_LIGHT0_KL] = glGetUniformLocation(m_programID, "lights[0].kL");
-		m_parameters[U_LIGHT0_KQ] = glGetUniformLocation(m_programID, "lights[0].kQ");
-		m_parameters[U_LIGHT0_SPOTDIRECTION] = glGetUniformLocation(m_programID, "lights[0].spotDirection");
-		m_parameters[U_LIGHT0_COSCUTOFF] = glGetUniformLocation(m_programID, "lights[0].cosCutoff");
-		m_parameters[U_LIGHT0_COSINNER] = glGetUniformLocation(m_programID, "lights[0].cosInner");
-		m_parameters[U_LIGHT0_EXPONENT] = glGetUniformLocation(m_programID, "lights[0].exponent");
+	m_parameters[U_LIGHT0_TYPE] = glGetUniformLocation(m_programID, "lights[0].type");
+	m_parameters[U_LIGHT0_POSITION] = glGetUniformLocation(m_programID, "lights[0].position_cameraspace");
+	m_parameters[U_LIGHT0_COLOR] = glGetUniformLocation(m_programID, "lights[0].color");
+	m_parameters[U_LIGHT0_POWER] = glGetUniformLocation(m_programID, "lights[0].power");
+	m_parameters[U_LIGHT0_KC] = glGetUniformLocation(m_programID, "lights[0].kC");
+	m_parameters[U_LIGHT0_KL] = glGetUniformLocation(m_programID, "lights[0].kL");
+	m_parameters[U_LIGHT0_KQ] = glGetUniformLocation(m_programID, "lights[0].kQ");
+	m_parameters[U_LIGHT0_SPOTDIRECTION] = glGetUniformLocation(m_programID, "lights[0].spotDirection");
+	m_parameters[U_LIGHT0_COSCUTOFF] = glGetUniformLocation(m_programID, "lights[0].cosCutoff");
+	m_parameters[U_LIGHT0_COSINNER] = glGetUniformLocation(m_programID, "lights[0].cosInner");
+	m_parameters[U_LIGHT0_EXPONENT] = glGetUniformLocation(m_programID, "lights[0].exponent");
 
 
-		m_parameters[U_LIGHT1_TYPE] = glGetUniformLocation(m_programID, "lights[1].type");
-		m_parameters[U_LIGHT1_POSITION] = glGetUniformLocation(m_programID, "lights[1].position_cameraspace");
-		m_parameters[U_LIGHT1_COLOR] = glGetUniformLocation(m_programID, "lights[1].color");
-		m_parameters[U_LIGHT1_POWER] = glGetUniformLocation(m_programID, "lights[1].power");
-		m_parameters[U_LIGHT1_KC] = glGetUniformLocation(m_programID, "lights[1].kC");
-		m_parameters[U_LIGHT1_KL] = glGetUniformLocation(m_programID, "lights[1].kL");
-		m_parameters[U_LIGHT1_KQ] = glGetUniformLocation(m_programID, "lights[1].kQ");
-		m_parameters[U_LIGHT1_SPOTDIRECTION] = glGetUniformLocation(m_programID, "lights[1].spotDirection");
-		m_parameters[U_LIGHT1_COSCUTOFF] = glGetUniformLocation(m_programID, "lights[1].cosCutoff");
-		m_parameters[U_LIGHT1_COSINNER] = glGetUniformLocation(m_programID, "lights[1].cosInner");
-		m_parameters[U_LIGHT1_EXPONENT] = glGetUniformLocation(m_programID, "lights[1].exponent");
+	m_parameters[U_LIGHT1_TYPE] = glGetUniformLocation(m_programID, "lights[1].type");
+	m_parameters[U_LIGHT1_POSITION] = glGetUniformLocation(m_programID, "lights[1].position_cameraspace");
+	m_parameters[U_LIGHT1_COLOR] = glGetUniformLocation(m_programID, "lights[1].color");
+	m_parameters[U_LIGHT1_POWER] = glGetUniformLocation(m_programID, "lights[1].power");
+	m_parameters[U_LIGHT1_KC] = glGetUniformLocation(m_programID, "lights[1].kC");
+	m_parameters[U_LIGHT1_KL] = glGetUniformLocation(m_programID, "lights[1].kL");
+	m_parameters[U_LIGHT1_KQ] = glGetUniformLocation(m_programID, "lights[1].kQ");
+	m_parameters[U_LIGHT1_SPOTDIRECTION] = glGetUniformLocation(m_programID, "lights[1].spotDirection");
+	m_parameters[U_LIGHT1_COSCUTOFF] = glGetUniformLocation(m_programID, "lights[1].cosCutoff");
+	m_parameters[U_LIGHT1_COSINNER] = glGetUniformLocation(m_programID, "lights[1].cosInner");
+	m_parameters[U_LIGHT1_EXPONENT] = glGetUniformLocation(m_programID, "lights[1].exponent");
 
-		m_parameters[U_LIGHTENABLED] = glGetUniformLocation(m_programID, "lightEnabled");
-		m_parameters[U_NUMLIGHTS] = glGetUniformLocation(m_programID, "numLights");
-		m_parameters[U_COLOR_TEXTURE_ENABLED] = glGetUniformLocation(m_programID, "colorTextureEnabled");
-		m_parameters[U_COLOR_TEXTURE] = glGetUniformLocation(m_programID, "colorTexture");
-		m_parameters[U_TEXT_ENABLED] = glGetUniformLocation(m_programID, "textEnabled");
-		m_parameters[U_TEXT_COLOR] = glGetUniformLocation(m_programID, "textColor");
-	}
+	m_parameters[U_LIGHTENABLED] = glGetUniformLocation(m_programID, "lightEnabled");
+	m_parameters[U_NUMLIGHTS] = glGetUniformLocation(m_programID, "numLights");
+	m_parameters[U_COLOR_TEXTURE_ENABLED] = glGetUniformLocation(m_programID, "colorTextureEnabled");
+	m_parameters[U_COLOR_TEXTURE] = glGetUniformLocation(m_programID, "colorTexture");
+	m_parameters[U_TEXT_ENABLED] = glGetUniformLocation(m_programID, "textEnabled");
+	m_parameters[U_TEXT_COLOR] = glGetUniformLocation(m_programID, "textColor");
 
 	Mesh::SetMaterialLoc(m_parameters[U_MATERIAL_AMBIENT], m_parameters[U_MATERIAL_DIFFUSE], m_parameters[U_MATERIAL_SPECULAR], m_parameters[U_MATERIAL_SHININESS]);
 
@@ -124,32 +124,37 @@ void SceneDuckShooting::Init()
 	meshList[GEO_PLANE] = MeshBuilder::GenerateQuad("Quad", glm::vec3(0.1, 0.1, 0.1), 1000.0f);
 	meshList[GEO_PLANE]->material = Material::Concrete(GREY);
 
-	meshList[GEO_BOOTHROOF] = MeshBuilder::GenerateOBJMTL("BoothRoof", "Models//DS_BoothRoof.obj", "Models//DS_BoothRoof.mtl");
-	meshList[GEO_BOOTHROOF]->textureID = LoadPNG("Images//DS_BoothRoof.png");
+
+	meshList[GEO_POWERUI_FRAME] = MeshBuilder::GenerateQuad("PowerUi_Frame", glm::vec3(1, 1, 1), 1);
+	meshList[GEO_POWERUI_FRAME]->textureID = LoadPNG("Images//CK_PowerUi_Frame.png");
+	meshList[GEO_POWERUI_BAR] = MeshBuilder::GenerateQuad("PowerUi_Bar", glm::vec3(1, 1, 0), 1);
+
+	meshList[GEO_BALL] = MeshBuilder::GenerateSphere("Ball", WHITE, 1.0f, 100, 100);
+	meshList[GEO_BALL]->material = Material::Plastic(BLUE);
+
+	meshList[GEO_TABLE] = MeshBuilder::GenerateOBJMTL("Table", "Models//CK_Table.obj", "Models//CK_Table.mtl");
+	meshList[GEO_TABLE]->textureID = LoadPNG("Images//CK_Table.png");
+	meshList[GEO_TABLE]->material = Material::Wood(WHITE);
+
+	meshList[GEO_CAN] = MeshBuilder::GenerateOBJMTL("Can", "Models//CK_Can.obj", "Models//CK_Can.mtl");
+	meshList[GEO_CAN]->textureID = LoadPNG("Images//CK_Can.png");
+	meshList[GEO_CAN]->material = Material::Wood(WHITE);
+
+	meshList[GEO_BOOTHROOF] = MeshBuilder::GenerateOBJMTL("BoothRoof", "Models//CK_BoothRoof.obj", "Models//CK_BoothRoof.mtl");
+	meshList[GEO_BOOTHROOF]->textureID = LoadPNG("Images//CK_BoothRoof.png");
 	meshList[GEO_BOOTHROOF]->material = Material::Wood(WHITE);
 
-	meshList[GEO_BOOTHGUARDS] = MeshBuilder::GenerateOBJMTL("BoothGuards", "Models//DS_BoothGuards.obj", "Models//DS_BoothGuards.mtl");
+	meshList[GEO_BOOTHGUARDS] = MeshBuilder::GenerateOBJMTL("BoothGuards", "Models//CK_BoothGuards.obj", "Models//CK_BoothGuards.mtl");
 	meshList[GEO_BOOTHGUARDS]->material = Material::Metal(GREY);
 
 	meshList[GEO_COUNTER] = MeshBuilder::GenerateCube("Counter", glm::vec3(0.459, 0.302, 0), 1);
-	meshList[GEO_COUNTER]->textureID = LoadPNG("Images//DS_Wood.png");
+	meshList[GEO_COUNTER]->textureID = LoadPNG("Images//CK_Wood.png");
 	meshList[GEO_COUNTER]->material = Material::Wood(glm::vec3(0.459, 0.302, 0));
 
-	meshList[GEO_LIGHTBULB] = MeshBuilder::GenerateOBJMTL("Lamp", "Models//DS_LightBulb.obj", "Models//DS_LightBulb.mtl");
+	meshList[GEO_LIGHTBULB] = MeshBuilder::GenerateOBJMTL("Lamp", "Models//CK_LightBulb.obj", "Models//CK_LightBulb.mtl");
 	meshList[GEO_LIGHTBULB]->material = Material::Wood(WHITE);
 
-	meshList[GEO_DUCK] = MeshBuilder::GenerateOBJMTL("Duck", "Models//DS_Duck.obj", "Models//DS_Duck.mtl");
-	meshList[GEO_DUCK]->material = Material::Wood(YELLOW);
-
-	meshList[GEO_GUN] = MeshBuilder::GenerateOBJ("Gun", "Models//DS_Gun.obj");
-	meshList[GEO_GUN]->material = Material::Wood(WHITE);
-	meshList[GEO_GUN]->textureID = LoadPNG("Images//DS_Gun.png");
-
-	meshList[GEO_BULLET] = MeshBuilder::GenerateOBJMTL("Bullet", "Models//DS_Bullet.obj", "Models//DS_Bullet.mtl");
-	meshList[GEO_BULLET]->material = Material::Wood(YELLOW);
-
-
-	mainCamera.Init(glm::vec3(0, 3, 7.5), glm::vec3(0, 3, 0), VECTOR3_UP);
+	mainCamera.Init(glm::vec3(0, 4, 7.5), glm::vec3(0, 4, 0), VECTOR3_UP);
 	mainCamera.sensitivity = 50.0f;
 
 	glUniform1i(m_parameters[U_NUMLIGHTS], 2);
@@ -157,7 +162,7 @@ void SceneDuckShooting::Init()
 	lights[0].m_transform.m_position = glm::vec3(3, 100, 2);
 	lights[0].color = glm::vec3(1, 1, 1);
 	lights[0].type = Light::LIGHT_DIRECTIONAL;
-	lights[0].power = 0;
+	lights[0].power = 1;
 	lights[0].kC = 1.f;
 	lights[0].kL = 0.01f;
 	lights[0].kQ = 0.001f;
@@ -176,7 +181,7 @@ void SceneDuckShooting::Init()
 	glUniform1f(m_parameters[U_LIGHT0_COSINNER], cosf(glm::radians<float>(lights[0].cosInner)));
 	glUniform1f(m_parameters[U_LIGHT0_EXPONENT], lights[0].exponent);
 
-	lights[1].m_transform.m_position = glm::vec3(0.2866777, 10.987, 0.0397956);
+	lights[1].m_transform.m_position = glm::vec3(0.0866777, 10.987, 0.0397956);
 	lights[1].color = glm::vec3(1, 1, 1);
 	lights[1].type = Light::LIGHT_POINT;
 	lights[1].power = 1;
@@ -186,7 +191,7 @@ void SceneDuckShooting::Init()
 	lights[1].cosCutoff = 60.f;
 	lights[1].cosInner = 30.f;
 	lights[1].exponent = 3.f;
-	lights[1].spotDirection = glm::vec3(0.f, -1.f, 0.f);
+	lights[1].spotDirection = glm::vec3(0.f, 1.f, 0.f);
 
 	glUniform3fv(m_parameters[U_LIGHT1_COLOR], 1, &lights[1].color.r);
 	glUniform1i(m_parameters[U_LIGHT1_TYPE], lights[1].type);
@@ -213,65 +218,77 @@ void SceneDuckShooting::Init()
 
 	// Create objects in scene:
 	{
-		objInScene[FLOOR] = new DS_Floor;
-		objInScene[BOOTH_WALL] = new DS_BoothWall;
-		objInScene[BOOTH_ROOF] = new DS_BoothRoof;
-		objInScene[CONVEYOR] = new DS_Conveyor;
-		objInScene[PILLAR] = new DS_Pillar;
-		objInScene[PILLAR2] = new DS_Pillar;
-		objInScene[DUCK] = new DS_Duck;
-		objInScene[BULLET] = new DS_Bullet;
+		objInScene[BALL] = new CK_Ball;
+		objInScene[CAN] = new CK_Can;
+		objInScene[CAN2] = new CK_Can;
+		objInScene[CAN3] = new CK_Can;
+		objInScene[CAN4] = new CK_Can;
+		objInScene[CAN5] = new CK_Can;
+		objInScene[CAN6] = new CK_Can;
+		objInScene[TABLE] = new CK_Table;
+		objInScene[COUNTER] = new CK_Counter;
+		objInScene[COUNTER2] = new CK_Counter2;
+		objInScene[COUNTER3] = new CK_Counter2;
+		objInScene[FLOOR] = new CK_Floor;
+		objInScene[BOOTH_WALL] = new CK_BoothWall;
+		objInScene[BOOTH_ROOF] = new CK_BoothRoof;
 	}
 
 	// Modify objects in scene:
 	{
-		// Pillars:
-		objInScene[PILLAR]->m_transform.Translate(24.3538 * 0.5 + 2.5 * 0.5, 5, -4.78361);
-		objInScene[PILLAR2]->m_transform.Translate(-24.3538 * 0.5 - 2.5 * 0.5, 5, -4.78361);
-
+		// Ball:
+		objInScene[BALL]->m_transform.ScaleBy(0.25, 0.25, 0.25);
 		
 
-		//// Counters:
-		//{
-		//	objInScene[COUNTER]->m_transform.Translate(0, 2.65 * 0.5, 4.84);
-		//	objInScene[COUNTER]->m_transform.ScaleBy(11.4612, 2.65, 1);
+		// Counters:
+		{
+			objInScene[COUNTER]->m_transform.Translate(0, 2.65 * 0.5, 4.84);
+			objInScene[COUNTER]->m_transform.ScaleBy(11.4612, 2.65, 1);
 
-		//	objInScene[COUNTER2]->m_transform.Translate(5.25, 2.65 * 0.5, -0.4);
-		//	objInScene[COUNTER2]->m_transform.ScaleBy(1, 2.65, 11);
+			objInScene[COUNTER2]->m_transform.Translate(5.25, 2.65 * 0.5, -0.4);
+			objInScene[COUNTER2]->m_transform.ScaleBy(1, 2.65, 11);
 
-		//	objInScene[COUNTER3]->m_transform.Translate(-5.25, 2.65 * 0.5, -0.4);
-		//	objInScene[COUNTER3]->m_transform.ScaleBy(1, 2.65, 11);
-		//}
+			objInScene[COUNTER3]->m_transform.Translate(-5.25, 2.65 * 0.5, -0.4);
+			objInScene[COUNTER3]->m_transform.ScaleBy(1, 2.65, 11);
+		}
+
+		// Cans:
+		{
+			float canY = 0.67;
+			objInScene[CAN]->m_transform.Translate(-0.65, 2.84 + canY * 0.5, 0);
+			objInScene[CAN2]->m_transform.Translate(0, 2.84 + canY * 0.5, 0);
+			objInScene[CAN3]->m_transform.Translate(0.65, 2.84 + canY * 0.5, 0);
+			objInScene[CAN4]->m_transform.Translate(-0.65 * 0.5, 2.84 + canY * 1.5, 0);
+			objInScene[CAN5]->m_transform.Translate(0.65 * 0.5, 2.84 + canY * 1.5, 0);
+			objInScene[CAN6]->m_transform.Translate(0, 2.84 + canY * 2.5, 0);
+		}
+
+		// Table:
+		objInScene[TABLE]->m_transform.Translate(0, 2.84 * 0.5, 0);
 	}
 
 	GameObjectManager::GetInstance()->IniAll();
 
-	// Ducks Collision Ignore:
-	{
-		// Ducks:
-		objInScene[DUCK]->rb->setIgnoreCollisionCheck(objInScene[PILLAR]->rb, true);
-		objInScene[DUCK]->rb->setIgnoreCollisionCheck(objInScene[PILLAR2]->rb, true);
-		objInScene[DUCK]->rb->setIgnoreCollisionCheck(objInScene[CONVEYOR]->rb, true);
-	}
-
-	bulletSpeed = 20;
+	power = 5;
+	isShooting = false;
 	cooldownTimer = 0;
+	attemptsLeft = 2;
 	gameComplete = false;
 }
 
-void SceneDuckShooting::Update()
+void SceneCanKnockdown::Update()
 {
 	HandleKeyPress();
 	mainCamera.Update();
 	glm::vec3 inputMovementDir{};
-	if (KeyboardController::GetInstance()->IsKeyDown('W'))
-		inputMovementDir = mainCamera.view;
-	if (KeyboardController::GetInstance()->IsKeyDown('S'))
-		inputMovementDir = -mainCamera.view;
-	if (KeyboardController::GetInstance()->IsKeyDown('D'))
-		inputMovementDir = mainCamera.right;
-	if (KeyboardController::GetInstance()->IsKeyDown('A'))
-		inputMovementDir = -mainCamera.right;
+	//if (KeyboardController::GetInstance()->IsKeyDown('W'))
+	//	inputMovementDir = mainCamera.view;
+	//if (KeyboardController::GetInstance()->IsKeyDown('S'))
+	//	inputMovementDir = -mainCamera.view;
+	//if (KeyboardController::GetInstance()->IsKeyDown('D'))
+	//	inputMovementDir = mainCamera.right;
+	//if (KeyboardController::GetInstance()->IsKeyDown('A'))
+	//	inputMovementDir = -mainCamera.right;
 
 	glm::vec3 finalForce = inputMovementDir * 10.0f * Time::deltaTime;
 	mainCamera.m_transform.Translate(finalForce);
@@ -279,112 +296,126 @@ void SceneDuckShooting::Update()
 	mainCamera.UpdateCameraRotation();
 
 	// stop player rotating too far:
-	//{
-	//	glm::vec3 toObject = glm::normalize(glm::vec3(0, 3, 0) - mainCamera.m_transform.m_position);
+	{
+		glm::vec3 toObject = glm::normalize(glm::vec3(0, 3, 0) - mainCamera.m_transform.m_position);
 
-	//	glm::vec3 lookVector = glm::normalize(mainCamera.target - mainCamera.m_transform.m_position);
+		glm::vec3 lookVector = glm::normalize(mainCamera.target - mainCamera.m_transform.m_position);
 
-	//	float dotProduct = glm::dot(lookVector, toObject);
-	//	float threshold = glm::cos(glm::radians(fov * 0.5));
+		float dotProduct = glm::dot(lookVector, toObject);
+		float threshold = glm::cos(glm::radians(fov * 0.5));
 
-	//	if (dotProduct <= threshold) // Rotated too much
-	//	{
-	//		mainCamera.target = prevTarget;
-	//	}
-	//	else {
-	//		float closeness = (dotProduct - threshold) / (1.0f - threshold);
-	//		mainCamera.sensitivity = 10 + closeness * (50 - 10);
-	//	}
-	//}
+		if (dotProduct <= threshold) // Rotated too much
+		{
+			mainCamera.target = prevTarget;
+		}
+		else {
+			float closeness = (dotProduct - threshold) / (1.0f - threshold);
+			mainCamera.sensitivity = 10 + closeness * (50 - 10);
+		}
+	}
 
-	float speed = 2 * Time::deltaTime;
-	if (KeyboardController::GetInstance()->IsKeyDown('I'))
-		devVec.z += speed;
-	if (KeyboardController::GetInstance()->IsKeyDown('K'))
-		devVec.z -= speed;
-	if (KeyboardController::GetInstance()->IsKeyDown('J'))
-		devVec.x += speed;
-	if (KeyboardController::GetInstance()->IsKeyDown('L'))
-		devVec.x -= speed;
-	if (KeyboardController::GetInstance()->IsKeyDown('O'))
-		devVec.y += speed;
-	if (KeyboardController::GetInstance()->IsKeyDown('P'))
-		devVec.y -= speed;
+	//float speed = 2 * Time::deltaTime;
+	//if (KeyboardController::GetInstance()->IsKeyDown('I'))
+	//	devVec.z += speed;
+	//if (KeyboardController::GetInstance()->IsKeyDown('K'))
+	//	devVec.z -= speed;
+	//if (KeyboardController::GetInstance()->IsKeyDown('J'))
+	//	devVec.x += speed;
+	//if (KeyboardController::GetInstance()->IsKeyDown('L'))
+	//	devVec.x -= speed;
+	//if (KeyboardController::GetInstance()->IsKeyDown('O'))
+	//	devVec.y += speed;
+	//if (KeyboardController::GetInstance()->IsKeyDown('P'))
+	//	devVec.y -= speed;
 
 	//lights[0].m_transform.m_position = devVec;
-	std::cout << devVec.x << ", " << devVec.y << ", " << devVec.z << std::endl;
+	//std::cout << devVec.x << ", " << devVec.y << ", " << devVec.z << std::endl;
 
 
 
+	// Checking if can has fallen off the table:
+	{
+		int cansFallen = 0;
+		for (GameObject* obj : objInScene) {
+			CK_Can* can = dynamic_cast<CK_Can*>(obj);
+			if (can) 
+			{
+				if (can->GetRigidbodyPosition().y < 3) {
+					cansFallen++;
+				}
+			}
+			else continue;
+		}
+
+		if (cansFallen == 6) {
+			std::cout << "Game complete" << std::endl;
+			gameComplete = true;
+		}
+	}
 
 	GameObjectManager::GetInstance()->UpdateAll();
 }
 
-void SceneDuckShooting::LateUpdate()
+void SceneCanKnockdown::LateUpdate()
 {
-	// View Model:
+	if (cooldownTimer > 0) {
+		cooldownTimer -= Time::deltaTime;
+	}
+	else if (isShooting == true) {
+		isShooting = false;
+		cooldownTimer = 0;
+		attemptsLeft--;
+
+		if (attemptsLeft < 0 && gameComplete == false) {
+			SceneManager::GetInstance()->PopState();
+			SceneManager::GetInstance()->PushState(new SceneCanKnockdown);
+		}
+	}
+
+	float powerIncreaseSpeed = maxPower;
+	if (isShooting == false && attemptsLeft >= 0 && gameComplete == false) 
 	{
 		glm::vec3 cameraPos = mainCamera.m_transform.m_position;
 		glm::vec3 forward = mainCamera.view;
 		glm::vec3 right = mainCamera.right;
 		glm::vec3 up = mainCamera.up;
 
-		glm::vec3 gunOffset = right * 0.2f + up * -0.15f + forward * 0.45f;
-		gunTransform.m_position = cameraPos + gunOffset;
+		// Calculate world position of the ball
+		glm::vec3 newPos = cameraPos + (forward * 2.f) + (right * 1.f) + (up * -1.f);
 
-		glm::vec3 direction = glm::normalize(mainCamera.target - cameraPos);
-
-		glm::vec3 gunRotation;
-		gunRotation.y = atan2(direction.x, direction.z);
-		gunRotation.x = asin(-direction.y);
-		gunTransform.m_rotation = gunRotation;
-	}
-
-
-	if (cooldownTimer > 0) {
-		cooldownTimer -= Time::deltaTime;
-	}
-	else {
-		cooldownTimer = 0;
-	}
-
-	if (gameComplete == false) 
-	{
+		if (objInScene[BALL] != nullptr && attemptsLeft >= 0) {
+			objInScene[BALL]->SetRigidbodyPosition(newPos);
+			objInScene[BALL]->rb->clearGravity();
+			objInScene[BALL]->rb->setSleepingThresholds(0, 0);
+		}
+		
+		
 		if (cooldownTimer <= 0) {
+			if (MouseController::GetInstance()->IsButtonDown(0))
+			{
+				if (power < maxPower) {
+					power += powerIncreaseSpeed * Time::deltaTime;
+				}
+				else {
+					power = maxPower;
+				}
+			}
+
 			if (MouseController::GetInstance()->IsButtonReleased(0))
 			{
+				isShooting = true;
 				cooldownTimer = 3;
-
-				// Shoot:
-				std::cout << "Pew" << std::endl;
-
-			//	if (objInScene[BULLET] == nullptr)
-			//		objInScene[BULLET] = new DS_Bullet;
-
-				
-
-				glm::vec3 bulletOffset = mainCamera.right * 0.2f + mainCamera.up * -0.15f + mainCamera.view * 0.5f;
-				glm::vec3 origin = mainCamera.m_transform.m_position + bulletOffset;
-				glm::vec3 direction = glm::normalize(mainCamera.target - origin);
-
-				objInScene[BULLET]->m_transform.Translate(origin);
-
-				glm::vec3 bulletRotation = gunTransform.m_rotation;
-				bulletRotation.x -= glm::radians(90.0f);  // Rotate bullet so it faces forward instead of up
-				objInScene[BULLET]->m_transform.m_rotation = bulletRotation;
-
-				objInScene[BULLET]->rb->setSleepingThresholds(0.8, 1);
-				objInScene[BULLET]->rb->setLinearVelocity(btVector3(direction.x, direction.y, direction.z) * bulletSpeed);
-				objInScene[BULLET]->rb->activate();
-
+				glm::vec3 look = mainCamera.view * power;
+				objInScene[BALL]->rb->setSleepingThresholds(0.8, 1);
+				objInScene[BALL]->rb->setLinearVelocity(btVector3(look.x - 3, look.y + 3, look.z));
+				objInScene[BALL]->rb->activate();
+				power = 0;
 			}
 		}
 	}
-
-	GameObjectManager::GetInstance()->LateUpdateAll();
 }
 
-void SceneDuckShooting::Render()
+void SceneCanKnockdown::Render()
 {
 	{
 		// Clear color buffer every frame
@@ -446,12 +477,13 @@ void SceneDuckShooting::Render()
 		RenderMesh(meshList[GEO_AXIS]);
 		modelStack.PopMatrix();
 	}
+
 	
 	// Light:
 	{
 		modelStack.PushMatrix();
 		modelStack.Translate(lights[0].m_transform.m_position.x, lights[0].m_transform.m_position.y, lights[0].m_transform.m_position.z);
-		//RenderMesh(meshList[GEO_LIGHT], !enableLight);
+		RenderMesh(meshList[GEO_LIGHT], !enableLight);
 		modelStack.PopMatrix();
 
 		modelStack.PushMatrix();
@@ -459,12 +491,12 @@ void SceneDuckShooting::Render()
 		//RenderMesh(meshList[GEO_LIGHT], !enableLight);
 		modelStack.PopMatrix();
 	}
+
 	
 	// Tent:
 	{
 		modelStack.PushMatrix();
 		modelStack.Translate(0,0,0);
-		modelStack.Scale(objInScene[BOOTH_ROOF]->m_transform.m_scale.x, objInScene[BOOTH_ROOF]->m_transform.m_scale.y, objInScene[BOOTH_ROOF]->m_transform.m_scale.z);
 		RenderMesh(meshList[GEO_BOOTHROOF], enableLight);
 		RenderMesh(meshList[GEO_BOOTHGUARDS], enableLight);
 		modelStack.PopMatrix();
@@ -473,40 +505,35 @@ void SceneDuckShooting::Render()
 	// Render lamp:
 	{
 		modelStack.PushMatrix();
-		modelStack.Translate(0.302714, 11.9211, 0.0587656);
+		modelStack.Translate(0.102714, 11.9211, 0.0587656);
 		modelStack.Rotate(180, 1, 0, 0);
 		modelStack.Scale(7, 7, 7);
 		RenderMesh(meshList[GEO_LIGHTBULB], false);
 		modelStack.PopMatrix();
 	}
 
-	// Gun:
+	// Attempt Balls:
 	{
-		modelStack.PushMatrix();
-		modelStack.Translate(gunTransform.m_position.x, gunTransform.m_position.y, gunTransform.m_position.z);
-		modelStack.Rotate(glm::degrees(gunTransform.m_rotation.y), 0, 1, 0); // Yaw
-		modelStack.Rotate(glm::degrees(gunTransform.m_rotation.x), 1, 0, 0); // Pitch
-		RenderMesh(meshList[GEO_GUN], enableLight);
-		modelStack.PopMatrix();
-
-		modelStack.PushMatrix();
-		modelStack.Translate(0, 3, 1);
-		modelStack.Rotate(90, 1, 0, 0);
-		RenderMesh(meshList[GEO_BULLET], enableLight);
-		modelStack.PopMatrix();
-	}
-
-	// placeholder:
-	{
-		//modelStack.PushMatrix();
-		//modelStack.Translate(devVec.x, devVec.y, devVec.z);
-		////modelStack.Scale(1.5, 1.5, 0.2);
-		//RenderMesh(meshList[GEO_BULLET], true);
-		//modelStack.PopMatrix();
+		for (int i = 0; i < attemptsLeft; i++) {
+			modelStack.PushMatrix();
+			modelStack.Translate(0 - objInScene[BALL]->m_transform.m_scale.x * 2.5 * i, 2.8615, 4.83625);
+			modelStack.Scale(objInScene[BALL]->m_transform.m_scale.x, objInScene[BALL]->m_transform.m_scale.y, objInScene[BALL]->m_transform.m_scale.z);
+			RenderMesh(meshList[GEO_BALL], enableLight);
+			modelStack.PopMatrix();
+		}
+		
 	}
 
 	// Render hitboxes:
 	GameObjectManager::GetInstance()->RenderAll(*this);
+
+	// Render ui:
+	{
+		if (power > 5) {
+			RenderMeshOnScreen(meshList[GEO_POWERUI_FRAME], 0.5, 0.3, 100 * 1.25, 25 * 1.25, glm::vec2(0, 0));
+			RenderMeshOnScreen(meshList[GEO_POWERUI_BAR], 0.425, 0.3, power / maxPower * 120, 25, glm::vec2(-0.5, 0));
+		}
+	}
 
 #ifdef DRAW_HITBOX
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -552,7 +579,7 @@ void SceneDuckShooting::Render()
 #endif
 }
 
-void SceneDuckShooting::Exit()
+void SceneCanKnockdown::Exit()
 {
 	// Cleanup VBO here
 	for (int i = 0; i < NUM_GEOMETRY; ++i) { if (meshList[i]) delete meshList[i]; }
@@ -564,7 +591,7 @@ void SceneDuckShooting::Exit()
 	glDeleteProgram(m_programID);
 }
 
-void SceneDuckShooting::RenderSkybox(void)
+void SceneCanKnockdown::RenderSkybox(void)
 {
 	float size = 50.0f;
 	modelStack.PushMatrix();
@@ -621,7 +648,7 @@ void SceneDuckShooting::RenderSkybox(void)
 	modelStack.PopMatrix();
 }
 
-void SceneDuckShooting::RenderMeshOnScreen(Mesh* mesh, float x, float y, float width, float height, glm::vec2 anchorPoint)
+void SceneCanKnockdown::RenderMeshOnScreen(Mesh* mesh, float x, float y, float width, float height, glm::vec2 anchorPoint)
 {
 	glDisable(GL_DEPTH_TEST);
 	glm::mat4 ortho = glm::ortho(0.f, 800.f, 0.f, 600.f, -

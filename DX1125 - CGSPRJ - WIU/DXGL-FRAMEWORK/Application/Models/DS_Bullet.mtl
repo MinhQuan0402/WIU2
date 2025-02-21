@@ -1,0 +1,15 @@
+# Blender 4.3.2 MTL File: 'None'
+# www.blender.org
+
+newmtl Blue
+Ka 0.2 0.2 0.2  # Added a default ambient value (adjust as needed)
+Kd 0.045043 0.056054 0.800055
+Ks 0.500000 0.500000 0.500000
+Ns 100.0  # Estimated shininess value (adjust as needed)
+
+newmtl Orange
+Ka 0.2 0.2 0.2
+Kd 0.800378 0.059778 0.000000
+Ks 0.500000 0.500000 0.500000
+Ns 100.0
+

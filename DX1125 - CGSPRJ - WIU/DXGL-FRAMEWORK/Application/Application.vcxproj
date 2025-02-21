@@ -155,7 +155,11 @@
     <ClCompile Include="Source\CQuad.cpp" />
     <ClCompile Include="Source\DS_BoothRoof.cpp" />
     <ClCompile Include="Source\DS_BoothWall.cpp" />
+    <ClCompile Include="Source\DS_Bullet.cpp" />
+    <ClCompile Include="Source\DS_Conveyor.cpp" />
+    <ClCompile Include="Source\DS_Duck.cpp" />
     <ClCompile Include="Source\DS_Floor.cpp" />
+    <ClCompile Include="Source\DS_Pillar.cpp" />
     <ClCompile Include="Source\FPCamera.cpp" />
     <ClCompile Include="Source\GameObject.cpp" />
     <ClCompile Include="Source\GameObjectManager.cpp" />
@@ -185,7 +189,11 @@
     <ClInclude Include="Source\CollisionManager.h" />
     <ClInclude Include="Source\DS_BoothRoof.h" />
     <ClInclude Include="Source\DS_BoothWall.h" />
+    <ClInclude Include="Source\DS_Bullet.h" />
+    <ClInclude Include="Source\DS_Conveyor.h" />
+    <ClInclude Include="Source\DS_Duck.h" />
     <ClInclude Include="Source\DS_Floor.h" />
+    <ClInclude Include="Source\DS_Pillar.h" />
     <ClInclude Include="Source\FPCamera.h" />
     <ClInclude Include="Source\GameObject.h" />
     <ClInclude Include="Source\GameObjectManager.h" />

@@ -195,6 +195,10 @@ void GameObjectManager::UpdateAll(void)
 {
 	for (GameObject*& value : GameObjectManager::GetInstance()->m_allGOs) { if (value) value->Update(); }
 }
+void GameObjectManager::LateUpdateAll(void)
+{
+	for (GameObject*& value : GameObjectManager::GetInstance()->m_allGOs) { if (value) value->LateUpdate(); }
+}
 void GameObjectManager::RenderAll(Scene& scene)
 {
 	for (GameObject*& value : GameObjectManager::GetInstance()->m_allGOs) { if (value) value->Render(scene); }

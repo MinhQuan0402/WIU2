@@ -6,6 +6,7 @@
 #include "Transform.h"
 #include "GameObject.h"
 #include "RigidBody.h"
+#include "Time.h"
 
 class SceneDuckShooting : public Scene
 {
@@ -37,6 +38,10 @@ public:
 		GEO_COUNTER,
 		GEO_LIGHTBULB,
 
+		GEO_DUCK,
+		GEO_GUN,
+		GEO_BULLET,
+
 		NUM_GEOMETRY
 	};
 
@@ -67,8 +72,9 @@ private:
 		BOOTH_ROOF,
 
 		CONVEYOR,
+		PILLAR,
+		PILLAR2,
 		DUCK,
-		GUN,
 		BULLET,
 
 		NUM_OBJ
@@ -76,14 +82,14 @@ private:
 	
 	GameObject* objInScene[NUM_OBJ];
 
-	float power;
-	const float maxPower = 30;
+	Transform gunTransform;
+	float bulletSpeed;
 
-	bool isShooting;
 	float cooldownTimer;
 
-	float attemptsLeft;
 	bool gameComplete;
+
+	glm::vec3 devVec;
 };
 
 #endif
