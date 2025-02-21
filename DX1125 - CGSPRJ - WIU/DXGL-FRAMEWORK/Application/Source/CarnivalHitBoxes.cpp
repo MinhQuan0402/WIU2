@@ -15,6 +15,10 @@ CarnivalHitBoxes::~CarnivalHitBoxes()
 
 void CarnivalHitBoxes::Start()
 {
+	PhysicsMaterial mat;
+	mat.m_mass = 0.0f;
+
+	
 }
 
 void CarnivalHitBoxes::Render(Scene& scene)

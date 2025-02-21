@@ -23,6 +23,7 @@
 #include "CarnivalHitBoxes.h"
 #include "ColliderManager.h"
 #include "RigidBody.h"
+#include "PlayerHitBox.h"
 carnivalroaming::carnivalroaming() : numLight{ 2 }
 {
 	meshList.resize(NUM_GEOMETRY);
@@ -126,16 +127,13 @@ void carnivalroaming::Init()
 	meshList[GEO_CANTENTROOF]->textureID = LoadPNG("Images//CK_BoothRoof.png");
 	meshList[GEO_CANTENTROOF]->material = Material::Wood(WHITE);
 
-
 	meshList[GEO_TABLECAN] = MeshBuilder::GenerateOBJ("Table", "Models//simpletable.obj");
 	meshList[GEO_TABLECAN]->textureID = LoadPNG("Images//tableCan.png");
 	meshList[GEO_TABLECAN]->material = Material::Wood(WHITE);
 
-
 	meshList[GEO_CAN] = MeshBuilder::GenerateOBJMTL("Can", "Models//Can.obj", "Models//Can.mtl");
 	meshList[GEO_CAN]->textureID = LoadPNG("Images//Can.png");
 	meshList[GEO_CAN]->material = Material::Wood(WHITE);
-
 
 	meshList[GEO_STRIPEWALL] = MeshBuilder::GenerateOBJ("Stripewall", "Models//redwhitewalls.obj");
 	meshList[GEO_STRIPEWALL]->textureID = LoadPNG("Images//redwhitestripes.png");
@@ -172,11 +170,9 @@ void carnivalroaming::Init()
 	meshList[GEO_BOTTOMCOTTONCANDY]->textureID = LoadPNG("Images//bottom_cottoncandy.png");
 	meshList[GEO_BOTTOMCOTTONCANDY]->material = Material::Wood(WHITE);
 
-
 	meshList[GEO_PLINKO] = MeshBuilder::GenerateOBJMTL("Plinko", "Models//plinko.obj", "Models//plinko.mtl");
 	meshList[GEO_PLINKO]->textureID = LoadPNG("Images//plinko.png");
 	meshList[GEO_PLINKO]->material = Material::Wood(WHITE);
-
 
 	meshList[GEO_POOL] = MeshBuilder::GenerateOBJ("Table", "Models//InflatablePool.obj");
 	meshList[GEO_POOL]->textureID = LoadPNG("Images//pool.png");
@@ -192,7 +188,6 @@ void carnivalroaming::Init()
 	meshList[GEO_SHOOTINGDUCK] = MeshBuilder::GenerateOBJMTL("duckpewpew", "Models//duck_w_target.obj", "Models//duck_w_target.mtl");
 	meshList[GEO_SHOOTINGDUCK]->material = Material::Wood(WHITE);
 	
-
 	meshList[GEO_TARGET] = MeshBuilder::GenerateOBJ("target", "Models//target2.obj");
 	meshList[GEO_TARGET]->textureID = LoadPNG("Images//targetpic.png");
 	meshList[GEO_TARGET]->material = Material::Wood(WHITE);
@@ -273,8 +268,9 @@ void carnivalroaming::Init()
 	objInscene[BOX7] = new CarnivalHitBoxes();
 	objInscene[BOX8] = new CarnivalHitBoxes();
 
-
+	objInscene[PLAYERBOX] = new PlayerHitBox();
 	
+
 	objInscene[CIRCLE]->m_transform.ScaleBy(200.0f, 200.f, 200.0f);
 
 
@@ -313,6 +309,9 @@ void carnivalroaming::Init()
 	objInscene[BOX8]->m_transform.ScaleBy(100.0f, 100.f, 200.0f);
 	objInscene[BOX8]->rb = addBoxCollider(objInscene[BOX8], 100.0f, 100.f, 200.0f, mat);
 
+	mat.m_mass = 1.0f;
+	objInscene[PLAYERBOX]->m_transform.Translate(mainCamera.m_transform.m_position);
+	objInscene[PLAYERBOX]->rb = addBoxCollider(objInscene[PLAYERBOX], 2.0f, 2.f, 2.0f, mat);
 
 	GameObjectManager::GetInstance()->IniAll();
 
@@ -330,9 +329,6 @@ void carnivalroaming::Init()
 		ducksX[i] = x;
 		ducksY[i] = y;
 
-		//std::cout << "RandomPoint in circle: (" << x << ", " << y << ")\n";
-		//std::cout << ducksX[i] << std::endl; 
-		//std::cout << ducksY[i] << std::endl;
 	}
 	
 	
@@ -355,18 +351,8 @@ void carnivalroaming::Update()
 	glm::vec3 finalForce = inputMovementDir * 100.0f * Time::deltaTime;
 	mainCamera.m_transform.Translate(finalForce);
 	mainCamera.UpdateCameraRotation();
-
-
-	GameObject::MoveObj(objInscene[CIRCLE]->m_transform);
-	GameObject::MoveObj(objInscene[BOX]->m_transform);
-	GameObject::MoveObj(objInscene[BOX2]->m_transform);
-	GameObject::MoveObj(objInscene[BOX3]->m_transform);
-	GameObject::MoveObj(objInscene[BOX4]->m_transform);
-	GameObject::MoveObj(objInscene[BOX5]->m_transform);
-	GameObject::MoveObj(objInscene[BOX6]->m_transform);
-	GameObject::MoveObj(objInscene[BOX7]->m_transform);
-
-	
+	objInscene[PLAYERBOX]->SetRigidbodyPosition(mainCamera.m_transform.m_position);
+	objInscene[PLAYERBOX]->rb->clearGravity();
 	GameObjectManager::GetInstance()->UpdateAll();
 }
 
@@ -396,6 +382,22 @@ void carnivalroaming::LateUpdate()
 
 		lights[0].m_transform.m_position = devVec;
 		//std::cout << devVec.x << ", " << devVec.y << ", " << devVec.z << std::endl;
+		
+		mainCamera.m_transform.Translate(objInscene[PLAYERBOX]->GetRigidbodyPosition());
+		
+
+		GameObject::MoveObj(objInscene[CIRCLE]->m_transform);
+		GameObject::MoveObj(objInscene[BOX]->m_transform);
+		GameObject::MoveObj(objInscene[BOX2]->m_transform);
+		GameObject::MoveObj(objInscene[BOX3]->m_transform);
+		GameObject::MoveObj(objInscene[BOX4]->m_transform);
+		GameObject::MoveObj(objInscene[BOX5]->m_transform);
+		GameObject::MoveObj(objInscene[BOX6]->m_transform);
+		GameObject::MoveObj(objInscene[BOX7]->m_transform);
+		GameObject::MoveObj(objInscene[BOX8]->m_transform);
+		GameObject::MoveObj(objInscene[PLAYERBOX]->m_transform);
+
+		GameObjectManager::GetInstance()->UpdateAll(); 
 	}
 }
 

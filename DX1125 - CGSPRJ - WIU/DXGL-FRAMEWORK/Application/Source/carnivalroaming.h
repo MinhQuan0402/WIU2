@@ -103,6 +103,7 @@ private:
 		BOX7,
 		BOX8,
 
+		PLAYERBOX,
 
 		NUM_OBJ
 	};
