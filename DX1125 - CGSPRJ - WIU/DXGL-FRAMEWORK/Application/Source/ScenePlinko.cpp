@@ -347,6 +347,14 @@ void ScenePlinko::Render()
 	modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
 	RenderMesh(meshList[GEO_BOOTHROOF], enableLight);
 	RenderMesh(meshList[GEO_BOOTHGUARDS], enableLight);
+	meshList[GEO_BOOTHROOF]->material.kAmbient = glm::vec3(0.1f, 0.1f, 0.1f);
+	meshList[GEO_BOOTHROOF]->material.kDiffuse = glm::vec3(0.4f, 0.4f, 0.4f);
+	meshList[GEO_BOOTHROOF]->material.kSpecular = glm::vec3(0.1f, 0.1f, 0.1f);
+	meshList[GEO_BOOTHROOF]->material.kShininess = 2.0f;
+	meshList[GEO_BOOTHGUARDS]->material.kAmbient = glm::vec3(0.1f, 0.1f, 0.1f);
+	meshList[GEO_BOOTHGUARDS]->material.kDiffuse = glm::vec3(0.4f, 0.4f, 0.4f);
+	meshList[GEO_BOOTHGUARDS]->material.kSpecular = glm::vec3(0.1f, 0.1f, 0.1f);
+	meshList[GEO_BOOTHGUARDS]->material.kShininess = 2.0f;
 	modelStack.PopMatrix();
 
 	RenderTextOnScreen(meshList[GEO_TEXT], "Score:" + std::to_string(plinkoScore), RED, 40, 980, 600);
