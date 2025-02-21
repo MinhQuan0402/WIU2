@@ -108,11 +108,11 @@
     <ClCompile Include="Source\DS_BoothRoof.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\DS_BoothWall.cpp">
-      <Filter>Header Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\DS_Floor.cpp">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DS_BoothWall.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

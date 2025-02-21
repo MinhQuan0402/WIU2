@@ -130,8 +130,8 @@ void SceneDuckShooting::Init()
 	meshList[GEO_COUNTER]->textureID = LoadPNG("Images//DS_Wood.png");
 	meshList[GEO_COUNTER]->material = Material::Wood(glm::vec3(0.459, 0.302, 0));
 
-	/*meshList[GEO_LIGHTBULB] = MeshBuilder::GenerateOBJMTL("Lamp", "Models//CK_LightBulb.obj", "Models//CK_LightBulb.mtl");
-	meshList[GEO_LIGHTBULB]->material = Material::Wood(WHITE);*/
+	meshList[GEO_LIGHTBULB] = MeshBuilder::GenerateOBJMTL("Lamp", "Models//DS_LightBulb.obj", "Models//DS_LightBulb.mtl");
+	meshList[GEO_LIGHTBULB]->material = Material::Wood(WHITE);
 
 	mainCamera.Init(glm::vec3(0, 4, 7.5), glm::vec3(0, 4, 0), VECTOR3_UP);
 	mainCamera.sensitivity = 50.0f;
@@ -204,35 +204,17 @@ void SceneDuckShooting::Init()
 
 	// Modify objects in scene:
 	{
-		// Ball:
-		objInScene[BALL]->m_transform.ScaleBy(0.25, 0.25, 0.25);
-		
+		//// Counters:
+		//{
+		//	objInScene[COUNTER]->m_transform.Translate(0, 2.65 * 0.5, 4.84);
+		//	objInScene[COUNTER]->m_transform.ScaleBy(11.4612, 2.65, 1);
 
-		// Counters:
-		{
-			objInScene[COUNTER]->m_transform.Translate(0, 2.65 * 0.5, 4.84);
-			objInScene[COUNTER]->m_transform.ScaleBy(11.4612, 2.65, 1);
+		//	objInScene[COUNTER2]->m_transform.Translate(5.25, 2.65 * 0.5, -0.4);
+		//	objInScene[COUNTER2]->m_transform.ScaleBy(1, 2.65, 11);
 
-			objInScene[COUNTER2]->m_transform.Translate(5.25, 2.65 * 0.5, -0.4);
-			objInScene[COUNTER2]->m_transform.ScaleBy(1, 2.65, 11);
-
-			objInScene[COUNTER3]->m_transform.Translate(-5.25, 2.65 * 0.5, -0.4);
-			objInScene[COUNTER3]->m_transform.ScaleBy(1, 2.65, 11);
-		}
-
-		// Cans:
-		{
-			float canY = 0.67;
-			objInScene[CAN]->m_transform.Translate(-0.65, 2.84 + canY * 0.5, 0);
-			objInScene[CAN2]->m_transform.Translate(0, 2.84 + canY * 0.5, 0);
-			objInScene[CAN3]->m_transform.Translate(0.65, 2.84 + canY * 0.5, 0);
-			objInScene[CAN4]->m_transform.Translate(-0.65 * 0.5, 2.84 + canY * 1.5, 0);
-			objInScene[CAN5]->m_transform.Translate(0.65 * 0.5, 2.84 + canY * 1.5, 0);
-			objInScene[CAN6]->m_transform.Translate(0, 2.84 + canY * 2.5, 0);
-		}
-
-		// Table:
-		objInScene[TABLE]->m_transform.Translate(0, 2.84 * 0.5, 0);
+		//	objInScene[COUNTER3]->m_transform.Translate(-5.25, 2.65 * 0.5, -0.4);
+		//	objInScene[COUNTER3]->m_transform.ScaleBy(1, 2.65, 11);
+		//}
 	}
 
 	GameObjectManager::GetInstance()->IniAll();
@@ -446,6 +428,7 @@ void SceneDuckShooting::Render()
 	{
 		modelStack.PushMatrix();
 		modelStack.Translate(0,0,0);
+		modelStack.Scale(objInScene[BOOTH_ROOF]->m_transform.m_scale.x, objInScene[BOOTH_ROOF]->m_transform.m_scale.y, objInScene[BOOTH_ROOF]->m_transform.m_scale.z);
 		RenderMesh(meshList[GEO_BOOTHROOF], enableLight);
 		RenderMesh(meshList[GEO_BOOTHGUARDS], enableLight);
 		modelStack.PopMatrix();

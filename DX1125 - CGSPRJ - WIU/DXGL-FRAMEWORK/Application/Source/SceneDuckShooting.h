@@ -59,21 +59,17 @@ private:
 	float fov;
 
 	enum OBJINSCENE {
-		GROUND,
-		BALL,
-		CAN,
-		CAN2,
-		CAN3,
-		CAN4,
-		CAN5,
-		CAN6,
-		TABLE,
 		COUNTER,
 		COUNTER2,
 		COUNTER3,
 		FLOOR,
 		BOOTH_WALL,
 		BOOTH_ROOF,
+
+		CONVEYOR,
+		DUCK,
+		GUN,
+		BULLET,
 
 		NUM_OBJ
 	};

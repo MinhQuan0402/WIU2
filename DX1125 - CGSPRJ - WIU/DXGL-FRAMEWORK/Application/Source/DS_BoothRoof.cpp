@@ -12,7 +12,8 @@ void DS_BoothRoof::Start()
 	PhysicsMaterial mat;
 	mat.m_mass = 0;
 	m_transform.Translate(0, 11.2144, 0);
-	rb = addBoxCollider(this, 12.7474, 4.80242, 12.7441, mat);
+	m_transform.ScaleBy(3, 1, 1.5);
+	rb = addBoxCollider(this, 12.7474 * m_transform.m_scale.x, 4.80242 * m_transform.m_scale.y, 12.7441 * m_transform.m_scale.z, mat);
 }
 
 void DS_BoothRoof::Update()
