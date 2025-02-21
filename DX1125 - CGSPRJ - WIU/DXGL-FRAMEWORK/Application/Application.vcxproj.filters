@@ -31,6 +31,12 @@
     <Filter Include="Header Files\Managers\GameManager">
       <UniqueIdentifier>{dade94ca-696f-4d2e-8b6b-b0c9c72e4804}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Objects">
+      <UniqueIdentifier>{39e541b9-1aca-40ac-8ba8-83d5a25e99cb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Objects">
+      <UniqueIdentifier>{8cb46493-b321-4bce-8eef-2bd4e8f87a9b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Application.cpp">
@@ -102,8 +108,14 @@
     <ClCompile Include="Source\ColliderManager.cpp">
       <Filter>Source Files\Managers</Filter>
     </ClCompile>
-    <ClCompile Include="Source\SceneRingToss.cpp">
+    <ClCompile Include="Source\SceneBalloon.cpp">
       <Filter>Source Files\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Balloon.cpp">
+      <Filter>Source Files\Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BalloonBoard.cpp">
+      <Filter>Source Files\Objects</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -179,8 +191,14 @@
     <ClInclude Include="Source\SceneManager.h">
       <Filter>Header Files\Managers</Filter>
     </ClInclude>
-    <ClInclude Include="Source\SceneRingToss.h">
+    <ClInclude Include="Source\SceneBalloon.h">
       <Filter>Header Files\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Balloon.h">
+      <Filter>Header Files\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\BalloonBoard.h">
+      <Filter>Header Files\Objects</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

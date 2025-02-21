@@ -18,7 +18,7 @@
 #include "SceneManager.h"
 #include "CollisionManager.h"
 #include "ColliderManager.h"
-#include "SceneRingToss.h"
+#include "SceneBalloon.h"
 
 GLFWmonitor* primaryMonitor;
 const GLFWvidmode* videoMode;
@@ -149,7 +149,7 @@ void Application::Run()
 {
 	//Main Loop
 	CollisionManager::GetInstance()->SetUpDynamicWorld(10.0f);
-	SceneManager::GetInstance()->PushState(new SceneRingToss);
+	SceneManager::GetInstance()->PushState(new SceneBalloon);
 	Time::fixedDeltaTime = FIXED_TIME_STEP;
 	m_timer.startTimer();    // Start timer to calculate how long it takes to render this frame
 	while (!glfwWindowShouldClose(m_window) && !IsKeyPressed(VK_ESCAPE))
