@@ -297,7 +297,7 @@ void SceneDuckShooting::Update()
 	//	}
 	//}
 
-	float speed = 2 * Time::deltaTime;
+	float speed = 20 * Time::deltaTime;
 	if (KeyboardController::GetInstance()->IsKeyDown('I'))
 		devVec.z += speed;
 	if (KeyboardController::GetInstance()->IsKeyDown('K'))
@@ -361,17 +361,16 @@ void SceneDuckShooting::LateUpdate()
 			//	if (objInScene[BULLET] == nullptr)
 			//		objInScene[BULLET] = new DS_Bullet;
 
-				
-
-				glm::vec3 bulletOffset = mainCamera.right * 0.2f + mainCamera.up * -0.15f + mainCamera.view * 0.5f;
+				glm::vec3 bulletOffset = mainCamera.right * 0.165f + mainCamera.up * -0.075f + mainCamera.view * 1.f;
 				glm::vec3 origin = mainCamera.m_transform.m_position + bulletOffset;
 				glm::vec3 direction = glm::normalize(mainCamera.target - origin);
 
-				objInScene[BULLET]->m_transform.Translate(origin);
+				glm::vec3 rotation;
+				rotation.y = glm::degrees(atan2(direction.x, direction.z)); // Yaw
+				rotation.x = glm::degrees(asin(-direction.y)) - 90;              // Pitch
 
-				glm::vec3 bulletRotation = gunTransform.m_rotation;
-				bulletRotation.x -= glm::radians(90.0f);  // Rotate bullet so it faces forward instead of up
-				objInScene[BULLET]->m_transform.m_rotation = bulletRotation;
+				objInScene[BULLET]->m_transform.Translate(origin);
+				objInScene[BULLET]->m_transform.m_rotation = rotation;
 
 				objInScene[BULLET]->rb->setSleepingThresholds(0.8, 1);
 				objInScene[BULLET]->rb->setLinearVelocity(btVector3(direction.x, direction.y, direction.z) * bulletSpeed);
@@ -487,12 +486,6 @@ void SceneDuckShooting::Render()
 		modelStack.Rotate(glm::degrees(gunTransform.m_rotation.y), 0, 1, 0); // Yaw
 		modelStack.Rotate(glm::degrees(gunTransform.m_rotation.x), 1, 0, 0); // Pitch
 		RenderMesh(meshList[GEO_GUN], enableLight);
-		modelStack.PopMatrix();
-
-		modelStack.PushMatrix();
-		modelStack.Translate(0, 3, 1);
-		modelStack.Rotate(90, 1, 0, 0);
-		RenderMesh(meshList[GEO_BULLET], enableLight);
 		modelStack.PopMatrix();
 	}
 
