@@ -48,6 +48,7 @@ void FPCamera::UpdateCameraRotation(void)
 
 	//Yaw update
 	float yawAngle = -deltaX * sensitivity * (float)Time::deltaTime;
+	m_transform.m_rotation.y += yawAngle;
 
 	glm::mat4 yaw = glm::rotate(glm::mat4(1.0f), glm::radians(yawAngle), up);
 	glm::vec3 yawView = yaw * glm::vec4(view, 0.f);

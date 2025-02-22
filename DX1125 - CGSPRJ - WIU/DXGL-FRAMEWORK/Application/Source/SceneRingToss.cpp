@@ -97,13 +97,19 @@ void SceneRingToss::Init()
 	meshList[GEO_RING]->textureID = LoadPNG("Images//rope.png");
 	meshList[GEO_TIE] = MeshBuilder::GenerateOBJ("Tie", "Models//ring_toss_tie.obj");
 	meshList[GEO_TIE]->textureID = LoadPNG("Images//tie.png");
+	meshList[GEO_TABLE] = MeshBuilder::GenerateOBJ("Table", "Models//ring_toss_table.obj");
+	meshList[GEO_TABLE]->textureID = LoadPNG("Images//wood.png");
+	meshList[GEO_TABLECLOTH] = MeshBuilder::GenerateOBJ("Table cloth", "Models//ring_toss_tablecloth.obj");
+	meshList[GEO_TABLECLOTH]->textureID = LoadPNG("Images//tablecloth.png");
+	meshList[GEO_COUNTER] = MeshBuilder::GenerateOBJ("Counter", "Models//ring_toss_counter.obj");
+	meshList[GEO_COUNTER]->textureID = LoadPNG("Images//counter.png");
 
-	mainCamera.Init(glm::vec3(0, 6, 10), glm::vec3(0, 6, 0), VECTOR3_UP);
+	mainCamera.Init(glm::vec3(0, 10, 30), glm::vec3(0, 10, 0), VECTOR3_UP);
 	
 	glUniform1i(m_parameters[U_NUMLIGHTS], 2);
 
 	lights[0].m_transform.m_position = glm::vec3{};
-	lights[0].m_transform.m_position = glm::vec3(0, 5, 0);
+	lights[0].m_transform.m_position = glm::vec3(0, 20, 0);
 	lights[0].color = glm::vec3(1, 1, 1);
 	lights[0].type = Light::LIGHT_SPOT;
 	lights[0].power = 1;
@@ -125,7 +131,7 @@ void SceneRingToss::Init()
 	glUniform1f(m_parameters[U_LIGHT0_COSINNER], cosf(glm::radians<float>(lights[0].cosInner)));
 	glUniform1f(m_parameters[U_LIGHT0_EXPONENT], lights[0].exponent);
 
-	enableLight = true;
+	enableLight = false;
 
 	PhysicsMaterial groundMat;
 	groundMat.m_bounciness = 0.5f;
@@ -134,14 +140,25 @@ void SceneRingToss::Init()
 	objInScene[GROUND]->rb = addStaticPlane(objInScene[GROUND], VECTOR3_UP, groundMat);
 	GameObjectManager::GetInstance()->addItem(objInScene[GROUND]);
 
-	PhysicsMaterial mat;
-	mat.m_mass = 1.0f;
-	mat.m_bounciness = 0.5f;
-	mat.m_friction = 0.5f;
+	objInScene[TABLE] = new TossTable();
+	objInScene[TABLE]->m_transform.Translate(0.0f, .0f, 4.f);
+	objInScene[TABLE]->m_transform.Rotate(0.0f, 90.0f);
+	objInScene[TABLE]->m_transform.ScaleBy(2.0f, 2.0f, 2.0f);
 
 	objInScene[BOARD] = new TossBoard();
+	objInScene[BOARD]->m_transform.Translate(0.0f, 5.5f, 0.0f);
+
+	float colliderHeight = 7.3f;
+	PhysicsMaterial mat;
+	mat.m_mass = 0.0f;
+	objInScene[COUNTER] = new GameObject;
+	objInScene[COUNTER]->m_transform.Translate(0.0f, .0f, 20.0f);
+	objInScene[COUNTER]->m_transform.Rotate(0.0f, 180.0f);
+	objInScene[COUNTER]->m_transform.ScaleBy(0.4f, 0.4f, 0.4f);
+	objInScene[COUNTER]->rb = addBoxCollider(objInScene[COUNTER], 10.0f, colliderHeight, 6.25f, mat, glm::vec3(0.0f, colliderHeight / 2.f, 0.f));
+	GameObjectManager::addItem(objInScene[COUNTER]);
+
 	objInScene[RING] = new Ring(RED);
-	objInScene[RING]->m_transform.Translate(0.0f, 5.0f);
 	GameObjectManager::IniAll();
 }
 
@@ -150,10 +167,11 @@ void SceneRingToss::Update()
 	HandleKeyPress();
 	mainCamera.Update();
 	glm::vec3 inputMovementDir{};
+	glm::vec3 forward = glm::normalize(glm::cross(mainCamera.up, mainCamera.right));
 	if (KeyboardController::GetInstance()->IsKeyDown('W'))
-		inputMovementDir = mainCamera.view;
+		inputMovementDir = forward;
 	if (KeyboardController::GetInstance()->IsKeyDown('S'))
-		inputMovementDir = -mainCamera.view;
+		inputMovementDir = -forward;
 	if (KeyboardController::GetInstance()->IsKeyDown('D'))
 		inputMovementDir = mainCamera.right;
 	if (KeyboardController::GetInstance()->IsKeyDown('A'))
@@ -167,6 +185,36 @@ void SceneRingToss::Update()
 
 void SceneRingToss::LateUpdate()
 {
+	if (!isShoot)
+	{
+		glm::vec3 forward = glm::normalize(glm::cross(mainCamera.up, mainCamera.right));
+		glm::vec3 throwablePos = mainCamera.m_transform.m_position
+			+ mainCamera.right * 1.0f  // Move right
+			- mainCamera.up * 0.5f    // Move down
+			+ mainCamera.view * 1.0f; // Optional depth
+		objInScene[RING]->SetRigidbodyPosition(throwablePos);
+		objInScene[RING]->rb->clearGravity();
+	}
+	else
+	{
+		timer += Time::deltaTime;
+
+		if (timer >= 4.0f)
+		{
+			isShoot = false;
+			timer = 0.0f;
+		}
+	}
+
+	if (!isShoot && KeyboardController::GetInstance()->IsKeyPressed(VK_SPACE))
+	{
+		float power = 20.0f;
+		btVector3 finalVel = btVector3(mainCamera.view.x, mainCamera.view.y, mainCamera.view.z) * power;
+		objInScene[RING]->rb->setLinearVelocity(btVector3(finalVel));
+		objInScene[RING]->rb->setAngularVelocity(btVector3(0.f, power, 0.0f));
+		objInScene[RING]->rb->activate();
+		isShoot = true;
+	}
 }
 
 void SceneRingToss::Render()
@@ -211,11 +259,14 @@ void SceneRingToss::Render()
 	RenderMesh(meshList[GEO_AXIS]);
 	modelStack.PopMatrix();
 
+	meshList[GEO_PLANE]->material = Material::Concrete(WHITE);
 	modelStack.PushMatrix();
 	modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
-	RenderMesh(meshList[GEO_PLANE]);
+	RenderMesh(meshList[GEO_PLANE], enableLight);
 	modelStack.PopMatrix();
 
+	meshList[GEO_COUNTER]->material = Material::Wood(WHITE);
+	RenderMesh(meshList[GEO_COUNTER], enableLight, objInScene[COUNTER]->m_transform);
 	GameObjectManager::RenderAll(*this);
 
 #ifdef DRAW_HITBOX
@@ -231,6 +282,7 @@ void SceneRingToss::Render()
 			SphereCollider* sphereCollider = static_cast<SphereCollider*>(shape);
 			float size = sphereCollider->GetRadius();
 			modelStack.Scale(size, size, size);
+			modelStack.Scale(shape->getLocalScaling().x(), shape->getLocalScaling().y(), shape->getLocalScaling().z());
 			RenderMesh(hitboxMeshList[HITBOX_SPHERE]);
 		}
 		else if (shape->getShapeType() == BOX_SHAPE_PROXYTYPE)
@@ -239,6 +291,7 @@ void SceneRingToss::Render()
 			float width, height, depth;
 			boxCollider->GetDimension(width, height, depth);
 			modelStack.Scale(width, height, depth);
+			modelStack.Scale(shape->getLocalScaling().x(), shape->getLocalScaling().y(), shape->getLocalScaling().z());
 			RenderMesh(hitboxMeshList[HITBOX_BOX]);
 		}
 		else if (shape->getShapeType() == CYLINDER_SHAPE_PROXYTYPE)
@@ -247,6 +300,7 @@ void SceneRingToss::Render()
 			float rad, height;
 			cylinderCollider->GetDimension(rad, height);
 			modelStack.Scale(rad / 2.0f, height, rad / 2.0f);
+			modelStack.Scale(shape->getLocalScaling().x(), shape->getLocalScaling().y(), shape->getLocalScaling().z());
 			RenderMesh(hitboxMeshList[HITBOX_CYLINDER]);
 		}
 		else if (shape->getShapeType() == COMPOUND_SHAPE_PROXYTYPE)

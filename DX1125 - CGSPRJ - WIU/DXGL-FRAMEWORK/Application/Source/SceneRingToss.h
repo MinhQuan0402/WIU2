@@ -25,6 +25,9 @@ public:
 		GEO_RING, 
 		GEO_TIE,
 		GEO_PLANE,
+		GEO_TABLE,
+		GEO_TABLECLOTH,
+		GEO_COUNTER,
 		NUM_GEOMETRY
 	};
 
@@ -40,12 +43,16 @@ public:
 private:
 	void RenderSkybox(void);
 	int numLight;
+	bool isShoot = false;
+	float timer = 0.f;
 	
 	enum OBJINSCENE
 	{
 		GROUND,
 		BOARD,
 		RING,
+		TABLE,
+		COUNTER,
 		NUMOBJ
 	};
 

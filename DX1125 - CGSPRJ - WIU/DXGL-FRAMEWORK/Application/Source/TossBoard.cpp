@@ -7,6 +7,7 @@
 #include "btBulletDynamicsCommon.h"
 #include "Utility.h"
 #include "MeshBuilder.h"
+#include <MyMath.h>
 
 btCompoundShape* Bottle::GenerateCollider(void)
 {
@@ -36,7 +37,7 @@ btCompoundShape* Bottle::GenerateCollider(void)
 void Bottle::GenerateRigidbody(void)
 {
 	PhysicsMaterial mat;
-	mat.m_mass = 5.0f;
+	mat.m_mass = 10.0f;
 	btTransform t;
 	t.setIdentity();
 	btVector3 finalPosition = btVector3(m_transform.m_position.x + colliderOffset.x, m_transform.m_position.y + colliderOffset.y, m_transform.m_position.z + colliderOffset.z);
@@ -83,7 +84,8 @@ void Bottle::LateUpdate(void)
 
 void Bottle::Render(Scene& scene)
 {
-	scene.RenderRigidMesh(scene.meshList[SceneRingToss::GEO_BOTTLE], false, m_transform, rb);
+	scene.meshList[SceneRingToss::GEO_BOTTLE]->material = Material::Metal(m_color);
+	scene.RenderRigidMesh(scene.meshList[SceneRingToss::GEO_BOTTLE], scene.enableLight, m_transform, rb);
 }
 
 btCompoundShape* TossBoard::GenerateCollider(void)
@@ -184,6 +186,7 @@ TossBoard::TossBoard(void)
 
 	glm::vec3 originalPos = glm::vec3(1.55f, 1.25f, 4.8f);
 	glm::vec3 localPos = originalPos;
+	localPos.y += 5.5f;
 	for (unsigned i = 0; i < 9; ++i)
 	{
 		if (i != 0 && i % 3 == 0)
@@ -193,7 +196,10 @@ TossBoard::TossBoard(void)
 			localPos.y += 0.5f;
 		}
 
-		bottles.push_back(new Bottle(RED));
+		glm::vec3 randColor = glm::vec3{ Math::RandFloatMinMax(0.0f, 1.0f),
+										Math::RandFloatMinMax(0.0f, 1.0f),
+										Math::RandFloatMinMax(0.0f, 1.0f) };
+		bottles.push_back(new Bottle(randColor));
 		bottles[i]->m_transform.Translate(localPos);
 		bottles[i]->m_transform.Rotate(20.0f, 0.0f, 0.0f);
 
@@ -202,6 +208,7 @@ TossBoard::TossBoard(void)
 
 	originalPos = glm::vec3(1.55f, originalPos.y * 2, 0.0f);
 	localPos = originalPos;
+	localPos.y += 5.5f;
 	for (unsigned i = 0; i < 9; ++i)
 	{
 		if (i != 0 && i % 3 == 0)
@@ -211,7 +218,10 @@ TossBoard::TossBoard(void)
 			localPos.y += 0.5f;
 		}
 
-		bottles.push_back(new Bottle(RED));
+		glm::vec3 randColor = glm::vec3{ Math::RandFloatMinMax(0.0f, 1.0f),
+										Math::RandFloatMinMax(0.0f, 1.0f),
+										Math::RandFloatMinMax(0.0f, 1.0f) };
+		bottles.push_back(new Bottle(randColor));
 		bottles[bottles.size() - 1]->m_transform.Translate(localPos);
 		bottles[bottles.size() - 1]->m_transform.Rotate(20.0f, 0.0f, 0.0f);
 
@@ -234,7 +244,7 @@ void TossBoard::LateUpdate(void)
 
 void TossBoard::Render(Scene& scene)
 {
-	scene.RenderMesh(scene.meshList[SceneRingToss::GEO_BOARD], false, m_transform);
+	scene.RenderMesh(scene.meshList[SceneRingToss::GEO_BOARD], scene.enableLight, m_transform);
 }
 
 btCompoundShape* Ring::GenerateCollider(void)
@@ -262,7 +272,8 @@ btCompoundShape* Ring::GenerateCollider(void)
 void Ring::GenerateRigidbody(void)
 {
 	PhysicsMaterial mat;
-	mat.m_mass = 1.0f;
+	mat.m_mass = 0.5f;
+	mat.m_friction = 0.8f;
 	btTransform t;
 	t.setIdentity();
 	btVector3 finalPosition = btVector3(m_transform.m_position.x + colliderOffset.x, m_transform.m_position.y + colliderOffset.y, m_transform.m_position.z + colliderOffset.z);
@@ -307,6 +318,94 @@ void Ring::LateUpdate(void)
 
 void Ring::Render(Scene& scene)
 {
-	scene.RenderRigidMesh(scene.meshList[SceneRingToss::GEO_TIE], false, m_transform, rb);
-	scene.RenderRigidMesh(scene.meshList[SceneRingToss::GEO_RING], false, m_transform, rb);
+	scene.meshList[SceneRingToss::GEO_TIE]->material = Material::Metal(WHITE);
+	scene.meshList[SceneRingToss::GEO_RING]->material = Material::Wood(WHITE);
+	scene.RenderRigidMesh(scene.meshList[SceneRingToss::GEO_TIE], scene.enableLight, m_transform, rb);
+	scene.RenderRigidMesh(scene.meshList[SceneRingToss::GEO_RING], scene.enableLight, m_transform, rb);
+}
+
+btCompoundShape* TossTable::GenerateCollider(void)
+{
+	btCompoundShape* compoundShape = new btCompoundShape();
+	compoundShape->setUserPointer(this);
+
+	btTransform tableTopTransform;
+	tableTopTransform.setIdentity();
+	tableTopTransform.setOrigin(btVector3(0.0f, 2.45f, .0f));
+	BoxCollider* tableTopCollider = new BoxCollider(this, 8.75f, 0.5f, 4.5f);
+	compoundShape->addChildShape(tableTopTransform, tableTopCollider);
+
+	float z = 1.25f;
+	for (unsigned i = 0; i < 2; ++i)
+	{
+		btTransform localTrandform1;
+		localTrandform1.setIdentity();
+		localTrandform1.setOrigin(btVector3(3.6f, 1.2f, z));
+		BoxCollider* leg1Collider = new BoxCollider(this, 0.5f, 2.25f, 0.65f);
+		compoundShape->addChildShape(localTrandform1, leg1Collider);
+
+		btTransform localTrandform2;
+		localTrandform2.setIdentity();
+		localTrandform2.setOrigin(btVector3(-3.6f, 1.2f, z));
+		BoxCollider* leg2Collider = new BoxCollider(this, 0.5f, 2.25f, 0.65f);
+		compoundShape->addChildShape(localTrandform2, leg2Collider);
+
+		z -= 2.52f;
+	}
+
+	return compoundShape;
+}
+
+void TossTable::GenerateRigidbody(void)
+{
+	PhysicsMaterial mat;
+	mat.m_mass = 0.0f;
+	mat.m_friction = 0.8f;
+	btTransform t;
+	t.setIdentity();
+	btVector3 finalPosition = btVector3(m_transform.m_position.x + colliderOffset.x, m_transform.m_position.y + colliderOffset.y, m_transform.m_position.z + colliderOffset.z);
+	t.setOrigin(btVector3(finalPosition));
+	t.setRotation(SetRotation(m_transform.m_rotation));
+	btCompoundShape* compoundCollider = GenerateCollider();
+	compoundCollider->setLocalScaling(btVector3(m_transform.m_scale.x, m_transform.m_scale.y, m_transform.m_scale.z));
+	ColliderManager::GetInstance()->AddCollider(compoundCollider);
+	btVector3 inertia(0.f, 0.f, 0.f);
+	if (mat.m_mass != 0.0f) compoundCollider->calculateLocalInertia(mat.m_mass, inertia);
+	btMotionState* motion = new btDefaultMotionState(t);
+	btRigidBody::btRigidBodyConstructionInfo info(mat.m_mass, motion, compoundCollider, inertia);
+
+	mat.m_bounciness = glm::clamp(mat.m_bounciness, 0.0f, 1.0f);
+	mat.m_friction = glm::clamp(mat.m_friction, 0.0f, 1.0f);
+	info.m_restitution = mat.m_bounciness;
+	info.m_friction = mat.m_friction;
+
+	rb = new btRigidBody(info);
+	CollisionManager::GetInstance()->GetDynamicsWorld()->addRigidBody(rb);
+	rb->setUserPointer(this);
+}
+
+TossTable::TossTable(void)
+{
+	GameObjectManager::addItem(this);
+}
+
+void TossTable::Start(void)
+{
+	GenerateRigidbody();
+}
+
+void TossTable::Update(void)
+{
+}
+
+void TossTable::LateUpdate(void)
+{
+}
+
+void TossTable::Render(Scene& scene)
+{
+	scene.meshList[SceneRingToss::GEO_TABLE]->material = Material::Wood(WHITE);
+	scene.meshList[SceneRingToss::GEO_TABLECLOTH]->material = Material::Plastic(WHITE);
+	scene.RenderMesh(scene.meshList[SceneRingToss::GEO_TABLE], scene.enableLight, m_transform);
+	scene.RenderMesh(scene.meshList[SceneRingToss::GEO_TABLECLOTH], scene.enableLight, m_transform);
 }

@@ -308,6 +308,7 @@ void Scene::RenderChildCollider(btCollisionShape* childShape, float matrix[16])
 		float size = sphereCollider->GetRadius();
 		modelStack.MultMatrix(GetTransformMatrix(matrix));
 		modelStack.Scale(size, size, size);
+		modelStack.Scale(childShape->getLocalScaling().x(), childShape->getLocalScaling().y(), childShape->getLocalScaling().z());
 		RenderMesh(hitboxMeshList[HITBOX_SPHERE]);
 	}
 	else if (childShape->getShapeType() == BOX_SHAPE_PROXYTYPE)
@@ -317,6 +318,7 @@ void Scene::RenderChildCollider(btCollisionShape* childShape, float matrix[16])
 		boxCollider->GetDimension(width, height, depth);
 		modelStack.MultMatrix(GetTransformMatrix(matrix));
 		modelStack.Scale(width, height, depth);
+		modelStack.Scale(childShape->getLocalScaling().x(), childShape->getLocalScaling().y(), childShape->getLocalScaling().z());
 		RenderMesh(hitboxMeshList[HITBOX_BOX]);
 	}
 	else if (childShape->getShapeType() == CYLINDER_SHAPE_PROXYTYPE)
@@ -326,11 +328,13 @@ void Scene::RenderChildCollider(btCollisionShape* childShape, float matrix[16])
 		cylinderCollider->GetDimension(rad, height);
 		modelStack.MultMatrix(GetTransformMatrix(matrix));
 		modelStack.Scale(rad / 2.0f, height, rad / 2.0f);
+		modelStack.Scale(childShape->getLocalScaling().x(), childShape->getLocalScaling().y(), childShape->getLocalScaling().z());
 		RenderMesh(hitboxMeshList[HITBOX_CYLINDER]);
 	}
 	else
 	{
 		modelStack.MultMatrix(GetTransformMatrix(matrix));
+		modelStack.Scale(childShape->getLocalScaling().x(), childShape->getLocalScaling().y(), childShape->getLocalScaling().z());
 		btCompoundShape* compoundShape = static_cast<btCompoundShape*>(childShape);
 		for (unsigned i = 0; i < compoundShape->getNumChildShapes(); ++i)
 		{
