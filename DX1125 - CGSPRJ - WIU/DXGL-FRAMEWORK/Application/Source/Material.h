@@ -12,6 +12,7 @@ public:
 	glm::vec3 kAmbient; //color for ambient light
 	glm::vec3 kDiffuse; //color for diffuse light
 	glm::vec3 kSpecular; //color for specular light
+	glm::vec3 kEmission;
 	float kShininess; //coefficient to define how shiny the material is
 	Material(void);
 

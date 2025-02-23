@@ -6,14 +6,11 @@ class Ring :
     public GameObject
 {
 private:
-    glm::vec3 m_color;
-
-private:
     btCompoundShape* GenerateCollider(void);
     void GenerateRigidbody(void);
 
 public:
-    Ring(glm::vec3 color);
+    Ring(void);
     ~Ring(void) = default;
 
     void Start(void) override;

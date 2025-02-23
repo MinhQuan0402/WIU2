@@ -1,4 +1,5 @@
 #include "Utility.h"
+#include "iostream"
 
 glm::mat4 GetTransformMatrix(btRigidBody* body)
 {
@@ -71,4 +72,46 @@ btVector3 QuaternionToEuler(btQuaternion quat) {
     btScalar roll, pitch, yaw;
     btMatrix3x3(quat).getEulerZYX(yaw, pitch, roll); // Convert quaternion to Euler angles (ZYX order)
     return btVector3(roll, pitch, yaw); // Angles in radians
+}
+
+bool isObjectInteractable(const glm::vec3& objectPos, FPCamera camera, float cameraFOV, float maxInteractionDistance)
+{
+    // Calculate the distance from the player to the object
+    float distanceToPlayer = glm::distance(objectPos, camera.m_transform.m_position);
+
+    // Check if the object is near the player
+    bool isNear = distanceToPlayer <= maxInteractionDistance;
+
+    if (!isNear) return isNear;
+
+    // Vector from camera to object
+    glm::vec3 toObject = objectPos - camera.m_transform.m_position;
+
+    // Normalize the toObject vector
+    glm::vec3 toObjectNormalized = glm::normalize(toObject);
+
+    glm::vec3 forward = glm::normalize(camera.target - camera.m_transform.m_position);
+
+    // Calculate the angle between the camera's forward direction and the object
+    float cosTheta = glm::dot(toObjectNormalized, glm::normalize(forward));
+
+    // Calculate the cosine of the half-FOV angle
+    float halfFOV = glm::radians(cameraFOV / 2.0f);
+    float cosHalfFOV = std::cos(halfFOV);
+
+    // Check if the object is in the field of view
+    bool isInView = cosTheta >= cosHalfFOV;
+
+    // Interaction is allowed only if both conditions are met
+    return isInView;
+}
+
+void printVector(glm::vec3 rhs)
+{
+    std::cout << "X: " << rhs.x << " Y: " << rhs.y << " Z: " << rhs.z << std::endl;
+}
+
+bool isTimeReach(const float& currentTime, const float& from, const float& to)
+{
+    return currentTime <= to && currentTime >= from;
 }

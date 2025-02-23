@@ -37,7 +37,7 @@ btCompoundShape* Bottle::GenerateCollider(void)
 void Bottle::GenerateRigidbody(void)
 {
 	PhysicsMaterial mat;
-	mat.m_mass = 10.0f;
+	mat.m_mass = 50.0f;
 	btTransform t;
 	t.setIdentity();
 	btVector3 finalPosition = btVector3(m_transform.m_position.x + colliderOffset.x, m_transform.m_position.y + colliderOffset.y, m_transform.m_position.z + colliderOffset.z);
@@ -272,7 +272,7 @@ btCompoundShape* Ring::GenerateCollider(void)
 void Ring::GenerateRigidbody(void)
 {
 	PhysicsMaterial mat;
-	mat.m_mass = 0.5f;
+	mat.m_mass = 1.0f;
 	mat.m_friction = 0.8f;
 	btTransform t;
 	t.setIdentity();
@@ -296,8 +296,7 @@ void Ring::GenerateRigidbody(void)
 	rb->setUserPointer(this);
 }
 
-Ring::Ring(glm::vec3 color)
-	: m_color{ color }
+Ring::Ring(void)
 {
 	m_transform.ScaleBy(0.1f, 0.1f, 0.1f);
 	GameObjectManager::addItem(this);
@@ -405,7 +404,7 @@ void TossTable::LateUpdate(void)
 void TossTable::Render(Scene& scene)
 {
 	scene.meshList[SceneRingToss::GEO_TABLE]->material = Material::Wood(WHITE);
-	scene.meshList[SceneRingToss::GEO_TABLECLOTH]->material = Material::Plastic(WHITE);
+	scene.meshList[SceneRingToss::GEO_TABLECLOTH]->material = Material::Wood(WHITE);
 	scene.RenderMesh(scene.meshList[SceneRingToss::GEO_TABLE], scene.enableLight, m_transform);
 	scene.RenderMesh(scene.meshList[SceneRingToss::GEO_TABLECLOTH], scene.enableLight, m_transform);
 }

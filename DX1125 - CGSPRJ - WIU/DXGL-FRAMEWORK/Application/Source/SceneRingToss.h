@@ -28,6 +28,7 @@ public:
 		GEO_TABLE,
 		GEO_TABLECLOTH,
 		GEO_COUNTER,
+		GEO_LIGHTPOLE,
 		NUM_GEOMETRY
 	};
 
@@ -42,17 +43,26 @@ public:
 
 private:
 	void RenderSkybox(void);
+	void RenderGround(int size);
 	int numLight;
-	bool isShoot = false;
-	float timer = 0.f;
+	bool isShoot;
+	bool isPickable;
+	int currentIndexRing;
+	float lightTimer;
 	
 	enum OBJINSCENE
 	{
 		GROUND,
+		WALLRIGHT,
+		WALLLEFT,
+		WALLBACK,
 		BOARD,
 		RING,
+		RING2,
+		RING3,
 		TABLE,
 		COUNTER,
+		PLAYER,
 		NUMOBJ
 	};
 

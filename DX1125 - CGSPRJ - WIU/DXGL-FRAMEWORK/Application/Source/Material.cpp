@@ -1,7 +1,10 @@
 #include "Material.h"
 
 float Material::additionalAmbient = 0.0f;
-Material::Material(void) : kAmbient(0.0f, 0.0f, 0.0f), kDiffuse(0.0f, 0.0f, 0.0f), kSpecular(0.0f, 0.0f, 0.0f), kShininess(1.f), size(0)
+Material::Material(void) 
+	: kAmbient(0.0f, 0.0f, 0.0f), kDiffuse(0.0f, 0.0f, 0.0f), 
+	kSpecular(0.0f, 0.0f, 0.0f), kShininess(1.f), size(0), 
+	kEmission(0.0f, 0.0f, 0.0f)
 {
 }
 
@@ -15,15 +18,15 @@ Material Material::Plastic(glm::vec3 color)
 	plastic.kAmbient = color * ambientStrength;
 	plastic.kDiffuse = color;
 	plastic.kSpecular = glm::vec3(specularStrength, specularStrength, specularStrength);
-	plastic.kShininess = 0.2f;
+	plastic.kShininess = 1.0f;
 	return plastic;
 }
 
 Material Material::Metal(glm::vec3 color)
 {
-	float ambientStrength = 0.3f + additionalAmbient;
-	float diffuseStrength = 0.6f;
-	float specularStrength = 0.8f;
+	float ambientStrength = 0.3f;
+	float diffuseStrength = 0.5f;
+	float specularStrength = 0.15f;
 
 	Material metal;
 	metal.kAmbient = color * ambientStrength;
@@ -64,7 +67,7 @@ Material Material::LED_Panel(glm::vec3 color)
 Material Material::Concrete(glm::vec3 color)
 {
 	float ambientStrength = 0.1f;
-	float diffuseStrength = 0.9f;
+	float diffuseStrength = 0.5f;
 	float specularStrength = 0.3f;
 
 	Material concrete;
