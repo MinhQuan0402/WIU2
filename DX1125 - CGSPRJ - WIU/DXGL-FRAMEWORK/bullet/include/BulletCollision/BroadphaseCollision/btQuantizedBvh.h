@@ -15,7 +15,7 @@ subject to the following restrictions:
 
 #ifndef BT_QUANTIZED_BVH_H
 #define BT_QUANTIZED_BVH_H
-
+#pragma warning(disable : 26495)
 class btSerializer;
 
 //#define DEBUG_CHECK_DEQUANTIZATION 1
@@ -450,7 +450,7 @@ public:
 
 	////////////////////////////////////////////////////////////////////
 
-	SIMD_FORCE_INLINE bool isQuantized() const
+	SIMD_FORCE_INLINE bool isQuantized()
 	{
 		return m_useQuantization;
 	}
