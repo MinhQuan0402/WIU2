@@ -170,7 +170,10 @@ void SceneBalloon::Update()
 		inputMovementDir = -mainCamera.right;
 	glm::vec3 finalForce = inputMovementDir * 10.0f * Time::deltaTime;
 	mainCamera.m_transform.Translate(finalForce);
+	glm::vec3 prevTarget = mainCamera.target;
 	mainCamera.UpdateCameraRotation();
+
+
 
 	GameObjectManager::GetInstance()->UpdateAll();
 }
