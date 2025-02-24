@@ -332,7 +332,7 @@ void SceneRingToss::Update()
 	{
 		for (int i = 1; i <= 12; ++i)
 		{
-			meshList[GEO_LIGHTPOLE]->materials[i - 1].kEmission = glm::vec3(0.25f, 0.25f, 0.25f);
+			meshList[GEO_LIGHTPOLE]->materials[i - 1].kEmission = glm::vec3(0.5f, 0.5f, 0.5f);
 
 			glm::vec3 randColor = glm::vec3{
 				Math::RandFloatMinMax(0.0f, 1.0f),

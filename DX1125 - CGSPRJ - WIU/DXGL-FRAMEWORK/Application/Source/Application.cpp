@@ -18,12 +18,13 @@
 #include "SceneManager.h"
 #include "CollisionManager.h"
 #include "ColliderManager.h"
+#include "SceneRingToss.h"
 
 GLFWmonitor* primaryMonitor;
 const GLFWvidmode* videoMode;
 GLFWwindow* m_window;		
 const unsigned char FPS = 60; // FPS of this game
-const unsigned int frameTime = 1.0 / FPS; // time for each frame
+const unsigned int frameTime = 1000 / (int)FPS; // time for each frame
 constexpr double FIXED_TIME_STEP = 1.0 / 60.0;
 
 int Application::m_consoleHeight = 0;
@@ -148,8 +149,8 @@ void Application::Run()
 {
 	//Main Loop
 	CollisionManager::GetInstance()->SetUpDynamicWorld(10.0f);
-	SceneManager::GetInstance()->PushState(new SceneGame);	
-	Time::fixedDeltaTime = FIXED_TIME_STEP;
+	SceneManager::GetInstance()->PushState(new SceneRingToss);	
+	Time::fixedDeltaTime = (float)FIXED_TIME_STEP;
 	m_timer.startTimer();    // Start timer to calculate how long it takes to render this frame
 	while (!glfwWindowShouldClose(m_window) && !IsKeyPressed(VK_ESCAPE))
 	{
@@ -162,7 +163,7 @@ void Application::Run()
 
 		Time::deltaTime = (float)m_timer.getElapsedTime();
 		Time::time += Time::deltaTime;
-
+		
 		SceneManager::GetInstance()->Update();
 		CollisionManager::GetInstance()->UpdateCollision();
 		SceneManager::GetInstance()->LateUpdate();
