@@ -102,8 +102,13 @@ private:
 		BOX6,
 		BOX7,
 		BOX8,
+		BOX9,
+		BOX10,
+		BOX11,
+		BOX12,
 
 		PLAYERBOX,
+		GROUND,
 
 		NUM_OBJ
 	};

@@ -7,7 +7,7 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 
-FPCamera::FPCamera() : isDirty(false), right{}, view{}, sensitivity{ 10.0f }
+FPCamera::FPCamera() : isDirty(false), right{}, view{}, sensitivity{ 10.0f }, forward{}
 {
 	this->target = glm::vec3(0, 0, 0);
 	this->up = glm::vec3(0, 1, 0);
@@ -31,6 +31,7 @@ void FPCamera::Update(void)
 {
 	view = glm::normalize(target - m_transform.m_position); //calculate the new view vector
 	right = glm::normalize(glm::cross(view, up));
+	forward = glm::normalize(glm::cross(up, right));
 }
 
 void FPCamera::UpdateCameraPosition(float x, float y, float z)
