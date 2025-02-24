@@ -6,7 +6,7 @@ class GameObject;
 
 struct MyContactResultCallback : public btCollisionWorld::ContactResultCallback {
     bool collisionDetected;
-
+	//please let me hit mq happy bd :) u old fuck
 	MyContactResultCallback();
 
 	btScalar addSingleResult(btManifoldPoint& cp,

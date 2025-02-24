@@ -192,6 +192,8 @@ btRigidBody* addCapsuleCollider(GameObject* go, const float& rad, const float& h
 	CollisionManager::GetInstance()->GetDynamicsWorld()->addRigidBody(rb);
 	rb->setUserPointer(go);
 	return rb;
+}
+
 bool CheckCollisionWith(btCollisionObject* obj1, btCollisionObject* obj2)
 {
 	MyContactResultCallback result;
