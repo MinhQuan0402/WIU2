@@ -10,7 +10,7 @@
 */
 #ifndef BT_WHEEL_INFO_H
 #define BT_WHEEL_INFO_H
-#pragma warning(disable : 26495)
+#pragma warning(disable : 26496)
 #include "LinearMath/btVector3.h"
 #include "LinearMath/btTransform.h"
 

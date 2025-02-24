@@ -31,44 +31,6 @@ SceneGame::~SceneGame()
 {
 }
 
-std::vector<btRigidBody*> bodies;
-
-btRigidBody* addSphere(float rad, float x, float y, float z, float mass)
-{
-	btTransform t;
-	t.setIdentity();
-	t.setOrigin(btVector3(x, y, z));
-	btSphereShape* sphere = new btSphereShape(rad);
-	btVector3 inertia(0.f, 0.f, 0.f);
-	if (mass != 0.0f) sphere->calculateLocalInertia(mass, inertia);
-	btMotionState* motion = new btDefaultMotionState(t);
-	btRigidBody::btRigidBodyConstructionInfo info(mass, motion, sphere, inertia);
-	info.m_restitution = 0.8f;
-	info.m_friction = 0.8f;
-	btRigidBody* rb = new btRigidBody(info);
-	CollisionManager::GetInstance()->GetDynamicsWorld()->addRigidBody(rb);
-	bodies.push_back(rb);
-	return rb;
-}
-
-btRigidBody* addBox(float size_x, float size_y, float size_z, float x, float y, float z, float mass)
-{
-	btTransform t;
-	t.setIdentity();
-	t.setOrigin(btVector3(x, y, z));
-	btBoxShape* box = new btBoxShape(btVector3(size_x / 2.0f, size_y / 2.0f, size_z / 2.0f));
-	btVector3 inertia(0.f, 0.f, 0.f);
-	if (mass != 0.0f) box->calculateLocalInertia(mass, inertia);
-	btMotionState* motion = new btDefaultMotionState(t);
-	btRigidBody::btRigidBodyConstructionInfo info(mass, motion, box, inertia);
-	info.m_restitution = 0.8f;
-	info.m_friction = 0.8f;
-	btRigidBody* rb = new btRigidBody(info);
-	CollisionManager::GetInstance()->GetDynamicsWorld()->addRigidBody(rb);
-	bodies.push_back(rb);
-	return rb;
-}
-
 void SceneGame::Init()
 {
 	Scene::Init();
@@ -131,7 +93,19 @@ void SceneGame::Init()
 	meshList[GEO_CYLINDER] = MeshBuilder::GenerateCylinder("Cylinder", BLUE, 180, 1.0f, 1.0f);
 	meshList[GEO_PLANE] = MeshBuilder::GenerateQuad("Quad", RED, 1000.0f);
 
-	
+	meshList[GEO_TOP] = MeshBuilder::GenerateQuad("Plane", glm::vec3(1.f, 1.f, 1.f), 10.f);
+	meshList[GEO_TOP]->textureID = LoadPNG("Images//top.png");
+	meshList[GEO_BOTTOM] = MeshBuilder::GenerateQuad("Plane", glm::vec3(1.f, 1.f, 1.f), 10.f);
+	meshList[GEO_BOTTOM]->textureID = LoadPNG("Images//bottom.png");
+	meshList[GEO_RIGHT] = MeshBuilder::GenerateQuad("Plane", glm::vec3(1.f, 1.f, 1.f), 10.f);
+	meshList[GEO_RIGHT]->textureID = LoadPNG("Images//front.png");
+	meshList[GEO_LEFT] = MeshBuilder::GenerateQuad("Plane", glm::vec3(1.f, 1.f, 1.f), 10.f);
+	meshList[GEO_LEFT]->textureID = LoadPNG("Images//back.png");
+	meshList[GEO_FRONT] = MeshBuilder::GenerateQuad("Plane", glm::vec3(1.f, 1.f, 1.f), 10.f);
+	meshList[GEO_FRONT]->textureID = LoadPNG("Images//right.png");
+	meshList[GEO_BACK] = MeshBuilder::GenerateQuad("Plane", glm::vec3(1.f, 1.f, 1.f), 10.f);
+	meshList[GEO_BACK]->textureID = LoadPNG("Images//left.png");
+
 	mainCamera.Init(glm::vec3(8, 6, 6), glm::vec3(0, 6, 0), VECTOR3_UP);
 	
 	glUniform1i(m_parameters[U_NUMLIGHTS], 2);
@@ -187,10 +161,9 @@ void SceneGame::Init()
 	objInScene[CYLINDER]->m_transform.Translate(0.0f, 80.0f, 0.0f);
 	objInScene[CYLINDER]->m_transform.ScaleBy(0.5f, 2.0f, 0.5f);
 	objInScene[CYLINDER]->rb = addCylinderCollider(objInScene[CYLINDER], 2.0f, 1.0f, mat);
-	objInScene[BOX]->rb->setSleepingThresholds(0.0f, 0.0f);
 	GameObjectManager::GetInstance()->addItem(objInScene[CYLINDER]);
 
-
+	
 }
 
 void SceneGame::Update()
@@ -209,11 +182,6 @@ void SceneGame::Update()
 	glm::vec3 finalForce = inputMovementDir * 10.0f * Time::deltaTime;
 	mainCamera.m_transform.Translate(finalForce);
 	mainCamera.UpdateCameraRotation();
-
-	
-
-	
-	
 }
 
 void SceneGame::LateUpdate()
@@ -225,12 +193,10 @@ void SceneGame::LateUpdate()
 		objInScene[BOX]->rb->clearGravity();
 	}
 
-	if (KeyboardController::GetInstance()->IsKeyReleased(VK_SPACE) && objInScene[BOX]->rb->getActivationState() == ISLAND_SLEEPING)
+	if (CheckCollisionWith(objInScene[BOX]->getObject(), objInScene[SPHERE]->getObject()))
 	{
-		objInScene[BOX]->rb->activate();
+		std::cout << "Is Collided!" << std::endl;
 	}
-
-	std::cout << "X: " << boxPosition.x << " Y: " << boxPosition.y << " Z: " << boxPosition.z << std::endl;
 }
 
 void SceneGame::Render()
@@ -275,10 +241,12 @@ void SceneGame::Render()
 	RenderMesh(meshList[GEO_AXIS]);
 	modelStack.PopMatrix();
 
-	modelStack.PushMatrix();
-	modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
-	RenderMesh(meshList[GEO_PLANE]);
-	modelStack.PopMatrix();
+	RenderSkybox();
+
+	//modelStack.PushMatrix();
+	//modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
+	//RenderMesh(meshList[GEO_PLANE]);
+	//modelStack.PopMatrix();
 
 	RenderRigidMesh(meshList[GEO_SPHERE], false, objInScene[SPHERE]->m_transform, objInScene[SPHERE]->rb);
 	RenderRigidMesh(meshList[GEO_CUBE], false, objInScene[BOX]->m_transform, objInScene[BOX]->rb);
@@ -342,10 +310,10 @@ void SceneGame::Exit()
 
 void SceneGame::RenderSkybox(void)
 {
-	float size = 50.0f;
+	float size = 30.0f;
 	modelStack.PushMatrix();
 	// Offset in Z direction by -50 units
-	modelStack.Translate(0.f, 0.f, -5.f * size);
+	modelStack.Translate(0.f, 0.f, -4.99f * size);
 	modelStack.Scale(size, size, 1.0f);
 	// Skybox should be rendered without light
 	RenderMesh(meshList[GEO_FRONT], false);
@@ -353,7 +321,7 @@ void SceneGame::RenderSkybox(void)
 
 	modelStack.PushMatrix();
 	// Offset in Z direction by -50 units
-	modelStack.Translate(0.f, 0.f, 5.f * size);
+	modelStack.Translate(0.f, 0.f, 4.99f * size);
 	modelStack.Rotate(180.0f, 0, 1, 0);
 	modelStack.Scale(size, size, 1.0f);
 	// Skybox should be rendered without light
@@ -362,7 +330,7 @@ void SceneGame::RenderSkybox(void)
 
 	modelStack.PushMatrix();
 	// Offset in Z direction by -50 units
-	modelStack.Translate(5.0f * size, 0.f, 0.0f);
+	modelStack.Translate(4.99f * size, 0.f, 0.0f);
 	modelStack.Rotate(-90.0f, 0, 1, 0);
 	modelStack.Scale(size, size, 1.0f);
 	// Skybox should be rendered without light
@@ -371,7 +339,7 @@ void SceneGame::RenderSkybox(void)
 
 	modelStack.PushMatrix();
 	// Offset in Z direction by -50 units
-	modelStack.Translate(-5.0f * size, 0.f, 0.0f);
+	modelStack.Translate(-4.99f * size, 0.f, 0.0f);
 	modelStack.Rotate(90.0f, 0, 1, 0);
 	modelStack.Scale(size, size, 1.0f);
 	// Skybox should be rendered without light
@@ -380,7 +348,7 @@ void SceneGame::RenderSkybox(void)
 
 	modelStack.PushMatrix();
 	// Offset in Z direction by -50 units
-	modelStack.Translate(0.0f, 5.0f * size, 0.0f);
+	modelStack.Translate(0.0f, 4.99f * size, 0.0f);
 	modelStack.Rotate(90.0f, 1, 0, 0);
 	modelStack.Scale(size, size, 1.0f);
 	// Skybox should be rendered without light
@@ -389,7 +357,7 @@ void SceneGame::RenderSkybox(void)
 
 	modelStack.PushMatrix();
 	// Offset in Z direction by -50 units
-	modelStack.Translate(0.0f, -5.0f * size, 0.0f);
+	modelStack.Translate(0.0f, -4.99f * size, 0.0f);
 	modelStack.Rotate(-90.0f, 1, 0, 0);
 	modelStack.Scale(size, size, 1.0f);
 	// Skybox should be rendered without light

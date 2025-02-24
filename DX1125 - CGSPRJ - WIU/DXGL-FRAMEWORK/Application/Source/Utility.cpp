@@ -18,6 +18,16 @@ glm::mat4 GetTransformMatrix(btRigidBody* body)
     return mat;
 }
 
+glm::mat4 GetTransformMatrix(float tempMat[16])
+{
+    glm::mat4 mat{};
+    unsigned index = 0;
+    for (unsigned i = 0; i < 4; ++i) { 
+        for (unsigned j = 0; j < 4; ++j) { 
+            mat[i][j] = tempMat[index++]; } }
+    return mat;
+}
+
 Transform ConvertMatrix2Transform(float mat[16])
 {
     Transform t;
