@@ -401,7 +401,7 @@ void SceneCanKnockdown::LateUpdate()
 				}
 			}
 
-			if (MouseController::GetInstance()->IsButtonReleased(0))
+			if (MouseController::GetInstance()->IsButtonReleased(0) && objInScene[BALL] != nullptr)
 			{
 				isShooting = true;
 				cooldownTimer = 3;
