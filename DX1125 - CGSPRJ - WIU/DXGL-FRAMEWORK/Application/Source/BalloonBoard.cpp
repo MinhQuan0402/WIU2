@@ -5,7 +5,9 @@
 
 BalloonBoard::BalloonBoard()
 {
+
 	srand((unsigned)time(0));
+	
 
 	float start = 5;
 	float dist = 1.5;
@@ -15,7 +17,6 @@ BalloonBoard::BalloonBoard()
 	{
 		for (unsigned column = 0; column < 8; column++)
 		{
-
 			Balloon* balloon = new Balloon();
 			balloon->m_transform.Translate(-5.1, startY, start);
 			balloons.push_back(balloon);

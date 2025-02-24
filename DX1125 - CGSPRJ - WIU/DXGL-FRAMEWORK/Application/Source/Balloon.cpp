@@ -28,8 +28,8 @@ void Balloon::Start()
 
 void Balloon::Update()
 {
-	if (setColour == false) {
-
+	if (setColour == false) 
+	{
 		colourR = ((float)rand() / (RAND_MAX));
 		std::cout << colourR << std::endl;
 
