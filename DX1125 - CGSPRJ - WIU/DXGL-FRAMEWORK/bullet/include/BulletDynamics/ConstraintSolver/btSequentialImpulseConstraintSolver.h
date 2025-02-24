@@ -15,7 +15,7 @@ subject to the following restrictions:
 
 #ifndef BT_SEQUENTIAL_IMPULSE_CONSTRAINT_SOLVER_H
 #define BT_SEQUENTIAL_IMPULSE_CONSTRAINT_SOLVER_H
-#pragma warning(disable : 26495)
+
 class btIDebugDraw;
 class btPersistentManifold;
 class btDispatcher;
@@ -118,12 +118,12 @@ protected:
 
 	virtual void convertBodies(btCollisionObject * *bodies, int numBodies, const btContactSolverInfo& infoGlobal);
 
-	btScalar resolveSplitPenetrationSIMD(btSolverBody& bodyA, btSolverBody& bodyB, const btSolverConstraint& contactConstraint) const
+	btScalar resolveSplitPenetrationSIMD(btSolverBody & bodyA, btSolverBody & bodyB, const btSolverConstraint& contactConstraint)
 	{
 		return m_resolveSplitPenetrationImpulse(bodyA, bodyB, contactConstraint);
 	}
 
-	btScalar resolveSplitPenetrationImpulseCacheFriendly(btSolverBody& bodyA, btSolverBody& bodyB, const btSolverConstraint& contactConstraint) const
+	btScalar resolveSplitPenetrationImpulseCacheFriendly(btSolverBody & bodyA, btSolverBody & bodyB, const btSolverConstraint& contactConstraint)
 	{
 		return m_resolveSplitPenetrationImpulse(bodyA, bodyB, contactConstraint);
 	}
@@ -136,7 +136,7 @@ protected:
 	btScalar resolveSingleConstraintRowGenericSIMD(btSolverBody & bodyA, btSolverBody & bodyB, const btSolverConstraint& contactConstraint);
 	btScalar resolveSingleConstraintRowLowerLimit(btSolverBody & bodyA, btSolverBody & bodyB, const btSolverConstraint& contactConstraint);
 	btScalar resolveSingleConstraintRowLowerLimitSIMD(btSolverBody & bodyA, btSolverBody & bodyB, const btSolverConstraint& contactConstraint);
-	btScalar resolveSplitPenetrationImpulse(btSolverBody& bodyA, btSolverBody& bodyB, const btSolverConstraint& contactConstraint) const
+	btScalar resolveSplitPenetrationImpulse(btSolverBody & bodyA, btSolverBody & bodyB, const btSolverConstraint& contactConstraint)
 	{
 		return m_resolveSplitPenetrationImpulse(bodyA, bodyB, contactConstraint);
 	}
@@ -181,7 +181,7 @@ public:
 		return BT_SEQUENTIAL_IMPULSE_SOLVER;
 	}
 
-	btSingleConstraintRowSolver getActiveConstraintRowSolverGeneric() const
+	btSingleConstraintRowSolver getActiveConstraintRowSolverGeneric()
 	{
 		return m_resolveSingleConstraintRowGeneric;
 	}
@@ -189,7 +189,7 @@ public:
 	{
 		m_resolveSingleConstraintRowGeneric = rowSolver;
 	}
-	btSingleConstraintRowSolver getActiveConstraintRowSolverLowerLimit() const
+	btSingleConstraintRowSolver getActiveConstraintRowSolverLowerLimit()
 	{
 		return m_resolveSingleConstraintRowLowerLimit;
 	}

@@ -25,7 +25,7 @@ http://gimpact.sf.net
 
 #ifndef BT_GENERIC_6DOF_CONSTRAINT_H
 #define BT_GENERIC_6DOF_CONSTRAINT_H
-
+#pragma warning(disable : 26495)
 #include "LinearMath/btVector3.h"
 #include "btJacobianEntry.h"
 #include "btTypedConstraint.h"

@@ -15,7 +15,7 @@ subject to the following restrictions:
 
 #ifndef BT_JACOBIAN_ENTRY_H
 #define BT_JACOBIAN_ENTRY_H
-
+#pragma warning(disable : 26495)
 #include "LinearMath/btMatrix3x3.h"
 
 //notes:
