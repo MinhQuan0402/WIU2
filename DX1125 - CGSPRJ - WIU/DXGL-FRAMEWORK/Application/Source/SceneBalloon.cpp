@@ -158,8 +158,7 @@ void SceneBalloon::Init()
 
 	GameObjectManager::GetInstance()->IniAll();
 
-	power = 10.f;
-	maxPower = 10.f;
+	power = 5.f;
 	cooldownTimer = 0.f;
 	isShooting = false;
 	gameComplete = false;
@@ -334,10 +333,10 @@ void SceneBalloon::Render()
 
 	// Render ui:
 	{
-		if (power > 10) {
-			RenderMeshOnScreen(meshList[GEO_POWERUI_FRAME], 50,30, 100 * 1.25, 25 * 1.25, glm::vec3(0, 0, 0));
-			RenderMeshOnScreen(meshList[GEO_POWERUI_BAR], 42.5, 30, power / maxPower * 120, 25, glm::vec3(-0.5, 0, 0));
-		}
+		//if (power > 5) {
+			RenderMeshOnScreen(meshList[GEO_POWERUI_FRAME], 600, 200, 100 * 1.25, 25 * 1.25, glm::vec3(0, 0, 0));
+			RenderMeshOnScreen(meshList[GEO_POWERUI_BAR], 525, 200, power / maxPower * 120, 25, glm::vec3(-0.5, 0, 0));
+		//}
 	}
 
 

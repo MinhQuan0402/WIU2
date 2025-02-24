@@ -53,7 +53,7 @@ private:
 	bool gameComplete;
 	int attemptsLeft;
 	float power;
-	float maxPower;
+	const float maxPower = 30.f;
 
 	
 	enum OBJINSCENE
