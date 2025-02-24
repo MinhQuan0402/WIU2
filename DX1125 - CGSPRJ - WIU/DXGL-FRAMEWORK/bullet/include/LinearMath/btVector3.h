@@ -20,7 +20,6 @@ subject to the following restrictions:
 #include "btMinMax.h"
 #include "btAlignedAllocator.h"
 
-
 #ifdef BT_USE_DOUBLE_PRECISION
 #define btVector3Data btVector3DoubleData
 #define btVector3DataName "btVector3DoubleData"
