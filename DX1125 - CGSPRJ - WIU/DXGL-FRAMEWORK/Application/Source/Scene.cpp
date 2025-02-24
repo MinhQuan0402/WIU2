@@ -175,8 +175,8 @@ void Scene::RenderMeshOnScreen(Mesh* mesh, float x, float y, float sizex, float 
 	glEnable(GL_BLEND);
 	glDisable(GL_DEPTH_TEST);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	modelStack.LoadIdentity();
 	modelStack.PushMatrix();
+	modelStack.LoadIdentity();
 	glm::mat4 ortho = glm::ortho(0.f, (float)Application::m_consoleWidth, 0.f, (float)Application::m_consoleHeight, -
 		1000.f, 1000.f); // dimension of screen UI
 	projectionStack.PushMatrix();
@@ -238,8 +238,8 @@ void Scene::RenderTextOnScreen(Mesh* mesh, std::string text, glm::vec3 color, fl
 {
 	if (!mesh || mesh->textureID <= 0) //Proper error check
 		return;
-	modelStack.LoadIdentity();
 	modelStack.PushMatrix();
+	modelStack.LoadIdentity();
 	// Enable blending
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
