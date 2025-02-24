@@ -162,7 +162,7 @@ void SceneBalloon::Init()
 	cooldownTimer = 0.f;
 	isShooting = false;
 	gameComplete = false;
-	attemptsLeft = 2;
+	attemptsLeft = 9;
 }
 
 void SceneBalloon::Update()
@@ -231,6 +231,8 @@ void SceneBalloon::LateUpdate()
 
 		// Calculate world position of the ball
 		glm::vec3 newPos = cameraPos + (forward * 2.f) + (right * 1.f) + (up * -1.f);
+
+		objInScene[DART]->m_transform.m_rotation = glm::vec3(mainCamera.view.x, mainCamera.view.y, mainCamera.view.z);
 
 		if (objInScene[DART] != nullptr && attemptsLeft >= 0) {
 			objInScene[DART]->SetRigidbodyPosition(newPos);
@@ -333,10 +335,10 @@ void SceneBalloon::Render()
 
 	// Render ui:
 	{
-		//if (power > 5) {
+		if (power > 5) {
 			RenderMeshOnScreen(meshList[GEO_POWERUI_FRAME], 600, 200, 100 * 1.25, 25 * 1.25, glm::vec3(0, 0, 0));
-			RenderMeshOnScreen(meshList[GEO_POWERUI_BAR], 525, 200, power / maxPower * 120, 25, glm::vec3(-0.5, 0, 0));
-		//}
+			RenderMeshOnScreen(meshList[GEO_POWERUI_BAR], 600, 200, power / maxPower * 120, 25, glm::vec3(-0.5, 0, 0));
+		}
 	}
 
 
