@@ -149,7 +149,7 @@ void SceneDuckShooting::Init()
 	meshList[GEO_BULLET]->material = Material::Plastic(BLUE);
 
 	meshList[GEO_PILLAR] = MeshBuilder::GenerateCube("Pillar", WHITE, 1);
-	meshList[GEO_PILLAR]->material = Material::Concrete(RED);
+	meshList[GEO_PILLAR]->material = Material::Concrete(glm::vec3(1, 0.2, 0.2));
 
 	meshList[GEO_CONVEYOR] = MeshBuilder::GenerateOBJ("Conveyor", "Models//DS_ConveyorBelt.obj");
 	meshList[GEO_CONVEYOR]->textureID = LoadPNG("Images//DS_ConveyorBelt.png");

@@ -2,7 +2,7 @@
 #include "GameObjectManager.h"
 #include "SceneDuckShooting.h"
 
-DS_Duck::DS_Duck() : hit{}, speed{ 3 }, animTime{}
+DS_Duck::DS_Duck() : hit{}, speed{ 7 }, animTime{}
 {
 	GameObjectManager::GetInstance()->addItem(this);
 }
