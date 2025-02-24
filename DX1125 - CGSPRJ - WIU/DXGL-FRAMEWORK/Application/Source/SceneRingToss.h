@@ -49,6 +49,7 @@ private:
 	bool isPickable;
 	int currentIndexRing;
 	float lightTimer;
+	bool isInView;
 	
 	enum OBJINSCENE
 	{

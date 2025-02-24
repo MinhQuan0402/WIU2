@@ -23,7 +23,8 @@
 #include "TossBoard.h"
 
 SceneRingToss::SceneRingToss()
-	: numLight{ 25 }, isShoot{ false }, isPickable{ true }, currentIndexRing{ 0 }, lightTimer{ 0.0f } 
+	: numLight{ 25 }, isShoot{ false }, isPickable{ true },
+	currentIndexRing{ 0 }, lightTimer{ 0.0f }, isInView{ false }
 {
 	meshList.resize(NUM_GEOMETRY);
 	lights.resize(numLight);
@@ -144,7 +145,7 @@ void SceneRingToss::Init()
 
 	meshList[GEO_BOARD]->material = Material::Wood(WHITE);
 
-	mainCamera.Init(glm::vec3(0, 10, 30), glm::vec3(0, 10, 0), VECTOR3_UP);
+	mainCamera.Init(glm::vec3(0, 10, 25.0f), glm::vec3(0, 10, 0), VECTOR3_UP);
 	mainCamera.constraintYaw = 0.5f;
 	
 	glUniform1i(m_parameters[U_NUMLIGHTS], numLight);
@@ -277,6 +278,7 @@ void SceneRingToss::Init()
 	objInScene[PLAYER]->rb = addBoxCollider(objInScene[PLAYER], 2.0f, colliderHeight, 2.0f, matP, glm::vec3(0.0f, colliderHeight / 2.f, 0.f));
 	GameObjectManager::addItem(objInScene[PLAYER]);
 	objInScene[PLAYER]->rb->setSleepingThresholds(0.0f, 0.0f);
+	objInScene[PLAYER]->rb->setAngularFactor(btVector3(0, 0, 0));
 
 	objInScene[RING] = new Ring;
 	objInScene[RING]->m_transform.Translate(-2.0f, 8.0f, 22.0f);
@@ -316,14 +318,19 @@ void SceneRingToss::Update()
 	{
 		for (int i = 0; i < 3; ++i)
 		{
-			if (isObjectInteractable(objInScene[RING + i]->GetRigidbodyPosition(), mainCamera, 25.0f, 4.f)
-			&& KeyboardController::GetInstance()->IsKeyPressed('F'))
+			if (isObjectInteractable(objInScene[RING + i]->GetRigidbodyPosition(), mainCamera, 25.0f, 4.f))
 			{
-				isPickable = false;
-				isShoot = false;
-
+				isInView = true;
 				currentIndexRing = RING + i;
+				if (KeyboardController::GetInstance()->IsKeyPressed('F'))
+				{
+					isPickable = false;
+					isShoot = false;
+					isInView = false;
+				}
+				break;
 			}
+			else isInView = false;
 		}
 	}
 
@@ -358,10 +365,7 @@ void SceneRingToss::LateUpdate()
 
 	glm::vec3 playerRBPosition = objInScene[PLAYER]->GetRigidbodyPosition();
 	mainCamera.m_transform.m_position = glm::vec3(playerRBPosition.x, playerRBPosition.y + 10, playerRBPosition.z);
-	objInScene[PLAYER]->rb->setAngularFactor(btVector3(0, 0, 0));
 	mainCamera.UpdateCameraRotation();
-
-	printVector(mainCamera.forward);
 
 	if (!isShoot && !isPickable)
 	{
@@ -453,6 +457,17 @@ void SceneRingToss::Render()
 	meshList[GEO_COUNTER]->material = Material::Wood(WHITE);
 	RenderMesh(meshList[GEO_COUNTER], enableLight, objInScene[COUNTER]->m_transform);
 	GameObjectManager::RenderAll(*this);
+
+	if (isInView)
+	{
+		modelStack.PushMatrix();
+		modelStack.Translate(objInScene[currentIndexRing]->m_transform.m_position.x - 1.0f,
+							objInScene[currentIndexRing]->m_transform.m_position.y + 1.0f,
+							objInScene[currentIndexRing]->m_transform.m_position.z);
+		modelStack.Scale(0.15f, 0.15f, 0.15f);
+		RenderText(meshList[GEO_TEXT], "Press 'F' to pickup", BLUE);
+		modelStack.PopMatrix();
+	}
 
 #ifdef DRAW_HITBOX
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);

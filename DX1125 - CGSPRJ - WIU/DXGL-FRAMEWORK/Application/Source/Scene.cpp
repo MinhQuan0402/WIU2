@@ -202,7 +202,6 @@ void Scene::RenderText(Mesh* mesh, std::string text, glm::vec3 color)
 {
 	if (!mesh || mesh->textureID <= 0) //Proper error check
 		return;
-	modelStack.LoadIdentity();
 	modelStack.PushMatrix();
 	// Enable blending
 	glEnable(GL_BLEND);
