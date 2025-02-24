@@ -121,6 +121,8 @@ public:
 	void SetRigidbodyRotation(const glm::vec3& newRotation);
 	void SetRigidbodyRotation(const float& x, const float& y, const float& z);
 	glm::vec3 GetRigidbodyRotation(void) const;
+
+	btCollisionObject* getObject(void) const;
 	
 	bool operator==(const GameObject& rhs);
 
