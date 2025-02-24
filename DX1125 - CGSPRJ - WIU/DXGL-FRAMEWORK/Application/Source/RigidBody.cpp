@@ -192,4 +192,20 @@ btRigidBody* addCapsuleCollider(GameObject* go, const float& rad, const float& h
 	CollisionManager::GetInstance()->GetDynamicsWorld()->addRigidBody(rb);
 	rb->setUserPointer(go);
 	return rb;
+bool CheckCollisionWith(btCollisionObject* obj1, btCollisionObject* obj2)
+{
+	MyContactResultCallback result;
+	CollisionManager::GetInstance()->GetDynamicsWorld()->contactPairTest(obj1, obj2, result);
+	return result.collisionDetected;
+}
+
+MyContactResultCallback::MyContactResultCallback()
+	: collisionDetected{ false }
+{
+}
+
+btScalar MyContactResultCallback::addSingleResult(btManifoldPoint& cp, const btCollisionObjectWrapper* colObj0Wrap, int partId0, int index0, const btCollisionObjectWrapper* colObj1Wrap, int partId1, int index1)
+{
+	collisionDetected = true;
+	return 0; // Return value is ignored
 }

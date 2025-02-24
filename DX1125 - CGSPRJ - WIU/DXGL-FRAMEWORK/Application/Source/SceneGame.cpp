@@ -162,6 +162,8 @@ void SceneGame::Init()
 	objInScene[CYLINDER]->m_transform.ScaleBy(0.5f, 2.0f, 0.5f);
 	objInScene[CYLINDER]->rb = addCylinderCollider(objInScene[CYLINDER], 2.0f, 1.0f, mat);
 	GameObjectManager::GetInstance()->addItem(objInScene[CYLINDER]);
+
+	
 }
 
 void SceneGame::Update()
@@ -191,8 +193,10 @@ void SceneGame::LateUpdate()
 		objInScene[BOX]->rb->clearGravity();
 	}
 
-
-	std::cout << "X: " << boxPosition.x << " Y: " << boxPosition.y << " Z: " << boxPosition.z << std::endl;
+	if (CheckCollisionWith(objInScene[BOX]->getObject(), objInScene[SPHERE]->getObject()))
+	{
+		std::cout << "Is Collided!" << std::endl;
+	}
 }
 
 void SceneGame::Render()
