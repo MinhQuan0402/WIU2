@@ -24,7 +24,7 @@
 #include "BalloonBoard.h"
 #include "Dart.h"
 
-SceneBalloon::SceneBalloon() : numLight{ 2 }
+SceneBalloon::SceneBalloon() : numLight{ 2 }, currentDartIndex{ DART1 }
 {
 	meshList.resize(NUM_GEOMETRY);
 	lights.resize(numLight);
@@ -153,10 +153,26 @@ void SceneBalloon::Init()
 
 	objInScene[BALLOONBOARD] = new BalloonBoard();
 	objInScene[DART1] = new Dart();
+	objInScene[DART2] = new Dart();
+	objInScene[DART3] = new Dart();
+	objInScene[DART4] = new Dart();
+	objInScene[DART5] = new Dart();
+	objInScene[DART6] = new Dart();
+	objInScene[DART7] = new Dart();
+	objInScene[DART8] = new Dart();
+	objInScene[DART9] = new Dart();
+	objInScene[DART10] = new Dart();
+
 
 	objInScene[BALLOONBOARD]->m_transform.Translate(-5.2, 3.6, -0.3);
 
 	GameObjectManager::GetInstance()->IniAll();
+
+	PhysicsMaterial groundMat;
+	groundMat.m_friction = 0.5f;
+	objInScene[GROUND] = new GameObject();
+	objInScene[GROUND]->rb = addStaticPlane(objInScene[GROUND], VECTOR3_UP, groundMat);
+	GameObjectManager::GetInstance()->addItem(objInScene[GROUND]);
 
 	power = 5.f;
 	cooldownTimer = 0.f;
@@ -216,6 +232,7 @@ void SceneBalloon::LateUpdate()
 		isShooting = false;
 		cooldownTimer = 0;
 		attemptsLeft--;
+		currentDartIndex++;
 
 		//if (attemptsLeft < 0 && gameComplete == false) {
 		//	SceneManager::GetInstance()->PopState();
@@ -241,13 +258,13 @@ void SceneBalloon::LateUpdate()
 
 		//objInScene[DART]->m_transform.m_rotation = gunRotation;
 
-		if (objInScene[DART1] != nullptr && attemptsLeft >= 0) {
+		if (objInScene[currentDartIndex] != nullptr && attemptsLeft >= 0) {
 
-			objInScene[DART1]->SetRigidbodyPosition(newPos);
-			objInScene[DART1]->SetRigidbodyRotation(gunRotation);
-			objInScene[DART1]->rb->clearGravity();
-			objInScene[DART1]->rb->setSleepingThresholds(0, 0);
-			objInScene[DART1]->rb->setAngularVelocity(btVector3(0, 0, 0));
+			objInScene[currentDartIndex]->SetRigidbodyPosition(newPos);
+			objInScene[currentDartIndex]->SetRigidbodyRotation(gunRotation);
+			objInScene[currentDartIndex]->rb->clearGravity();
+			objInScene[currentDartIndex]->rb->setSleepingThresholds(0, 0);
+			objInScene[currentDartIndex]->rb->setAngularVelocity(btVector3(0, 0, 0));
 		}
 
 		if (cooldownTimer <= 0) {
@@ -261,14 +278,14 @@ void SceneBalloon::LateUpdate()
 				}
 			}
 
-			if (MouseController::GetInstance()->IsButtonReleased(0) && objInScene[DART1] != nullptr)
+			if (MouseController::GetInstance()->IsButtonReleased(0) && objInScene[currentDartIndex] != nullptr)
 			{
 				isShooting = true;
 				cooldownTimer = 3;
 				glm::vec3 look = mainCamera.view * power;
-				objInScene[DART1]->rb->setSleepingThresholds(0.8, 1);
-				objInScene[DART1]->rb->setLinearVelocity(btVector3(look.x - 3, look.y + 3, look.z));
-				objInScene[DART1]->rb->activate();
+				objInScene[currentDartIndex]->rb->setSleepingThresholds(0.8, 1);
+				objInScene[currentDartIndex]->rb->setLinearVelocity(btVector3(look.x - 3, look.y + 3, look.z));
+				objInScene[currentDartIndex]->rb->activate();
 				power = 0;
 			}
 		}

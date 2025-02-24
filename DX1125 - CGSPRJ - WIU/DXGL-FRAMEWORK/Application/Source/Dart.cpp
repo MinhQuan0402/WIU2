@@ -13,6 +13,8 @@ void Dart::Start()
 {
 	PhysicsMaterial mat;
 	mat.m_mass = 1.f;
+	mat.m_friction = 0.7f;
+	mat.m_bounciness = 0.1f;
 
 	m_transform.Rotate(0, 0, 90);
 

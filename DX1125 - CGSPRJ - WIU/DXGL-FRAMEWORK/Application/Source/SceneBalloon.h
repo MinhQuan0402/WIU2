@@ -76,6 +76,8 @@ private:
 		NUMOBJ
 	};
 
+	int currentDartIndex;
+
 	GameObject* objInScene[NUMOBJ];
 };
 
