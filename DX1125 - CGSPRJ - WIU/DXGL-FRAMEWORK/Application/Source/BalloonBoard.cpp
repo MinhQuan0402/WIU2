@@ -5,16 +5,25 @@
 
 BalloonBoard::BalloonBoard()
 {
+	srand((unsigned)time(0));
+
 	float start = 5;
 	float dist = 1.5;
+	float startY = 6;
 
-	for (unsigned i = 0; i < 10; i++)
+	for (unsigned row = 0; row < 4; row++)
 	{
-		Balloon* balloon = new Balloon();
-		balloon->m_transform.Translate(-5.2, 3, start);
-		balloons.push_back(balloon);
+		for (unsigned column = 0; column < 8; column++)
+		{
 
-		start -= dist;
+			Balloon* balloon = new Balloon();
+			balloon->m_transform.Translate(-5.1, startY, start);
+			balloons.push_back(balloon);
+
+			start -= dist;
+		}
+		startY -= dist;
+		start = 5;
 	}
 
 	GameObjectManager::GetInstance()->addItem(this);

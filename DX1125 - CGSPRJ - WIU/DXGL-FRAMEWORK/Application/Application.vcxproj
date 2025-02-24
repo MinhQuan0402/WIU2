@@ -155,6 +155,7 @@
     <ClCompile Include="Source\ColliderManager.cpp" />
     <ClCompile Include="Source\CollisionManager.cpp" />
     <ClCompile Include="Source\CQuad.cpp" />
+    <ClCompile Include="Source\Dart.cpp" />
     <ClCompile Include="Source\FPCamera.cpp" />
     <ClCompile Include="Source\GameObject.cpp" />
     <ClCompile Include="Source\GameObjectManager.cpp" />
@@ -184,6 +185,7 @@
     <ClInclude Include="Source\Camera.h" />
     <ClInclude Include="Source\ColliderManager.h" />
     <ClInclude Include="Source\CollisionManager.h" />
+    <ClInclude Include="Source\Dart.h" />
     <ClInclude Include="Source\FPCamera.h" />
     <ClInclude Include="Source\GameObject.h" />
     <ClInclude Include="Source\GameObjectManager.h" />

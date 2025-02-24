@@ -22,6 +22,7 @@
 #include "ColliderManager.h"
 #include "Balloon.h"
 #include "BalloonBoard.h"
+#include "Dart.h"
 
 SceneBalloon::SceneBalloon() : numLight{ 2 }
 {
@@ -101,6 +102,7 @@ void SceneBalloon::Init()
 	meshList[GEO_BPBOOTHROOF]->textureID = LoadPNG("Images//BP_BoothRoof.png");
 	meshList[GEO_BALLOONBOARD] = MeshBuilder::GenerateOBJ("BalloonBoard", "Models//noticeboard.obj");
 	meshList[GEO_BALLOONBOARD]->textureID = LoadPNG("Images//boardimage.png");
+	meshList[GEO_DART] = MeshBuilder::GenerateOBJMTL("Dart", "Models//dart.obj", "Models//dart.mtl");
 
 	meshList[GEO_TOP] = MeshBuilder::GenerateQuad("Plane", glm::vec3(1.f, 1.f, 1.f), 10.f);
 	meshList[GEO_TOP]->textureID = LoadPNG("Images//top.png");
@@ -145,8 +147,8 @@ void SceneBalloon::Init()
 
 	enableLight = true;
 
-	objInScene[BALLOON] = new Balloon();
 	objInScene[BALLOONBOARD] = new BalloonBoard();
+	objInScene[DART] = new Dart();
 
 	objInScene[BALLOONBOARD]->m_transform.Translate(-5.2, 3.6, -0.3);
 

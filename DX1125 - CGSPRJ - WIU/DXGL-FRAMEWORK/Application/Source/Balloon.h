@@ -1,5 +1,7 @@
 #pragma once
 #include "GameObject.h"
+
+
 class Balloon : public GameObject
 {
 public:
@@ -7,6 +9,7 @@ public:
 	float colourR;
 	float colourB;
 	float colourG;
+	bool popped;
 
 	Balloon();
 

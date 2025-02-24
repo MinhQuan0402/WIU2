@@ -3,10 +3,15 @@
 #include "RigidBody.h"
 #include "GameObjectManager.h"
 #include "SceneBalloon.h"
+#include "Dart.h"
 
 Balloon::Balloon()
 {
 	setColour = false;
+	colourR = 0.f;
+	colourG = 0.f;
+	colourB = 0.f;
+	popped = false;
 	GameObjectManager::GetInstance()->addItem(this);
 }
 
@@ -23,28 +28,28 @@ void Balloon::Start()
 
 void Balloon::Update()
 {
-	srand((unsigned)time(0));
-
 	if (setColour == false) {
+
 		colourR = ((float)rand() / (RAND_MAX));
-		//std::cout << colourR << std::endl;
+		std::cout << colourR << std::endl;
 
 		colourG = ((float)rand() / (RAND_MAX));
-		//std::cout << colourG << std::endl;
+		std::cout << colourG << std::endl;
 
 		colourB = ((float)rand() / (RAND_MAX));
-		//std::cout << colourB << std::endl;
+		std::cout << colourB << std::endl;
 
 		setColour = true;
 	}
 
+	//if (rb->checkCollideWith())
 }
 
 void Balloon::Render(Scene& scene)
 {
 	scene.meshList[SceneBalloon::GEO_BALLOON]->material.kAmbient = glm::vec3(colourR - 0.2, colourG - 0.2, colourB - 0.2);
 	scene.meshList[SceneBalloon::GEO_BALLOON]->material.kDiffuse = glm::vec3(colourR, colourG, colourB);
-	scene.meshList[SceneBalloon::GEO_BALLOON]->material.kSpecular = glm::vec3(0.500000, 0.500000, 0.500000);
+	scene.meshList[SceneBalloon::GEO_BALLOON]->material.kSpecular = glm::vec3(0.200000, 0.200000, 0.200000);
 	scene.meshList[SceneBalloon::GEO_BALLOON]->material.kShininess = 1.f;
 
 	scene.RenderMesh(scene.meshList[SceneBalloon::GEO_BALLOON], true, m_transform);
