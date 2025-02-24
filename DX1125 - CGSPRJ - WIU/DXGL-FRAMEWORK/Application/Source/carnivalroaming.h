@@ -6,6 +6,7 @@
 #include "Transform.h"
 #include "GameObject.h"
 #include "CircusTent.h"
+
 class carnivalroaming : public Scene
 {
 public:
@@ -89,8 +90,6 @@ private:
 
 	float ducksX[10];
 	float ducksY[10];
-
-
 
 	enum OBJSCENE
 	{

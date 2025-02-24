@@ -24,6 +24,10 @@
 #include "ColliderManager.h"
 #include "RigidBody.h"
 #include "PlayerHitBox.h"
+#include "ScenePlinko.h"
+#include "SceneManager.h"
+#include "GameManager.h"
+
 carnivalroaming::carnivalroaming() : numLight{ 2 }
 {
 	meshList.resize(NUM_GEOMETRY);
@@ -225,8 +229,15 @@ void carnivalroaming::Init()
 	meshList[GEO_GRASS] = MeshBuilder::GenerateCube("Cube", YELLOW, 1.0f);
 	meshList[GEO_GRASS]->textureID = LoadPNG("Images//CR_grass.png");
 
+	glm::vec3 savedPositionn = GameManager::GetInstance()->GetPlayerPosition();
+	if (savedPositionn.x &&
+		savedPositionn.y &&
+		savedPositionn.z)
+	{
+		mainCamera.Init(savedPositionn, glm::vec3(0.0f, savedPositionn.y, 0.0f), VECTOR3_UP);
+	}
+	else mainCamera.Init(glm::vec3(0,35,-400), glm::vec3(0,35,0), VECTOR3_UP);
 
-	mainCamera.Init(glm::vec3(0, 35, -400), glm::vec3(0, 35, 0), VECTOR3_UP);
 	mainCamera.sensitivity = 20;
 
 	glUniform1i(m_parameters[U_NUMLIGHTS], 1);
@@ -338,6 +349,7 @@ void carnivalroaming::Init()
 	objInscene[PLAYERBOX]->m_transform.Translate(mainCamera.m_transform.m_position.x, 0.0f, mainCamera.m_transform.m_position.z);
 	objInscene[PLAYERBOX]->rb = addBoxCollider(objInscene[PLAYERBOX], 3.0f, playerColliderHeight, 3.0f, mat, glm::vec3(0.0f, playerColliderHeight / 2.f, 0.0f));
 	objInscene[PLAYERBOX]->rb->setSleepingThresholds(0.0f, 0.0f);
+	objInscene[PLAYERBOX]->rb->setAngularFactor(btVector3(0, 0, 0));
 
 	PhysicsMaterial groundMat;
 	groundMat.m_friction = 0.5f;
@@ -363,7 +375,7 @@ void carnivalroaming::Init()
 
 	}
 	
-	
+	std::cout << GameManager::GetInstance()->GetPoints() << std::endl;
 
 }
 
@@ -390,7 +402,6 @@ void carnivalroaming::LateUpdate()
 {
 	glm::vec3 playerRBPosition = objInscene[PLAYERBOX]->GetRigidbodyPosition();
 	mainCamera.m_transform.m_position = glm::vec3(playerRBPosition.x, playerRBPosition.y + 35, playerRBPosition.z);
-	objInscene[PLAYERBOX]->rb->setAngularFactor(btVector3(0, 0, 0));
 	mainCamera.UpdateCameraRotation();
 
 	// Developer Controls:
@@ -416,18 +427,6 @@ void carnivalroaming::LateUpdate()
 		}
 
 		lights[0].m_transform.m_position = devVec;
-		//std::cout << devVec.x << ", " << devVec.y << ", " << devVec.z << std::endl;
-		
-		/*GameObject::MoveObj(objInscene[CIRCLE]->m_transform);
-		GameObject::MoveObj(objInscene[BOX]->m_transform);
-		GameObject::MoveObj(objInscene[BOX2]->m_transform);
-		GameObject::MoveObj(objInscene[BOX3]->m_transform);
-		GameObject::MoveObj(objInscene[BOX4]->m_transform);
-		GameObject::MoveObj(objInscene[BOX5]->m_transform);
-		GameObject::MoveObj(objInscene[BOX6]->m_transform);
-		GameObject::MoveObj(objInscene[BOX7]->m_transform);
-		GameObject::MoveObj(objInscene[BOX8]->m_transform);
-		GameObject::MoveObj(objInscene[PLAYERBOX]->m_transform);*/
 
 		GameObjectManager::GetInstance()->UpdateAll(); 
 	}
@@ -435,6 +434,7 @@ void carnivalroaming::LateUpdate()
 	if (CheckCollisionWith(objInscene[PLAYERBOX]->getObject(), objInscene[BOX]->getObject())  and KeyboardController::GetInstance()->IsKeyDown('E'))
 	{
 		std::cout << "Colliding with duck shooting" << std::endl;
+		
 		
 	}
 	if (CheckCollisionWith(objInscene[PLAYERBOX]->getObject(), objInscene[BOX2]->getObject()) and KeyboardController::GetInstance()->IsKeyDown('E'))
@@ -458,6 +458,8 @@ void carnivalroaming::LateUpdate()
 	if (CheckCollisionWith(objInscene[PLAYERBOX]->getObject(), objInscene[BOX6]->getObject()) and KeyboardController::GetInstance()->IsKeyDown('E'))
 	{
 		std::cout << "Colliding with plinko" << std::endl;
+		SceneManager::GetInstance()->ChangeState(new ScenePlinko);
+		return;
 	}
 	if (CheckCollisionWith(objInscene[PLAYERBOX]->getObject(), objInscene[BOX7]->getObject()) and KeyboardController::GetInstance()->IsKeyDown('E'))
 	{
@@ -467,7 +469,6 @@ void carnivalroaming::LateUpdate()
 	{
 		std::cout << "Colliding with food truck" << std::endl;
 	}
-
 }
 
 void carnivalroaming::Render()
@@ -1552,10 +1553,15 @@ void carnivalroaming::Render()
 
 void carnivalroaming::Exit()
 {
+	GameManager::GetInstance()->SetPlayerPosition(mainCamera.m_transform.m_position.x, mainCamera.m_transform.m_position.y, mainCamera.m_transform.m_position.z);
+	GameManager::GetInstance()->SetCameraTarget(mainCamera.target.x, mainCamera.target.y, mainCamera.target.z);
+	//GameManager::GetInstance()->SetPoints();
+	
 	// Cleanup VBO here
 	for (int i = 0; i < NUM_GEOMETRY; ++i) { if (meshList[i]) delete meshList[i]; }
 	meshList.clear();
 	GameObjectManager::GetInstance()->clearGOs();
+	ColliderManager::GetInstance()->ClearAll();
 
 	glDeleteVertexArrays(1, &m_vertexArrayID);
 	glDeleteProgram(m_programID);

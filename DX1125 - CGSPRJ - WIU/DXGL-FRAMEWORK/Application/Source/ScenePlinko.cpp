@@ -23,6 +23,9 @@
 #include "PlinkoCylinder.h"
 #include "PlinkoWall.h"
 #include "PlinkoBoard.h"
+#include "GameManager.h"
+#include "SceneManager.h"
+#include "carnivalroaming.h"
 
 ScenePlinko::ScenePlinko() : numLight{ 2 }, ballZ{ 0.0f }, currentBallIndex{ BALL1 }, plinkoScore{ 0 }
 {
@@ -358,9 +361,10 @@ void ScenePlinko::Render()
 	modelStack.PopMatrix();
 
 	RenderTextOnScreen(meshList[GEO_TEXT], "Score:" + std::to_string(plinkoScore), RED, 40, 980, 600);
-
 	if (gameEnd) {
 		RenderTextOnScreen(meshList[GEO_TEXT], "YOU WIN!!!", GREEN, 80, 400, 400);
+		SceneManager::GetInstance()->ChangeState(new carnivalroaming);
+		return;
 	}
 
 //#ifdef DRAW_HITBOX
@@ -409,10 +413,13 @@ void ScenePlinko::Render()
 
 void ScenePlinko::Exit()
 {
+	GameManager::GetInstance()->SetPoints(GameManager::GetInstance()->GetPoints() + plinkoScore);
+
 	// Cleanup VBO here
 	for (int i = 0; i < NUM_GEOMETRY; ++i) { if (meshList[i]) delete meshList[i]; }
 	meshList.clear();
 	GameObjectManager::GetInstance()->clearGOs();
+	ColliderManager::GetInstance()->ClearAll(); 
 
 	glDeleteVertexArrays(1, &m_vertexArrayID);
 	glDeleteProgram(m_programID);

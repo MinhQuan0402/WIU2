@@ -16,9 +16,11 @@
 #include "Time.h"
 #include "SceneGame.h"
 #include "ScenePlinko.h"
+#include "carnivalroaming.h"
 #include "SceneManager.h"
 #include "CollisionManager.h"
 #include "ColliderManager.h"
+#include "GameManager.h"
 
 GLFWmonitor* primaryMonitor;
 const GLFWvidmode* videoMode;
@@ -149,7 +151,7 @@ void Application::Run()
 {
 	//Main Loop
 	CollisionManager::GetInstance()->SetUpDynamicWorld(10.0f);
-	SceneManager::GetInstance()->PushState(new ScenePlinko);
+	SceneManager::GetInstance()->PushState(new carnivalroaming); 
 	Time::fixedDeltaTime = FIXED_TIME_STEP;
 	m_timer.startTimer();    // Start timer to calculate how long it takes to render this frame
 	while (!glfwWindowShouldClose(m_window) && !IsKeyPressed(VK_ESCAPE))
@@ -194,6 +196,7 @@ void Application::Exit()
 	SceneManager::DestroyInstance();
 	ColliderManager::DestroyInstance();
 	CollisionManager::DestroyInstance();
+	GameManager::DestroyInstance();
 
 	//Close OpenGL window and terminate GLFW
 	glfwDestroyWindow(m_window);
