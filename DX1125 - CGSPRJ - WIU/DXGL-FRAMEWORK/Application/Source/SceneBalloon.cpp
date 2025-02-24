@@ -152,7 +152,7 @@ void SceneBalloon::Init()
 	enableLight = true;
 
 	objInScene[BALLOONBOARD] = new BalloonBoard();
-	objInScene[DART] = new Dart();
+	objInScene[DART1] = new Dart();
 
 	objInScene[BALLOONBOARD]->m_transform.Translate(-5.2, 3.6, -0.3);
 
@@ -183,30 +183,32 @@ void SceneBalloon::Update()
 	glm::vec3 prevTarget = mainCamera.target;
 	mainCamera.UpdateCameraRotation();
 
-	// stop player rotating too far:
-	{
-		glm::vec3 toObject = glm::normalize(glm::vec3(0, 3, 0) - mainCamera.m_transform.m_position);
+	//// stop player rotating too far:
+	//{
+	//	glm::vec3 toObject = glm::normalize(glm::vec3(0, 3, 0) - mainCamera.m_transform.m_position);
 
-		glm::vec3 lookVector = glm::normalize(mainCamera.target - mainCamera.m_transform.m_position);
+	//	glm::vec3 lookVector = glm::normalize(mainCamera.target - mainCamera.m_transform.m_position);
 
-		float dotProduct = glm::dot(lookVector, toObject);
-		float threshold = glm::cos(glm::radians(fov * 0.5));
+	//	float dotProduct = glm::dot(lookVector, toObject);
+	//	float threshold = glm::cos(glm::radians(fov * 0.5));
 
-		if (dotProduct <= threshold) // Rotated too much
-		{
-			mainCamera.target = prevTarget;
-		}
-		else {
-			float closeness = (dotProduct - threshold) / (1.0f - threshold);
-			mainCamera.sensitivity = 10 + closeness * (50 - 10);
-		}
-	}
+	//	if (dotProduct <= threshold) // Rotated too much
+	//	{
+	//		mainCamera.target = prevTarget;
+	//	}
+	//	else {
+	//		float closeness = (dotProduct - threshold) / (1.0f - threshold);
+	//		mainCamera.sensitivity = 10 + closeness * (50 - 10);
+	//	}
+	//}
 
 	GameObjectManager::GetInstance()->UpdateAll();
 }
 
 void SceneBalloon::LateUpdate()
 {
+	mainCamera.Update();
+
 	if (cooldownTimer > 0) {
 		cooldownTimer -= Time::deltaTime;
 	}
@@ -231,13 +233,21 @@ void SceneBalloon::LateUpdate()
 
 		// Calculate world position of the ball
 		glm::vec3 newPos = cameraPos + (forward * 2.f) + (right * 1.f) + (up * -1.f);
+		glm::vec3 direction = glm::normalize(mainCamera.target - cameraPos);
 
-		objInScene[DART]->m_transform.m_rotation = glm::vec3(mainCamera.view.x, mainCamera.view.y, mainCamera.view.z);
+		glm::vec3 gunRotation;
+		gunRotation.y = atan2(direction.x, direction.z);
+		gunRotation.x = asin(-direction.y);
 
-		if (objInScene[DART] != nullptr && attemptsLeft >= 0) {
-			objInScene[DART]->SetRigidbodyPosition(newPos);
-			objInScene[DART]->rb->clearGravity();
-			objInScene[DART]->rb->setSleepingThresholds(0, 0);
+		//objInScene[DART]->m_transform.m_rotation = gunRotation;
+
+		if (objInScene[DART1] != nullptr && attemptsLeft >= 0) {
+
+			objInScene[DART1]->SetRigidbodyPosition(newPos);
+			objInScene[DART1]->SetRigidbodyRotation(gunRotation);
+			objInScene[DART1]->rb->clearGravity();
+			objInScene[DART1]->rb->setSleepingThresholds(0, 0);
+			objInScene[DART1]->rb->setAngularVelocity(btVector3(0, 0, 0));
 		}
 
 		if (cooldownTimer <= 0) {
@@ -251,14 +261,14 @@ void SceneBalloon::LateUpdate()
 				}
 			}
 
-			if (MouseController::GetInstance()->IsButtonReleased(0) && objInScene[DART] != nullptr)
+			if (MouseController::GetInstance()->IsButtonReleased(0) && objInScene[DART1] != nullptr)
 			{
 				isShooting = true;
 				cooldownTimer = 3;
 				glm::vec3 look = mainCamera.view * power;
-				objInScene[DART]->rb->setSleepingThresholds(0.8, 1);
-				objInScene[DART]->rb->setLinearVelocity(btVector3(look.x - 3, look.y + 3, look.z));
-				objInScene[DART]->rb->activate();
+				objInScene[DART1]->rb->setSleepingThresholds(0.8, 1);
+				objInScene[DART1]->rb->setLinearVelocity(btVector3(look.x - 3, look.y + 3, look.z));
+				objInScene[DART1]->rb->activate();
 				power = 0;
 			}
 		}
@@ -336,8 +346,8 @@ void SceneBalloon::Render()
 	// Render ui:
 	{
 		if (power > 5) {
-			RenderMeshOnScreen(meshList[GEO_POWERUI_FRAME], 600, 200, 100 * 1.25, 25 * 1.25, glm::vec3(0, 0, 0));
-			RenderMeshOnScreen(meshList[GEO_POWERUI_BAR], 600, 200, power / maxPower * 120, 25, glm::vec3(-0.5, 0, 0));
+			RenderMeshOnScreen(meshList[GEO_POWERUI_FRAME], 0.5, 0.3, 100 * 1.25, 25 * 1.25, glm::vec2(0, 0));
+			RenderMeshOnScreen(meshList[GEO_POWERUI_BAR], 0.425, 0.3, power / maxPower * 120, 25, glm::vec2(-0.5, 0));
 		}
 	}
 
@@ -453,4 +463,27 @@ void SceneBalloon::RenderSkybox(void)
 	// Skybox should be rendered without light
 	RenderMesh(meshList[GEO_BOTTOM], false);
 	modelStack.PopMatrix();
+}
+
+void SceneBalloon::RenderMeshOnScreen(Mesh* mesh, float x, float y, float width, float height, glm::vec2 anchorPoint)
+{
+	glDisable(GL_DEPTH_TEST);
+	glm::mat4 ortho = glm::ortho(0.f, 800.f, 0.f, 600.f, -
+		1000.f, 1000.f); // dimension of screen UI
+	projectionStack.PushMatrix();
+	projectionStack.LoadMatrix(ortho);
+	viewStack.PushMatrix();
+	viewStack.LoadIdentity(); //No need camera for ortho mode
+	modelStack.PushMatrix();
+	modelStack.LoadIdentity();
+
+	// To do: Use modelStack to position GUI on screen
+	modelStack.Translate(x * 800 - width * anchorPoint.x, y * 600 - height * anchorPoint.y, 0);
+	// To do: Use modelStack to scale the GUI
+	modelStack.Scale(width, height, 1);
+	RenderMesh(mesh, false); //UI should not have light
+	projectionStack.PopMatrix();
+	viewStack.PopMatrix();
+	modelStack.PopMatrix();
+	glEnable(GL_DEPTH_TEST);
 }

@@ -45,6 +45,7 @@ public:
 
 private:
 	void RenderSkybox(void);
+	void RenderMeshOnScreen(Mesh* mesh, float x, float y, float width, float height, glm::vec2 anchorPoint);
 	int numLight;
 
 	float fov;
@@ -53,7 +54,8 @@ private:
 	bool gameComplete;
 	int attemptsLeft;
 	float power;
-	const float maxPower = 30.f;
+	const float maxPower = 25.f;
+
 
 	
 	enum OBJINSCENE
@@ -61,7 +63,16 @@ private:
 		GROUND,
 		BALLOON,
 		BALLOONBOARD,
-		DART,
+		DART1,
+		DART2,
+		DART3,
+		DART4,
+		DART5,
+		DART6,
+		DART7,
+		DART8,
+		DART9,
+		DART10,
 		NUMOBJ
 	};
 
