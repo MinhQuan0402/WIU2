@@ -145,8 +145,8 @@ void SceneDuckShooting::Init()
 	meshList[GEO_GUN]->material = Material::Wood(WHITE);
 	meshList[GEO_GUN]->textureID = LoadPNG("Images//DS_Gun.png");
 
-	meshList[GEO_BULLET] = MeshBuilder::GenerateOBJMTL("Bullet", "Models//DS_Bullet.obj", "Models//DS_Bullet.mtl");
-	meshList[GEO_BULLET]->material = Material::Wood(YELLOW);
+	meshList[GEO_BULLET] = MeshBuilder::GenerateSphere("Bullet", BLUE, 1);
+	meshList[GEO_BULLET]->material = Material::Plastic(BLUE);
 
 
 	mainCamera.Init(glm::vec3(0, 3, 7.5), glm::vec3(0, 3, 0), VECTOR3_UP);
@@ -365,14 +365,8 @@ void SceneDuckShooting::LateUpdate()
 				glm::vec3 origin = mainCamera.m_transform.m_position + bulletOffset;
 				glm::vec3 direction = glm::normalize(mainCamera.target - origin);
 
-				glm::vec3 rotation;
-				rotation.y = glm::degrees(atan2(direction.x, direction.z)); // Yaw
-				rotation.x = glm::degrees(asin(-direction.y)) - 90;              // Pitch
-
-				objInScene[BULLET]->m_transform.Translate(origin);
-				objInScene[BULLET]->m_transform.m_rotation = rotation;
-
 				objInScene[BULLET]->rb->setSleepingThresholds(0.8, 1);
+				objInScene[BULLET]->SetRigidbodyPosition(origin);
 				objInScene[BULLET]->rb->setLinearVelocity(btVector3(direction.x, direction.y, direction.z) * bulletSpeed);
 				objInScene[BULLET]->rb->activate();
 
@@ -492,8 +486,17 @@ void SceneDuckShooting::Render()
 	// placeholder:
 	{
 		//modelStack.PushMatrix();
-		//modelStack.Translate(devVec.x, devVec.y, devVec.z);
-		////modelStack.Scale(1.5, 1.5, 0.2);
+
+		//glm::vec3 bulletOffset = mainCamera.right * 0.165f + mainCamera.up * -0.075f + mainCamera.view * 1.f;
+		//glm::vec3 origin = mainCamera.m_transform.m_position + bulletOffset;
+		//glm::vec3 direction = glm::normalize(mainCamera.target - origin);
+
+		//glm::vec3 rotation;
+		//rotation.y = glm::degrees(atan2(direction.x, direction.z)); // Yaw
+		//rotation.x = glm::degrees(asin(-direction.y)) - 90;              // Pitch
+
+		//modelStack.Translate(origin.x, origin.y, origin.z);
+		//modelStack.Scale(0.05, 0.05, 0.05);
 		//RenderMesh(meshList[GEO_BULLET], true);
 		//modelStack.PopMatrix();
 	}
