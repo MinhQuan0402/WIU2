@@ -102,11 +102,14 @@
     <ClCompile Include="Source\ColliderManager.cpp">
       <Filter>Source Files\Managers</Filter>
     </ClCompile>
-    <ClCompile Include="Source\TossBoard.cpp">
+    <ClCompile Include="Source\Button_UI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\SceneRingToss.cpp">
       <Filter>Source Files\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\TossBoard.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -182,11 +185,14 @@
     <ClInclude Include="Source\SceneManager.h">
       <Filter>Header Files\Managers</Filter>
     </ClInclude>
-    <ClInclude Include="Source\TossBoard.h">
+    <ClInclude Include="Source\Button_UI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\SceneRingToss.h">
       <Filter>Header Files\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\TossBoard.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

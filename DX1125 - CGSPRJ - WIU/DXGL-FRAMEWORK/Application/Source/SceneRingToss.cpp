@@ -153,7 +153,7 @@ void SceneRingToss::Init()
 	lights[0].m_transform.m_position = glm::vec3(60.0f, 60.0f, -30.0f);
 	lights[0].color = glm::vec3(1, 1, 1);
 	lights[0].type = Light::LIGHT_DIRECTIONAL;
-	lights[0].power = 0.5;
+	lights[0].power = 2.0f;
 	lights[0].kC = 0.5f;
 	lights[0].kL = 0.01f;
 	lights[0].kQ = 0.001f;
@@ -353,6 +353,7 @@ void SceneRingToss::Update()
 
 			lights[12 + i].color = randColor;
 			glUniform3fv(m_parameters[U_LIGHT0_COLOR + U_LIGHT0_EXPONENT * (12 + i)], 1, &lights[12 + i].color.r); 
+			std::cout << U_LIGHT0_COLOR + U_LIGHT0_EXPONENT * (12 + i) << std::endl;
 		}
 
 		lightTimer = 0.0f;
@@ -433,10 +434,6 @@ void SceneRingToss::Render()
 		}
 	}
 
-	modelStack.PushMatrix();
-	RenderMesh(meshList[GEO_AXIS]);
-	modelStack.PopMatrix();
-
 	RenderSkybox();
 	RenderGround(7);
 
@@ -470,6 +467,11 @@ void SceneRingToss::Render()
 	}
 
 #ifdef DRAW_HITBOX
+
+	modelStack.PushMatrix();
+	RenderMesh(meshList[GEO_AXIS]);
+	modelStack.PopMatrix();
+
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	for (btCollisionShape* shape : ColliderManager::GetInstance()->colliders)
 	{
@@ -526,6 +528,7 @@ void SceneRingToss::Render()
 
 	if(isFillMode) glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 #endif
+
 }
 
 void SceneRingToss::Exit()

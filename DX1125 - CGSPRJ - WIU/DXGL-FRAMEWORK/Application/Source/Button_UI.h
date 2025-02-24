@@ -2,9 +2,9 @@
 #include <glm/ext/vector_float2.hpp>
 #include "Scene.h"
 
-struct GUI_Button
+struct Button_UI
 {
-	GUI_Button(glm::vec2 position = glm::vec2{}, float width = 1.0f, float height = 1.0f);
+	Button_UI(glm::vec2 position = glm::vec2{}, float width = 1.0f, float height = 1.0f);
 
 	glm::vec2 position;
 	float width, height;

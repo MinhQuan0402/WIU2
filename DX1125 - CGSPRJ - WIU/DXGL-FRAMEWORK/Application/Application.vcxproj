@@ -149,6 +149,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Source\Application.cpp" />
+    <ClCompile Include="Source\Button_UI.cpp" />
     <ClCompile Include="Source\Camera.cpp" />
     <ClCompile Include="Source\ColliderManager.cpp" />
     <ClCompile Include="Source\CollisionManager.cpp" />
@@ -178,6 +179,7 @@
     <ClInclude Include="..\..\..\..\..\..\..\..\School\DX1125 - CGSPRJ - WIU\DXGL-FRAMEWORK\Application\Source\CQuad.h" />
     <ClInclude Include="..\Common\Source\MyMath.h" />
     <ClInclude Include="Source\Application.h" />
+    <ClInclude Include="Source\Button_UI.h" />
     <ClInclude Include="Source\Camera.h" />
     <ClInclude Include="Source\ColliderManager.h" />
     <ClInclude Include="Source\CollisionManager.h" />

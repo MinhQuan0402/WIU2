@@ -5,6 +5,7 @@
 #include "Mesh.h"
 #include "Transform.h"
 #include "GameObject.h"
+#include "Button_UI.h"
 
 class SceneRingToss : public Scene
 {
@@ -68,6 +69,9 @@ private:
 	};
 
 	GameObject* objInScene[NUMOBJ];
+
+	Button_UI retryButton;
+	Button_UI exitButton;
 };
 
 #endif
