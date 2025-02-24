@@ -91,6 +91,7 @@ private:
 	float ducksY[10];
 
 
+
 	enum OBJSCENE
 	{
 		CIRCLE,

@@ -432,9 +432,40 @@ void carnivalroaming::LateUpdate()
 		GameObjectManager::GetInstance()->UpdateAll(); 
 	}
 
-	if (objInscene[PLAYERBOX]->rb->checkCollideWithOverride(objInscene[BOX]->rb))
+	if (CheckCollisionWith(objInscene[PLAYERBOX]->getObject(), objInscene[BOX]->getObject())  and KeyboardController::GetInstance()->IsKeyDown('E'))
 	{
-		//std::cout << "Colliding with duck shooting" << std::endl;
+		std::cout << "Colliding with duck shooting" << std::endl;
+		
+	}
+	if (CheckCollisionWith(objInscene[PLAYERBOX]->getObject(), objInscene[BOX2]->getObject()) and KeyboardController::GetInstance()->IsKeyDown('E'))
+	{
+		std::cout << "Colliding with ring toss" << std::endl;
+	
+	}
+	if (CheckCollisionWith(objInscene[PLAYERBOX]->getObject(), objInscene[BOX3]->getObject()) and KeyboardController::GetInstance()->IsKeyDown('E'))
+	{
+		std::cout << "Colliding with can game" << std::endl;
+		
+	}
+	if (CheckCollisionWith(objInscene[PLAYERBOX]->getObject(), objInscene[BOX4]->getObject()) and KeyboardController::GetInstance()->IsKeyDown('E'))
+	{
+		std::cout << "Colliding with balloon pop" << std::endl;
+	}
+	if (CheckCollisionWith(objInscene[PLAYERBOX]->getObject(), objInscene[BOX5]->getObject()) and KeyboardController::GetInstance()->IsKeyDown('E'))
+	{
+		std::cout << "Colliding with duck fishing" << std::endl;
+	}
+	if (CheckCollisionWith(objInscene[PLAYERBOX]->getObject(), objInscene[BOX6]->getObject()) and KeyboardController::GetInstance()->IsKeyDown('E'))
+	{
+		std::cout << "Colliding with plinko" << std::endl;
+	}
+	if (CheckCollisionWith(objInscene[PLAYERBOX]->getObject(), objInscene[BOX7]->getObject()) and KeyboardController::GetInstance()->IsKeyDown('E'))
+	{
+		std::cout << "Colliding with food truck" << std::endl;
+	}
+	if (CheckCollisionWith(objInscene[PLAYERBOX]->getObject(), objInscene[BOX8]->getObject()) and KeyboardController::GetInstance()->IsKeyDown('E'))
+	{
+		std::cout << "Colliding with food truck" << std::endl;
 	}
 
 }

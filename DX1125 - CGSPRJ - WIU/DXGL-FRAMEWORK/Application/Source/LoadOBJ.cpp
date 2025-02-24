@@ -289,6 +289,7 @@ bool LoadOBJMTL(const char* file_path, const char* mtl_path, std::vector<glm::ve
 			// process usemtl
 			char mtl_name[256];
 			strcpy_s(mtl_name, buf + 7);
+			mtl_name[strcspn(mtl_name, "\r")] = '\0';
 			if (materials_map.find(mtl_name) != materials_map.end())
 			{
 				Material* mtl = materials_map.find(mtl_name)->second;
