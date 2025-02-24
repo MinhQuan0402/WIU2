@@ -10,7 +10,8 @@ DS_Bullet::DS_Bullet()
 void DS_Bullet::Start()
 {
 	PhysicsMaterial mat;
-	mat.m_mass = 1;
+	mat.m_mass = 0.5;
+	mat.m_bounciness = 1;
 	m_transform.ScaleBy(0.05, 0.05, 0.05);
 	rb = addSphereCollider(this, 0.05, mat);
 }

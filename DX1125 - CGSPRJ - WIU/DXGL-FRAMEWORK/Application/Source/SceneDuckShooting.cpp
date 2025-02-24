@@ -145,9 +145,15 @@ void SceneDuckShooting::Init()
 	meshList[GEO_GUN]->material = Material::Wood(WHITE);
 	meshList[GEO_GUN]->textureID = LoadPNG("Images//DS_Gun.png");
 
-	meshList[GEO_BULLET] = MeshBuilder::GenerateSphere("Bullet", BLUE, 1);
+	meshList[GEO_BULLET] = MeshBuilder::GenerateSphere("Bullet", WHITE, 1);
 	meshList[GEO_BULLET]->material = Material::Plastic(BLUE);
 
+	meshList[GEO_PILLAR] = MeshBuilder::GenerateCube("Pillar", WHITE, 1);
+	meshList[GEO_PILLAR]->material = Material::Concrete(RED);
+
+	meshList[GEO_CONVEYOR] = MeshBuilder::GenerateOBJ("Conveyor", "Models//DS_ConveyorBelt.obj");
+	meshList[GEO_CONVEYOR]->textureID = LoadPNG("Images//DS_ConveyorBelt.png");
+	meshList[GEO_CONVEYOR]->material = Material::Wood(WHITE);
 
 	mainCamera.Init(glm::vec3(0, 3, 7.5), glm::vec3(0, 3, 0), VECTOR3_UP);
 	mainCamera.sensitivity = 50.0f;
@@ -255,6 +261,9 @@ void SceneDuckShooting::Init()
 	}
 
 	bulletSpeed = 20;
+	recoil = false;
+	recoilBack = false;
+	recoilTime = 0;
 	cooldownTimer = 0;
 	gameComplete = false;
 }
@@ -297,7 +306,8 @@ void SceneDuckShooting::Update()
 	//	}
 	//}
 
-	float speed = 20 * Time::deltaTime;
+
+	float speed = 2 * Time::deltaTime;
 	if (KeyboardController::GetInstance()->IsKeyDown('I'))
 		devVec.z += speed;
 	if (KeyboardController::GetInstance()->IsKeyDown('K'))
@@ -318,6 +328,48 @@ void SceneDuckShooting::Update()
 
 
 	GameObjectManager::GetInstance()->UpdateAll();
+
+
+	// recoil
+	{
+		if (recoil) {
+			if (recoilBack == false) {
+				if (recoilTime < recoilDuration * 0.75) {
+					recoilTime += Time::deltaTime;
+				}
+				else {
+					recoilTime = recoilDuration * 0.75;
+					recoilBack = true;
+				}
+			}
+			else {
+				if (recoilTime > 0) {
+					recoilTime -= Time::deltaTime;
+				}
+				else {
+					recoilTime = 0;
+					recoilBack = false;
+					recoil = false;
+				}
+			}
+		}
+	}
+
+	// check bullet collision with duck:
+	{
+		DS_Duck* duck = dynamic_cast<DS_Duck*>(objInScene[DUCK]);
+		if (CheckCollisionWith(duck->rb, objInScene[BULLET]->rb)) {
+			if (!duck->hit) {
+				duck->hit = true;
+				//duck->rb->setIgnoreCollisionCheck(objInScene[BULLET]->rb, true);
+				std::cout << "Touch" << std::endl;
+			}
+		}
+
+		if (duck->hit == false) {
+			//duck->rb->setIgnoreCollisionCheck(objInScene[BULLET]->rb, false);
+		}
+	}
 }
 
 void SceneDuckShooting::LateUpdate()
@@ -329,7 +381,7 @@ void SceneDuckShooting::LateUpdate()
 		glm::vec3 right = mainCamera.right;
 		glm::vec3 up = mainCamera.up;
 
-		glm::vec3 gunOffset = right * 0.2f + up * -0.15f + forward * 0.45f;
+		glm::vec3 gunOffset = right * 0.2f + up * -0.15f + forward * (1 - recoilTime / recoilDuration) * 0.45f;
 		gunTransform.m_position = cameraPos + gunOffset;
 
 		glm::vec3 direction = glm::normalize(mainCamera.target - cameraPos);
@@ -353,10 +405,11 @@ void SceneDuckShooting::LateUpdate()
 		if (cooldownTimer <= 0) {
 			if (MouseController::GetInstance()->IsButtonReleased(0))
 			{
-				cooldownTimer = 3;
+				cooldownTimer = 1;
+				recoil = true;
 
 				// Shoot:
-				std::cout << "Pew" << std::endl;
+				//std::cout << "Pew" << std::endl;
 
 			//	if (objInScene[BULLET] == nullptr)
 			//		objInScene[BULLET] = new DS_Bullet;
@@ -485,20 +538,12 @@ void SceneDuckShooting::Render()
 
 	// placeholder:
 	{
-		//modelStack.PushMatrix();
-
-		//glm::vec3 bulletOffset = mainCamera.right * 0.165f + mainCamera.up * -0.075f + mainCamera.view * 1.f;
-		//glm::vec3 origin = mainCamera.m_transform.m_position + bulletOffset;
-		//glm::vec3 direction = glm::normalize(mainCamera.target - origin);
-
-		//glm::vec3 rotation;
-		//rotation.y = glm::degrees(atan2(direction.x, direction.z)); // Yaw
-		//rotation.x = glm::degrees(asin(-direction.y)) - 90;              // Pitch
-
-		//modelStack.Translate(origin.x, origin.y, origin.z);
-		//modelStack.Scale(0.05, 0.05, 0.05);
-		//RenderMesh(meshList[GEO_BULLET], true);
-		//modelStack.PopMatrix();
+	//	modelStack.PushMatrix();
+	//	modelStack.Translate(0, 2.17004 * 0.5, -4.78361);
+	//	modelStack.Rotate(90, 0, 1, 0);
+	//	modelStack.Scale(1.2142, 1, 1.15754);
+	////	RenderMesh(meshList[GEO_CONVEYOR], enableLight);
+	//	modelStack.PopMatrix();
 	}
 
 	// Render hitboxes:

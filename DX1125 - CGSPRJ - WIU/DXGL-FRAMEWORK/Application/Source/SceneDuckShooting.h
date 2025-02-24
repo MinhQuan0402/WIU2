@@ -41,6 +41,8 @@ public:
 		GEO_DUCK,
 		GEO_GUN,
 		GEO_BULLET,
+		GEO_PILLAR,
+		GEO_CONVEYOR,
 
 		NUM_GEOMETRY
 	};
@@ -84,12 +86,16 @@ private:
 
 	Transform gunTransform;
 	float bulletSpeed;
+	bool recoil;
+	bool recoilBack;
+	float recoilTime;
+	const float recoilDuration = 0.1f;
 
 	float cooldownTimer;
 
 	bool gameComplete;
 
-	glm::vec3 devVec;
+	glm::vec3 devVec = glm::vec3{ 1, 1, 1 };
 };
 
 #endif

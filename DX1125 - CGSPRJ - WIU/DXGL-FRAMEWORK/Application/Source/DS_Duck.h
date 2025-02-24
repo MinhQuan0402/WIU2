@@ -5,6 +5,9 @@ class DS_Duck:
 {
 public:
     float speed;
+    float animTime;
+    const float duration = 0.25f;
+    bool hit;
 
     DS_Duck();
 

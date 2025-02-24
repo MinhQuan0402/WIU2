@@ -11,7 +11,8 @@ void DS_Pillar::Start()
 {
 	PhysicsMaterial mat;
 	mat.m_mass = 0;
-	rb = addBoxCollider(this, 2.5, 10, 2.5, mat);
+	m_transform.ScaleBy(3, 10, 3);
+	rb = addBoxCollider(this, 3, 10, 3, mat);
 }
 
 void DS_Pillar::Update()
@@ -20,4 +21,5 @@ void DS_Pillar::Update()
 
 void DS_Pillar::Render(Scene& scene)
 {
+	scene.RenderMesh(scene.meshList[SceneDuckShooting::GEO_PILLAR], scene.enableLight, m_transform);
 }
