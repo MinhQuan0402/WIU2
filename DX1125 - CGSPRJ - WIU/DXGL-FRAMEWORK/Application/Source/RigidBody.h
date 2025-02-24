@@ -23,6 +23,9 @@ struct PhysicsMaterial
 	PhysicsMaterial(void);
 };
 
+void SetObjectDynamic(btRigidBody* body, float mass);
+void SetObjectStatic(btRigidBody* body);
+
 btRigidBody* addSphereCollider(GameObject* go, const float& rad, PhysicsMaterial& mat, const glm::vec3& offset = glm::vec3{});
 btRigidBody* addBoxCollider(GameObject* go, const float& width, const float& height, const float& depth, PhysicsMaterial& mat, const glm::vec3& offset = glm::vec3{});
 btRigidBody* addCylinderCollider(GameObject* go, const float& height, const float& rad, PhysicsMaterial& mat, const glm::vec3& offset = glm::vec3{});

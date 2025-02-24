@@ -1,0 +1,14 @@
+# Blender 4.3.2 MTL File: 'None'
+# www.blender.org
+
+newmtl mat0
+Ka 1 1 1  # Ambient color (diffuse lighting influence)
+Kd 1.000000 1.000000 1.000000  # Diffuse color (base color)
+Ks 0.500000 0.500000 0.500000  # Specular reflection
+Ns 1
+
+newmtl mat1
+Ka 1 1 1  # Ambient color
+Kd 1.000000 1.000000 1.000000  # Diffuse color
+Ks 0.500000 0.500000 0.500000  # Specular reflection
+Ns 1.000000  # Specular exponent (shininess)

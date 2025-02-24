@@ -31,6 +31,12 @@
     <Filter Include="Header Files\Managers\GameManager">
       <UniqueIdentifier>{dade94ca-696f-4d2e-8b6b-b0c9c72e4804}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Objects">
+      <UniqueIdentifier>{0866ce5a-dc52-48a3-b212-2b379c5bc266}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Objects">
+      <UniqueIdentifier>{75bca22f-3dc3-436d-a1b3-5951886f17e8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Application.cpp">
@@ -100,7 +106,28 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\ColliderManager.cpp">
-      <Filter>Source Files\Managers</Filter>
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ScenePlinko.cpp">
+      <Filter>Source Files\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\PlinkoBall.cpp">
+      <Filter>Source Files\Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\PlinkoCylinder.cpp">
+      <Filter>Source Files\Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\PlinkoWall.cpp">
+      <Filter>Source Files\Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\PlinkoBoard.cpp">
+      <Filter>Source Files\Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\PlinkoPointsWall.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\PlinkoGlass.cpp">
+      <Filter>Source Files\Objects</Filter>
     </ClCompile>
     <ClCompile Include="Source\carnivalroaming.cpp">
       <Filter>Source Files\Scene</Filter>
@@ -180,7 +207,28 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\ColliderManager.h">
-      <Filter>Header Files\Managers</Filter>
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ScenePlinko.h">
+      <Filter>Header Files\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\PlinkoCylinder.h">
+      <Filter>Header Files\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\PlinkoBall.h">
+      <Filter>Header Files\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\PlinkoWall.h">
+      <Filter>Header Files\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\PlinkoBoard.h">
+      <Filter>Header Files\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\PlinkoPointsWall.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\PlinkoGlass.h">
+      <Filter>Header Files\Objects</Filter>
     </ClInclude>
     <ClInclude Include="Source\GameObjectManager.h">
       <Filter>Header Files\Managers\GameManager</Filter>
