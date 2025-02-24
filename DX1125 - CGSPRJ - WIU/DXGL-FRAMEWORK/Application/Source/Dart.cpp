@@ -12,7 +12,7 @@ Dart::Dart()
 void Dart::Start()
 {
 	PhysicsMaterial mat;
-	mat.m_mass = 0.f;
+	mat.m_mass = 1.f;
 
 	m_transform.Rotate(0, 0, 90);
 

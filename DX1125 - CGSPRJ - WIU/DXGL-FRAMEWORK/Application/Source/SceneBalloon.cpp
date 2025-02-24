@@ -103,6 +103,9 @@ void SceneBalloon::Init()
 	meshList[GEO_BALLOONBOARD] = MeshBuilder::GenerateOBJ("BalloonBoard", "Models//noticeboard.obj");
 	meshList[GEO_BALLOONBOARD]->textureID = LoadPNG("Images//boardimage.png");
 	meshList[GEO_DART] = MeshBuilder::GenerateOBJMTL("Dart", "Models//dart.obj", "Models//dart.mtl");
+	meshList[GEO_POWERUI_FRAME] = MeshBuilder::GenerateQuad("PowerUi_Frame", glm::vec3(1, 1, 1), 1);
+	meshList[GEO_POWERUI_FRAME]->textureID = LoadPNG("Images//CK_PowerUi_Frame.png");
+	meshList[GEO_POWERUI_BAR] = MeshBuilder::GenerateQuad("PowerUi_Bar", glm::vec3(1, 1, 0), 1);
 
 	meshList[GEO_TOP] = MeshBuilder::GenerateQuad("Plane", glm::vec3(1.f, 1.f, 1.f), 10.f);
 	meshList[GEO_TOP]->textureID = LoadPNG("Images//top.png");
@@ -119,6 +122,7 @@ void SceneBalloon::Init()
 
 	mainCamera.Init(glm::vec3(10, 4, 0), glm::vec3(0, 4, 0), VECTOR3_UP);
 	mainCamera.sensitivity = 15.f;
+	fov = 45.f;
 	
 	glUniform1i(m_parameters[U_NUMLIGHTS], 2);
 
@@ -153,6 +157,13 @@ void SceneBalloon::Init()
 	objInScene[BALLOONBOARD]->m_transform.Translate(-5.2, 3.6, -0.3);
 
 	GameObjectManager::GetInstance()->IniAll();
+
+	power = 10.f;
+	maxPower = 10.f;
+	cooldownTimer = 0.f;
+	isShooting = false;
+	gameComplete = false;
+	attemptsLeft = 2;
 }
 
 void SceneBalloon::Update()
@@ -173,14 +184,84 @@ void SceneBalloon::Update()
 	glm::vec3 prevTarget = mainCamera.target;
 	mainCamera.UpdateCameraRotation();
 
+	// stop player rotating too far:
+	{
+		glm::vec3 toObject = glm::normalize(glm::vec3(0, 3, 0) - mainCamera.m_transform.m_position);
 
+		glm::vec3 lookVector = glm::normalize(mainCamera.target - mainCamera.m_transform.m_position);
+
+		float dotProduct = glm::dot(lookVector, toObject);
+		float threshold = glm::cos(glm::radians(fov * 0.5));
+
+		if (dotProduct <= threshold) // Rotated too much
+		{
+			mainCamera.target = prevTarget;
+		}
+		else {
+			float closeness = (dotProduct - threshold) / (1.0f - threshold);
+			mainCamera.sensitivity = 10 + closeness * (50 - 10);
+		}
+	}
 
 	GameObjectManager::GetInstance()->UpdateAll();
 }
 
 void SceneBalloon::LateUpdate()
 {
-	
+	if (cooldownTimer > 0) {
+		cooldownTimer -= Time::deltaTime;
+	}
+	else if (isShooting == true) {
+		isShooting = false;
+		cooldownTimer = 0;
+		attemptsLeft--;
+
+		//if (attemptsLeft < 0 && gameComplete == false) {
+		//	SceneManager::GetInstance()->PopState();
+		//	SceneManager::GetInstance()->PushState(new SceneCanKnockdown);
+		//}
+	}
+
+	float powerIncreaseSpeed = maxPower;
+	if (isShooting == false && attemptsLeft >= 0 && gameComplete == false)
+	{
+		glm::vec3 cameraPos = mainCamera.m_transform.m_position;
+		glm::vec3 forward = mainCamera.view;
+		glm::vec3 right = mainCamera.right;
+		glm::vec3 up = mainCamera.up;
+
+		// Calculate world position of the ball
+		glm::vec3 newPos = cameraPos + (forward * 2.f) + (right * 1.f) + (up * -1.f);
+
+		if (objInScene[DART] != nullptr && attemptsLeft >= 0) {
+			objInScene[DART]->SetRigidbodyPosition(newPos);
+			objInScene[DART]->rb->clearGravity();
+			objInScene[DART]->rb->setSleepingThresholds(0, 0);
+		}
+
+		if (cooldownTimer <= 0) {
+			if (MouseController::GetInstance()->IsButtonDown(0))
+			{
+				if (power < maxPower) {
+					power += powerIncreaseSpeed * Time::deltaTime;
+				}
+				else {
+					power = maxPower;
+				}
+			}
+
+			if (MouseController::GetInstance()->IsButtonReleased(0) && objInScene[DART] != nullptr)
+			{
+				isShooting = true;
+				cooldownTimer = 3;
+				glm::vec3 look = mainCamera.view * power;
+				objInScene[DART]->rb->setSleepingThresholds(0.8, 1);
+				objInScene[DART]->rb->setLinearVelocity(btVector3(look.x - 3, look.y + 3, look.z));
+				objInScene[DART]->rb->activate();
+				power = 0;
+			}
+		}
+	}
 }
 
 void SceneBalloon::Render()
@@ -189,7 +270,7 @@ void SceneBalloon::Render()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glm::mat4 model = glm::mat4(1.0f);
 	// Setup Model View Projection matrix
-	projectionStack.LoadMatrix(glm::perspective(45.0f,
+	projectionStack.LoadMatrix(glm::perspective(fov,
 		Application::m_consoleWidth / (float)Application::m_consoleHeight,
 		0.1f, 1000.0f));
 
@@ -250,6 +331,15 @@ void SceneBalloon::Render()
 	//modelStack.PopMatrix();
 
 	GameObjectManager::GetInstance()->RenderAll(*this);
+
+	// Render ui:
+	{
+		if (power > 10) {
+			RenderMeshOnScreen(meshList[GEO_POWERUI_FRAME], 50,30, 100 * 1.25, 25 * 1.25, glm::vec3(0, 0, 0));
+			RenderMeshOnScreen(meshList[GEO_POWERUI_BAR], 42.5, 30, power / maxPower * 120, 25, glm::vec3(-0.5, 0, 0));
+		}
+	}
+
 
 #ifdef DRAW_HITBOX
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);

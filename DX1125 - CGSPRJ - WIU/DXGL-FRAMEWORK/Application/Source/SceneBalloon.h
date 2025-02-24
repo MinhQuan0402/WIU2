@@ -29,6 +29,8 @@ public:
 		GEO_DART,
 		GEO_BPBOOTHGUARDS,
 		GEO_BPBOOTHROOF,
+		GEO_POWERUI_FRAME,
+		GEO_POWERUI_BAR,
 		NUM_GEOMETRY
 	};
 
@@ -44,6 +46,15 @@ public:
 private:
 	void RenderSkybox(void);
 	int numLight;
+
+	float fov;
+	float cooldownTimer;
+	bool isShooting;
+	bool gameComplete;
+	int attemptsLeft;
+	float power;
+	float maxPower;
+
 	
 	enum OBJINSCENE
 	{
