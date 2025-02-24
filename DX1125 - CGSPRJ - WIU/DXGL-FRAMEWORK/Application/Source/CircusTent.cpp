@@ -7,7 +7,7 @@ CircusTent::CircusTent()
 {
 	PhysicsMaterial mat;
 	mat.m_mass = 0.0f;
-	rb = addSphereCollider(this, 200, mat);
+	rb = addSphereCollider(this, 201, mat);
 	GameObjectManager::GetInstance()->addItem(this);
 }
 

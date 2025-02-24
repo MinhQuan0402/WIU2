@@ -105,125 +105,125 @@ void carnivalroaming::Init()
 	meshList[GEO_CUBE] = MeshBuilder::GenerateCube("Cube", YELLOW, 1.0f);
 
 	meshList[GEO_PLANE] = MeshBuilder::GenerateQuad("Quad", WHITE, 1.0f);
-	meshList[GEO_PLANE]->textureID = LoadPNG("Images//grass.png");
+	meshList[GEO_PLANE]->textureID = LoadPNG("Images//CR_grass.png");
 	meshList[GEO_PLANE]->material = Material::Wood(WHITE); 
 
 
 	meshList[GEO_CIRCUSTENT] = MeshBuilder::GenerateCircle("Circle", WHITE, 200);
-	meshList[GEO_CIRCUSTENT] = MeshBuilder::GenerateOBJMTL("CircusTent", "Models//circusTentTest.obj", "Models//circusTentTest.mtl");
-	meshList[GEO_CIRCUSTENT]->textureID = LoadPNG("Images//CircusTentTest.png");
+	meshList[GEO_CIRCUSTENT] = MeshBuilder::GenerateOBJMTL("CircusTent", "Models//CR_circusTentTest.obj", "Models//CR_circusTentTest.mtl");
+	meshList[GEO_CIRCUSTENT]->textureID = LoadPNG("Images//CR_CircusTentTest.png");
 
 	//meshList[GEO_CIRCUSTENT] = MeshBuilder::GenerateCircle("Circle", WHITE, 200);
-	meshList[GEO_CIRCUSNAME] = MeshBuilder::GenerateOBJMTL("CircusName", "Models//circusName.obj", "Models//circusName.mtl");
-	meshList[GEO_CIRCUSNAME]->textureID = LoadPNG("Images//CircusNameTestpng.png");
+	meshList[GEO_CIRCUSNAME] = MeshBuilder::GenerateOBJMTL("CircusName", "Models//CR_circusName.obj", "Models//CR_circusName.mtl");
+	meshList[GEO_CIRCUSNAME]->textureID = LoadPNG("Images//CR_CircusNameTestpng.png");
 	meshList[GEO_CIRCUSNAME]->material = Material::Wood(WHITE);
 
 
-	meshList[GEO_CANTENT] = MeshBuilder::GenerateOBJMTL("CanTent", "Models//CK_BoothGuards.obj", "Models//CK_BoothGuards.mtl");
+	meshList[GEO_CANTENT] = MeshBuilder::GenerateOBJMTL("CanTent", "Models//CR_CK_BoothGuards.obj", "Models//CR_CK_BoothGuards.mtl");
 	meshList[GEO_CANTENT]->material = Material::Wood(WHITE);
 	meshList[GEO_CANTENT]->material.kAmbient = glm::vec3(0.4, 0.4, 0.4);
 
-	meshList[GEO_CANTENTROOF] = MeshBuilder::GenerateOBJMTL("CanTent", "Models//CK_BoothRoof.obj", "Models//CK_BoothRoof.mtl");
-	meshList[GEO_CANTENTROOF]->textureID = LoadPNG("Images//CK_BoothRoof.png");
+	meshList[GEO_CANTENTROOF] = MeshBuilder::GenerateOBJMTL("CanTent", "Models//CR_CK_BoothRoof.obj", "Models//CR_CK_BoothRoof.mtl");
+	meshList[GEO_CANTENTROOF]->textureID = LoadPNG("Images//CR_CK_BoothRoof.png");
 	meshList[GEO_CANTENTROOF]->material = Material::Wood(WHITE);
 
-	meshList[GEO_TABLECAN] = MeshBuilder::GenerateOBJ("Table", "Models//simpletable.obj");
-	meshList[GEO_TABLECAN]->textureID = LoadPNG("Images//tableCan.png");
+	meshList[GEO_TABLECAN] = MeshBuilder::GenerateOBJ("Table", "Models//CR_simpletable.obj");
+	meshList[GEO_TABLECAN]->textureID = LoadPNG("Images//CR_tableCan.png");
 	meshList[GEO_TABLECAN]->material = Material::Wood(WHITE);
 
-	meshList[GEO_CAN] = MeshBuilder::GenerateOBJMTL("Can", "Models//Can.obj", "Models//Can.mtl");
-	meshList[GEO_CAN]->textureID = LoadPNG("Images//Can.png");
+	meshList[GEO_CAN] = MeshBuilder::GenerateOBJMTL("Can", "Models//CR_Can.obj", "Models//CR_Can.mtl");
+	meshList[GEO_CAN]->textureID = LoadPNG("Images//CR_Can.png");
 	meshList[GEO_CAN]->material = Material::Wood(WHITE);
 
-	meshList[GEO_STRIPEWALL] = MeshBuilder::GenerateOBJ("Stripewall", "Models//redwhitewalls.obj");
-	meshList[GEO_STRIPEWALL]->textureID = LoadPNG("Images//redwhitestripes.png");
+	meshList[GEO_STRIPEWALL] = MeshBuilder::GenerateOBJ("Stripewall", "Models//CR_redwhitewalls.obj");
+	meshList[GEO_STRIPEWALL]->textureID = LoadPNG("Images//CR_redwhitestripes.png");
 	meshList[GEO_STRIPEWALL]->material = Material::Wood(WHITE);
 
-	meshList[GEO_TOPCOTTONCANDY] = MeshBuilder::GenerateOBJ("CottonCandy", "Models//top_cottoncandy.obj");
-	meshList[GEO_TOPCOTTONCANDY]->textureID = LoadPNG("Images//top_cotton_candy.png");
+	meshList[GEO_TOPCOTTONCANDY] = MeshBuilder::GenerateOBJ("CottonCandy", "Models//CR_top_cottoncandy.obj");
+	meshList[GEO_TOPCOTTONCANDY]->textureID = LoadPNG("Images//CR_top_cotton_candy.png");
 	meshList[GEO_TOPCOTTONCANDY]->material = Material::Wood(WHITE);
 
-	meshList[GEO_MIDDLECOTTONCANDY] = MeshBuilder::GenerateOBJ("Middle CottonCandy", "Models//middle_cottoncandy.obj");
-	meshList[GEO_MIDDLECOTTONCANDY]->textureID = LoadPNG("Images//middle_cottoncandy.png");
+	meshList[GEO_MIDDLECOTTONCANDY] = MeshBuilder::GenerateOBJ("Middle CottonCandy", "Models//CR_middle_cottoncandy.obj");
+	meshList[GEO_MIDDLECOTTONCANDY]->textureID = LoadPNG("Images//CR_middle_cottoncandy.png");
 	meshList[GEO_MIDDLECOTTONCANDY]->material = Material::Wood(WHITE);
 
-	meshList[GEO_INNERMIDDLECOTTONCANDY] = MeshBuilder::GenerateOBJ("Inner Middle CottonCandy", "Models//innermiddle_cottoncandy.obj");
+	meshList[GEO_INNERMIDDLECOTTONCANDY] = MeshBuilder::GenerateOBJ("Inner Middle CottonCandy", "Models//CR_innermiddle_cottoncandy.obj");
 	meshList[GEO_INNERMIDDLECOTTONCANDY]->material = Material::Wood(WHITE);
 
-	meshList[GEO_COTTONCANDYS] = MeshBuilder::GenerateOBJ("CottonCandy", "Models//cottoncandys.obj");
-	meshList[GEO_COTTONCANDYS]->textureID = LoadPNG("Images//cottoncandys.png");
+	meshList[GEO_COTTONCANDYS] = MeshBuilder::GenerateOBJ("CottonCandy", "Models//CR_cottoncandys.obj");
+	meshList[GEO_COTTONCANDYS]->textureID = LoadPNG("Images//CR_cottoncandys.png");
 	meshList[GEO_COTTONCANDYS]->material = Material::Wood(WHITE);
 
-	meshList[GEO_COTTONCANDYMACHINE] = MeshBuilder::GenerateOBJ("CottonCandymachines", "Models//cottoncandymachine.obj");
-	meshList[GEO_COTTONCANDYMACHINE]->textureID = LoadPNG("Images//cottoncandymachine.png");
+	meshList[GEO_COTTONCANDYMACHINE] = MeshBuilder::GenerateOBJ("CottonCandymachines", "Models//CR_cottoncandymachine.obj");
+	meshList[GEO_COTTONCANDYMACHINE]->textureID = LoadPNG("Images//CR_cottoncandymachine.png");
 	meshList[GEO_COTTONCANDYMACHINE]->material = Material::Wood(WHITE);
 
-	meshList[GEO_CARAMELAPPLE] = MeshBuilder::GenerateOBJ("CaramelApple", "Models//caramelapple_cottoncandy.obj");
-	meshList[GEO_CARAMELAPPLE]->textureID = LoadPNG("Images//caramelapple_cottoncandy.png");
+	meshList[GEO_CARAMELAPPLE] = MeshBuilder::GenerateOBJ("CaramelApple", "Models//CR_caramelapple_cottoncandy.obj");
+	meshList[GEO_CARAMELAPPLE]->textureID = LoadPNG("Images//CR_caramelapple_cottoncandy.png");
 	meshList[GEO_CARAMELAPPLE]->material = Material::Wood(WHITE);
 
-	meshList[GEO_CARAMELAPPLESTAND] = MeshBuilder::GenerateOBJ("CaramelAppleStand", "Models//caramelapplestand_cottoncandy.obj");
-	meshList[GEO_CARAMELAPPLESTAND]->textureID = LoadPNG("Images//caramelapplestands_cottoncandy.png");
+	meshList[GEO_CARAMELAPPLESTAND] = MeshBuilder::GenerateOBJ("CaramelAppleStand", "Models//CR_caramelapplestand_cottoncandy.obj");
+	meshList[GEO_CARAMELAPPLESTAND]->textureID = LoadPNG("Images//CR_caramelapplestands_cottoncandy.png");
 	meshList[GEO_CARAMELAPPLESTAND]->material = Material::Wood(WHITE);
 
-	meshList[GEO_BOTTOMCOTTONCANDY] = MeshBuilder::GenerateOBJ("BottomCottonCandy", "Models//bottom_cottoncandy.obj");
-	meshList[GEO_BOTTOMCOTTONCANDY]->textureID = LoadPNG("Images//bottom_cottoncandy.png");
+	meshList[GEO_BOTTOMCOTTONCANDY] = MeshBuilder::GenerateOBJ("BottomCottonCandy", "Models//CR_bottom_cottoncandy.obj");
+	meshList[GEO_BOTTOMCOTTONCANDY]->textureID = LoadPNG("Images//CR_bottom_cottoncandy.png");
 	meshList[GEO_BOTTOMCOTTONCANDY]->material = Material::Wood(WHITE);
 
-	meshList[GEO_PLINKO] = MeshBuilder::GenerateOBJMTL("Plinko", "Models//plinko.obj", "Models//plinko.mtl");
-	meshList[GEO_PLINKO]->textureID = LoadPNG("Images//plinko.png");
+	meshList[GEO_PLINKO] = MeshBuilder::GenerateOBJMTL("Plinko", "Models//CR_plinko.obj", "Models//CR_plinko.mtl");
+	meshList[GEO_PLINKO]->textureID = LoadPNG("Images//CR_plinko.png");
 	meshList[GEO_PLINKO]->material = Material::Wood(WHITE);
 
-	meshList[GEO_POOL] = MeshBuilder::GenerateOBJ("Table", "Models//InflatablePool.obj");
-	meshList[GEO_POOL]->textureID = LoadPNG("Images//pool.png");
+	meshList[GEO_POOL] = MeshBuilder::GenerateOBJ("Table", "Models//CR_InflatablePool.obj");
+	meshList[GEO_POOL]->textureID = LoadPNG("Images//CR_pool.png");
 	meshList[GEO_POOL]->material = Material::Wood(WHITE);
 
 	meshList[GEO_POOLWATER] = MeshBuilder::GenerateCircle("Circle", WHITE, 1);
-	meshList[GEO_POOLWATER]->textureID = LoadPNG("Images//water.png");
+	meshList[GEO_POOLWATER]->textureID = LoadPNG("Images//CR_water.png");
 	meshList[GEO_POOLWATER]->material = Material::Wood(WHITE);
 
-	meshList[GEO_DUCKY] = MeshBuilder::GenerateOBJMTL("duck", "Models//ducky.obj", "Models//ducky.mtl");
+	meshList[GEO_DUCKY] = MeshBuilder::GenerateOBJMTL("duck", "Models//CR_ducky.obj", "Models//CR_ducky.mtl");
 	meshList[GEO_DUCKY]->material = Material::Wood(WHITE);
 
-	meshList[GEO_SHOOTINGDUCK] = MeshBuilder::GenerateOBJMTL("duckpewpew", "Models//duck_w_target.obj", "Models//duck_w_target.mtl");
+	meshList[GEO_SHOOTINGDUCK] = MeshBuilder::GenerateOBJMTL("duckpewpew", "Models//CR_duck_w_target.obj", "Models//CR_duck_w_target.mtl");
 	meshList[GEO_SHOOTINGDUCK]->material = Material::Wood(WHITE);
 	
-	meshList[GEO_TARGET] = MeshBuilder::GenerateOBJ("target", "Models//target2.obj");
-	meshList[GEO_TARGET]->textureID = LoadPNG("Images//targetpic.png");
+	meshList[GEO_TARGET] = MeshBuilder::GenerateOBJ("target", "Models//CR_target2.obj");
+	meshList[GEO_TARGET]->textureID = LoadPNG("Images//CR_targetpic.png");
 	meshList[GEO_TARGET]->material = Material::Wood(WHITE);
 
-	meshList[GEO_CONVEYER] = MeshBuilder::GenerateOBJ("conveyer", "Models//conveyerbelt.obj");
-	meshList[GEO_CONVEYER]->textureID = LoadPNG("Images//conveyerbelt.png");
+	meshList[GEO_CONVEYER] = MeshBuilder::GenerateOBJ("conveyer", "Models//CR_conveyerbelt.obj");
+	meshList[GEO_CONVEYER]->textureID = LoadPNG("Images//CR_conveyerbelt.png");
 	meshList[GEO_CONVEYER]->material = Material::Wood(WHITE);
 
-	meshList[GEO_GUN] = MeshBuilder::GenerateOBJ("conveyer", "Models//DS_Gun.obj");
-	meshList[GEO_GUN]->textureID = LoadPNG("Images//DS_Gun.png");
+	meshList[GEO_GUN] = MeshBuilder::GenerateOBJ("conveyer", "Models//CR_DS_Gun.obj");
+	meshList[GEO_GUN]->textureID = LoadPNG("Images//CR_DS_Gun.png");
 	meshList[GEO_GUN]->material = Material::Wood(WHITE);
 
 
-	meshList[GEO_BOARD] = MeshBuilder::GenerateOBJ("conveyer", "Models//noticeboard.obj");
-	meshList[GEO_BOARD]->textureID = LoadPNG("Images//boardimage.png");
+	meshList[GEO_BOARD] = MeshBuilder::GenerateOBJ("conveyer", "Models//CR_noticeboard.obj");
+	meshList[GEO_BOARD]->textureID = LoadPNG("Images//CR_boardimage.png");
 	meshList[GEO_BOARD]->material = Material::Wood(WHITE);
 
-	meshList[GEO_BALLOON] = MeshBuilder::GenerateOBJ("balloon", "Models//balloon.obj");
+	meshList[GEO_BALLOON] = MeshBuilder::GenerateOBJ("balloon", "Models//CR_balloon.obj");
 
-	meshList[GEO_BOTTLES] = MeshBuilder::GenerateOBJ("Bottles", "Models//allbottles.obj");
+	meshList[GEO_BOTTLES] = MeshBuilder::GenerateOBJ("Bottles", "Models//CR_allbottles.obj");
 	meshList[GEO_BOTTLES]->material = Material::Metal(WHITE);
 
-	meshList[GEO_RACK] = MeshBuilder::GenerateOBJ("Rack", "Models//ring_toss_rack.obj");
-	meshList[GEO_RACK]->textureID = LoadPNG("Images//wood.png");
+	meshList[GEO_RACK] = MeshBuilder::GenerateOBJ("Rack", "Models//CR_ring_toss_rack.obj");
+	meshList[GEO_RACK]->textureID = LoadPNG("Images//CR_wood.png");
 	meshList[GEO_RACK]->material = Material::Wood(WHITE);
 
-	meshList[GEO_COUNTER] = MeshBuilder::GenerateOBJ("Counter", "Models//ring_toss_counter.obj");
-	meshList[GEO_COUNTER]->textureID = LoadPNG("Images//counter.png");
+	meshList[GEO_COUNTER] = MeshBuilder::GenerateOBJ("Counter", "Models//CR_ring_toss_counter.obj");
+	meshList[GEO_COUNTER]->textureID = LoadPNG("Images//CR_counter.png");
 	meshList[GEO_COUNTER]->material = Material::Wood(WHITE);
 
-	meshList[GEO_RING] = MeshBuilder::GenerateOBJ("Ring", "Models//ring_toss_rope.obj");
-	meshList[GEO_RING]->textureID = LoadPNG("Images//rope.png");
+	meshList[GEO_RING] = MeshBuilder::GenerateOBJ("Ring", "Models//CR_ring_toss_rope.obj");
+	meshList[GEO_RING]->textureID = LoadPNG("Images//CR_rope.png");
 	meshList[GEO_RING]->material = Material::Wood(WHITE);
 
 	meshList[GEO_GRASS] = MeshBuilder::GenerateCube("Cube", YELLOW, 1.0f);
-	meshList[GEO_GRASS]->textureID = LoadPNG("Images//grass.png");
+	meshList[GEO_GRASS]->textureID = LoadPNG("Images//CR_grass.png");
 
 
 	mainCamera.Init(glm::vec3(0, 35, -400), glm::vec3(0, 35, 0), VECTOR3_UP);
@@ -276,7 +276,7 @@ void carnivalroaming::Init()
 	objInscene[PLAYERBOX] = new PlayerHitBox();
 	
 
-	objInscene[CIRCLE]->m_transform.ScaleBy(200.0f, 200.f, 200.0f);
+	//objInscene[CIRCLE]->m_transform.ScaleBy(201.0f, 201.f, 201.0f);
 
 
 	objInscene[BOX]->m_transform.Translate(0.0f, 0.5f, 400.0f);
@@ -526,7 +526,7 @@ void carnivalroaming::Render()
 	
 	meshList[GEO_CIRCUSTENT]->material = Material::Wood(WHITE);
 	modelStack.PushMatrix();
-	modelStack.Translate(0.0f, 0.5f, 0.0f);
+	modelStack.Translate(0.0f, 10.5f, 0.0f);
 	modelStack.Scale(45, 45, 45);
 	RenderMesh(meshList[GEO_CIRCUSTENT], true);
 	modelStack.PopMatrix();
