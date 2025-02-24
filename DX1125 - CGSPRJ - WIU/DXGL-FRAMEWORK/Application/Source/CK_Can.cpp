@@ -9,7 +9,7 @@ CK_Can::CK_Can() {
 void CK_Can::Start()
 {
 	PhysicsMaterial mat;
-	mat.m_mass = 1.f;
+	mat.m_mass = 3.f;
 	mat.m_friction = 0.3;
 	m_transform.ScaleBy(glm::vec3(0.092));
 	rb = addCylinderCollider(this, 0.67, 0.48, mat);

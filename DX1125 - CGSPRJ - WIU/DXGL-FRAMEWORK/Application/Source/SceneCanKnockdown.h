@@ -84,7 +84,7 @@ private:
 	GameObject* objInScene[NUM_OBJ];
 
 	float power;
-	const float maxPower = 30;
+	const float maxPower = 25;
 
 	bool isShooting;
 	float cooldownTimer;
