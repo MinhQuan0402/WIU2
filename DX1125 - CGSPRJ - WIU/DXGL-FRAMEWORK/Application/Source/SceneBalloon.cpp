@@ -218,8 +218,21 @@ void SceneBalloon::Update()
 	//	}
 	//}
 
-	if (objInScene[DART1]->rb->checkCollideWith(objInScene[BALLOONBOARD]->rb)) {
-		std::cout << "Collided" << std::endl;
+	for (Balloon* balloon : ((BalloonBoard*)objInScene[BALLOONBOARD])->balloons)
+	{
+		if (balloon->getObject() != nullptr && objInScene[currentDartIndex]->getObject() != nullptr) {
+			if (CheckCollisionWith(balloon->getObject(), objInScene[currentDartIndex]->getObject()))
+			{
+				//GameObjectManager::GetInstance()->removeItem(balloon);
+				std::cout << "Collided" << std::endl;
+			}
+		}
+	}
+
+	if (CheckCollisionWith(objInScene[currentDartIndex]->getObject(), objInScene[BALLOONBOARD]->getObject()))
+	{
+		objInScene[currentDartIndex]->rbGOType = GameObject::STATIC;
+		std::cout << "Board Collided" << std::endl;
 	}
 
 	GameObjectManager::GetInstance()->UpdateAll();
@@ -236,7 +249,8 @@ void SceneBalloon::LateUpdate()
 		isShooting = false;
 		cooldownTimer = 0;
 		attemptsLeft--;
-		currentDartIndex++;
+		if (currentDartIndex != DART10)
+			currentDartIndex++;
 
 		//if (attemptsLeft < 0 && gameComplete == false) {
 		//	SceneManager::GetInstance()->PopState();
