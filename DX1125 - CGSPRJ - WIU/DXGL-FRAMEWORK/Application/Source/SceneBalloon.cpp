@@ -223,7 +223,7 @@ void SceneBalloon::Update()
 		if (balloon->getObject() != nullptr && objInScene[currentDartIndex]->getObject() != nullptr) {
 			if (CheckCollisionWith(balloon->getObject(), objInScene[currentDartIndex]->getObject()))
 			{
-				//GameObjectManager::GetInstance()->removeItem(balloon);
+				GameObjectManager::GetInstance()->removeItem(balloon);
 				std::cout << "Collided" << std::endl;
 			}
 		}
