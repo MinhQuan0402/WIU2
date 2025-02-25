@@ -37,6 +37,7 @@ public:
 
 	static void IniAll(void);
 	static void UpdateAll(void);
+	static void LateUpdateAll(void);
 	static void RenderAll(Scene& scene);
 
 	void clearQuad(CQuad* p);
