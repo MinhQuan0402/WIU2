@@ -45,6 +45,7 @@ private:
 	float lightTimer;
 	bool isInView;
 	int numAttempt;
+	float waitingTimer;
 	
 	enum OBJINSCENE
 	{

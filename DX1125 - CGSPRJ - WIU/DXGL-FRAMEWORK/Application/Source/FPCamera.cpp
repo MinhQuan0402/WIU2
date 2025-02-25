@@ -22,9 +22,6 @@ void FPCamera::Init(glm::vec3 position, glm::vec3 target, glm::vec3 up)
 	this->m_transform.m_position = position;
 	this->target = target;
 	this->up = up;
-	this->isDirty = true;
-
-	Refresh();
 }
 
 void FPCamera::Update(void)

@@ -563,7 +563,7 @@ void SceneCanKnockdown::Render()
 void SceneCanKnockdown::Exit()
 {
 	//GameManager::GetInstance()->SetPoints(GameManager::GetInstance()->GetPoints() + );
-
+	Scene::Exit(); 
 	// Cleanup VBO here
 	for (int i = 0; i < NUM_GEOMETRY; ++i) { if (meshList[i]) delete meshList[i]; }
 	meshList.clear();

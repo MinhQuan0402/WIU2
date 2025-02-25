@@ -22,11 +22,13 @@
 #include "ColliderManager.h"
 #include "TossBoard.h"
 #include "MeshManager.h"
+#include "SceneManager.h"
+#include "carnivalroaming.h"
 
 SceneRingToss::SceneRingToss()
 	: numLight{ 25 }, isShoot{ false }, isPickable{ true },
 	currentIndexRing{ 0 }, lightTimer{ 0.0f }, isInView{ false },
-	points{ 0 }, numAttempt{ 0 }
+	points{ 0 }, numAttempt{ 0 }, waitingTimer{ 0.0f }
 {
 	meshList.resize(NUM_GEOMETRY);
 	lights.resize(numLight);
@@ -360,6 +362,18 @@ void SceneRingToss::Update()
 	}
 
 	GameObjectManager::UpdateAll();
+
+	if (numAttempt == 3 && isShoot)
+	{
+		waitingTimer += Time::deltaTime;
+
+		if (waitingTimer >= 4.0f)
+		{
+			SceneManager::GetInstance()->ChangeState(new carnivalroaming);
+			SceneManager::GetInstance()->Update();
+			return;
+		}
+	}
 }
 
 void SceneRingToss::LateUpdate()
@@ -546,6 +560,7 @@ void SceneRingToss::Exit()
 	for (int i = 0; i < NUM_GEOMETRY; ++i) { if (meshList[i]) delete meshList[i]; }
 	meshList.clear();
 	GameObjectManager::GetInstance()->clearGOs();
+	ColliderManager::GetInstance()->ClearAll();
 
 	glDeleteVertexArrays(1, &m_vertexArrayID);
 	glDeleteProgram(m_programID);

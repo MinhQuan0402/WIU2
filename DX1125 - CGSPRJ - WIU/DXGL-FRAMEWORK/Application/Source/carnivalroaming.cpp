@@ -123,7 +123,7 @@ void carnivalroaming::Init()
 		savedPositionn.y &&
 		savedPositionn.z)
 	{
-		mainCamera.Init(savedPositionn, glm::vec3(0.0f, savedPositionn.y, 0.0f), VECTOR3_UP);
+		mainCamera.Init(savedPositionn, glm::vec3(0.0f, GameManager::GetInstance()->GetCameraTarget().y, 0.0f), VECTOR3_UP);
 	}
 	else mainCamera.Init(glm::vec3(0,35,-400), glm::vec3(0,35,0), VECTOR3_UP);
 
@@ -1531,7 +1531,7 @@ void carnivalroaming::Exit()
 	GameManager::GetInstance()->SetPlayerPosition(mainCamera.m_transform.m_position.x, mainCamera.m_transform.m_position.y, mainCamera.m_transform.m_position.z);
 	GameManager::GetInstance()->SetCameraTarget(mainCamera.target.x, mainCamera.target.y, mainCamera.target.z);
 	GameManager::GetInstance()->SetPoints(3000);
-	
+	Scene::Exit(); 
 	// Cleanup VBO here
 	for (int i = 0; i < NUM_GEOMETRY; ++i) { if (meshList[i]) delete meshList[i]; }
 	meshList.clear();

@@ -404,7 +404,7 @@ void ScenePlinko::Render()
 void ScenePlinko::Exit()
 {
 	GameManager::GetInstance()->SetPoints(GameManager::GetInstance()->GetPoints() + plinkoScore);
-
+	Scene::Exit(); 
 	// Cleanup VBO here
 	for (int i = 0; i < NUM_GEOMETRY; ++i) { if (meshList[i]) delete meshList[i]; }
 	meshList.clear();
