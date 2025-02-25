@@ -8,7 +8,8 @@ ColliderManager::ColliderManager(void)
 }
 ColliderManager::~ColliderManager(void)
 {
-    for (btCollisionShape* shape : colliders) delete shape;
+    if(colliders.size() > 3)
+        for (btCollisionShape* shape : colliders) delete shape;
 }
 ColliderManager* ColliderManager::GetInstance(void)
 {
@@ -26,9 +27,13 @@ void ColliderManager::RemoveCollider(btCollisionShape* collider2Remove) { collid
 
 void ColliderManager::ClearAll(void)
 {
-    for (btCollisionShape* collider : colliders)
-        delete collider;
-
+    if (colliders.size() > 0)
+    {
+        for (btCollisionShape* collider : colliders)
+        {
+            delete collider;
+        }
+    }
     colliders.clear();
 }
 

@@ -142,6 +142,31 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\GameManager.cpp">
+    <ClCompile Include="Source\CK_Ball.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\SceneCanKnockdown.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CK_Can.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CK_Counter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CK_Counter2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CK_Table.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CK_Floor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CK_BoothWall.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CK_BoothRoof.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -212,6 +237,24 @@
     <ClInclude Include="Source\ColliderManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Source\CK_Ball.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\SceneCanKnockdown.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CK_Can.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CK_Counter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CK_Table.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CK_Counter2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="Source\GameObjectManager.h">
       <Filter>Header Files\Managers\GameManager</Filter>
     </ClInclude>
@@ -252,6 +295,13 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\GameManager.h">
+    <ClInclude Include="Source\CK_Floor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CK_BoothWall.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CK_BoothRoof.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
