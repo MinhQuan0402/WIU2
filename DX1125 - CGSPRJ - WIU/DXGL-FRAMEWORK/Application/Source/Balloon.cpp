@@ -41,8 +41,6 @@ void Balloon::Update()
 
 		setColour = true;
 	}
-
-	//if (rb->checkCollideWith())
 }
 
 void Balloon::Render(Scene& scene)

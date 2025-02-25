@@ -27,6 +27,7 @@ void Dart::Start()
 
 void Dart::Update()
 {
+	
 }
 
 void Dart::Render(Scene& scene)

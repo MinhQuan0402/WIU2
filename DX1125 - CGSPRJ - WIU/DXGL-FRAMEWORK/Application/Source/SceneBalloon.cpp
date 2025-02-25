@@ -218,6 +218,10 @@ void SceneBalloon::Update()
 	//	}
 	//}
 
+	if (objInScene[DART1]->rb->checkCollideWith(objInScene[BALLOONBOARD]->rb)) {
+		std::cout << "Collided" << std::endl;
+	}
+
 	GameObjectManager::GetInstance()->UpdateAll();
 }
 
