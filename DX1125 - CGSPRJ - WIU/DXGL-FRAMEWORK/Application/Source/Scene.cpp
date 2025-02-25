@@ -229,10 +229,10 @@ void Scene::RenderText(Mesh* mesh, std::string text, glm::vec3 color)
 	}
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glUniform1i(m_parameters[U_TEXT_ENABLED], 0);
-	glEnable(GL_CULL_FACE);
-	glDisable(GL_BLEND);
-	glEnable(GL_DEPTH_TEST);
 	modelStack.PopMatrix();
+	glEnable(GL_DEPTH_TEST);
+	glDisable(GL_BLEND);
+	modelStack.LoadIdentity();
 }
 void Scene::RenderTextOnScreen(Mesh* mesh, std::string text, glm::vec3 color, float size, float x, float y)
 {

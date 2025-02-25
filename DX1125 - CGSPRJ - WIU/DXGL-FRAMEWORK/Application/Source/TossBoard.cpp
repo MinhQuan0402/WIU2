@@ -305,14 +305,27 @@ Ring::Ring(void)
 void Ring::Start(void)
 {
 	GenerateRigidbody();
+
+	PhysicsMaterial mat;
+	mat.m_mass = 0.0f;
+	trigger = new GameObject;
+	trigger->m_transform.m_position = m_transform.m_position;
+	trigger->rb = addSphereCollider(trigger, 0.005f, mat, glm::vec3{0.0f, -0.5f, 0.0f});
+	GameObjectManager::addItem(trigger);
+
+	trigger->rb->setCollisionFlags(trigger->rb->getCollisionFlags() | btCollisionObject::CF_NO_CONTACT_RESPONSE);
+	rb->setGravity(btVector3(0.0f, -15.0f, 0.0f));
 }
 
 void Ring::Update(void)
 {
+	if (trigger) trigger->SetRigidbodyPosition(GetRigidbodyPosition());
+	if (trigger) trigger->SetRigidbodyRotation(GetRigidbodyRotation());
 }
 
 void Ring::LateUpdate(void)
 {
+	if (trigger) trigger->SetRigidbodyPosition(GetRigidbodyPosition());
 }
 
 void Ring::Render(Scene& scene)

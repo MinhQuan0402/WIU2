@@ -113,5 +113,5 @@ void printVector(glm::vec3 rhs)
 
 bool isTimeReach(const float& currentTime, const float& from, const float& to)
 {
-    return currentTime <= to && currentTime >= from;
+    return currentTime >= from && currentTime <= to;
 }

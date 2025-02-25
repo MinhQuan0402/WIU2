@@ -51,6 +51,7 @@ private:
 	int currentIndexRing;
 	float lightTimer;
 	bool isInView;
+	int numAttempt;
 	
 	enum OBJINSCENE
 	{
@@ -68,6 +69,7 @@ private:
 		NUMOBJ
 	};
 
+	int points;
 	GameObject* objInScene[NUMOBJ];
 
 	Button_UI retryButton;

@@ -24,7 +24,8 @@
 
 SceneRingToss::SceneRingToss()
 	: numLight{ 25 }, isShoot{ false }, isPickable{ true },
-	currentIndexRing{ 0 }, lightTimer{ 0.0f }, isInView{ false }
+	currentIndexRing{ 0 }, lightTimer{ 0.0f }, isInView{ false },
+	points{ 0 }, numAttempt{ 0 }
 {
 	meshList.resize(NUM_GEOMETRY);
 	lights.resize(numLight);
@@ -145,7 +146,7 @@ void SceneRingToss::Init()
 
 	meshList[GEO_BOARD]->material = Material::Wood(WHITE);
 
-	mainCamera.Init(glm::vec3(0, 10, 25.0f), glm::vec3(0, 10, 0), VECTOR3_UP);
+	mainCamera.Init(glm::vec3(0, 10, 20.0f), glm::vec3(0, 10, 0), VECTOR3_UP);
 	mainCamera.constraintYaw = 0.5f;
 	
 	glUniform1i(m_parameters[U_NUMLIGHTS], numLight);
@@ -253,7 +254,7 @@ void SceneRingToss::Init()
 	GameObjectManager::GetInstance()->addItem(objInScene[WALLBACK]);
 
 	objInScene[TABLE] = new TossTable();
-	objInScene[TABLE]->m_transform.Translate(0.0f, .0f, 4.f);
+	objInScene[TABLE]->m_transform.Translate(0.0f, .0f, -4.f);
 	objInScene[TABLE]->m_transform.Rotate(0.0f, 90.0f);
 	objInScene[TABLE]->m_transform.ScaleBy(2.0f, 2.0f, 2.0f);
 
@@ -264,7 +265,7 @@ void SceneRingToss::Init()
 	PhysicsMaterial mat;
 	mat.m_mass = 0.0f;
 	objInScene[COUNTER] = new GameObject;
-	objInScene[COUNTER]->m_transform.Translate(0.0f, .0f, 20.0f);
+	objInScene[COUNTER]->m_transform.Translate(0.0f, .0f, 10.0f);
 	objInScene[COUNTER]->m_transform.Rotate(0.0f, 180.0f);
 	objInScene[COUNTER]->m_transform.ScaleBy(0.4f, 0.4f, 0.4f);
 	objInScene[COUNTER]->rb = addBoxCollider(objInScene[COUNTER], 10.0f, colliderHeight, 6.25f, mat, glm::vec3(0.0f, colliderHeight / 2.f, 0.f));
@@ -281,11 +282,11 @@ void SceneRingToss::Init()
 	objInScene[PLAYER]->rb->setAngularFactor(btVector3(0, 0, 0));
 
 	objInScene[RING] = new Ring;
-	objInScene[RING]->m_transform.Translate(-2.0f, 8.0f, 22.0f);
+	objInScene[RING]->m_transform.Translate(-2.0f, 8.0f, 12.0f);
 	objInScene[RING2] = new Ring;
-	objInScene[RING2]->m_transform.Translate(0.0f, 8.0f, 22.0f);
+	objInScene[RING2]->m_transform.Translate(0.0f, 8.0f, 12.0f);
 	objInScene[RING3] = new Ring;
-	objInScene[RING3]->m_transform.Translate(2.0f, 8.0f, 22.0f);
+	objInScene[RING3]->m_transform.Translate(2.0f, 8.0f, 12.0f);
 	GameObjectManager::IniAll();
 
 	objInScene[PLAYER]->rb->setIgnoreCollisionCheck(objInScene[RING]->rb, true);
@@ -312,7 +313,6 @@ void SceneRingToss::Update()
 		inputMovementDir = -mainCamera.right;
 	glm::vec3 finalForce = inputMovementDir * 10.0f;
 	objInScene[PLAYER]->rb->setLinearVelocity(btVector3(finalForce.x, 0.0f, finalForce.z));
-	GameObjectManager::UpdateAll();
 
 	if (isPickable)
 	{
@@ -335,7 +335,7 @@ void SceneRingToss::Update()
 	}
 
 	lightTimer += Time::deltaTime;
-	if (isTimeReach(lightTimer, 1.f, 1.1f))
+	if (isTimeReach(lightTimer, 1.f, 1.05f))
 	{
 		for (int i = 1; i <= 12; ++i)
 		{
@@ -353,11 +353,29 @@ void SceneRingToss::Update()
 
 			lights[12 + i].color = randColor;
 			glUniform3fv(m_parameters[U_LIGHT0_COLOR + U_LIGHT0_EXPONENT * (12 + i)], 1, &lights[12 + i].color.r); 
-			std::cout << U_LIGHT0_COLOR + U_LIGHT0_EXPONENT * (12 + i) << std::endl;
 		}
-
-		lightTimer = 0.0f;
 	}
+	else if (lightTimer >= 1.1f) lightTimer = 0.0f;
+
+	for (size_t i = 0; i < ((TossBoard*)objInScene[BOARD])->bottles.size(); ++i)
+	{
+		for (size_t j = 0; j < 3; ++j)
+		{
+			if (!objInScene[RING+ j]->rb->isActive() || !((Ring*)objInScene[RING + j])->trigger) continue;
+
+			if (CheckCollisionWith(((TossBoard*)objInScene[BOARD])->bottles[i]->getObject(),
+				((Ring*)objInScene[RING + j])->trigger->getObject()))
+			{
+				points += 500;
+				btCollisionShape* collider = ((Ring*)objInScene[RING + j])->trigger->rb->getCollisionShape();
+				GameObjectManager::removeItem(((Ring*)objInScene[RING + j])->trigger);
+				ColliderManager::GetInstance()->RemoveCollider(collider);
+				((Ring*)objInScene[RING + j])->trigger = NULL;
+			}
+		}
+	}
+
+	GameObjectManager::UpdateAll();
 }
 
 void SceneRingToss::LateUpdate()
@@ -386,11 +404,14 @@ void SceneRingToss::LateUpdate()
 			objInScene[currentIndexRing]->rb->activate();
 			isShoot = true;
 			isPickable = true;
+			numAttempt++;
 		}
 	}
 
 	if (MouseController::GetInstance()->IsButtonReleased(0) && isMouseLeftPressed)
 		isMouseLeftPressed = false;
+
+	GameObjectManager::LateUpdateAll();
 }
 
 void SceneRingToss::Render()
@@ -458,6 +479,7 @@ void SceneRingToss::Render()
 	if (isInView)
 	{
 		modelStack.PushMatrix();
+		modelStack.LoadIdentity();
 		modelStack.Translate(objInScene[currentIndexRing]->m_transform.m_position.x - 1.0f,
 							objInScene[currentIndexRing]->m_transform.m_position.y + 1.0f,
 							objInScene[currentIndexRing]->m_transform.m_position.z);
@@ -466,9 +488,12 @@ void SceneRingToss::Render()
 		modelStack.PopMatrix();
 	}
 
+	RenderTextOnScreen(meshList[GEO_TEXT], "Score: " + std::to_string(points), RED, 25.0f, Application::m_consoleWidth - 200.0f, Application::m_consoleHeight - 50.0f);
+
 #ifdef DRAW_HITBOX
 
 	modelStack.PushMatrix();
+	modelStack.LoadIdentity();
 	RenderMesh(meshList[GEO_AXIS]);
 	modelStack.PopMatrix();
 
@@ -528,7 +553,6 @@ void SceneRingToss::Render()
 
 	if(isFillMode) glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 #endif
-
 }
 
 void SceneRingToss::Exit()
