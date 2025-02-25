@@ -4,6 +4,9 @@ class DS_Duck:
     public GameObject
 {
 public:
+    static int nextId;
+
+    float size;
     float speed;
     float animTime;
     const float duration = 0.25f;

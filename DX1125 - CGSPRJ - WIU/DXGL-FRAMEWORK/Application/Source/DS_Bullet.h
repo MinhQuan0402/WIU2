@@ -4,6 +4,10 @@ class DS_Bullet :
     public GameObject
 {
 public:
+    bool hit;
+    float timeoutTime;
+    const float timeout = 3;
+
     DS_Bullet();
 
     void Start() override;

@@ -23,8 +23,6 @@
 #include "DS_BoothRoof.h"
 #include "DS_Conveyor.h"
 #include "DS_Pillar.h"
-#include "DS_Duck.h"
-#include "DS_Bullet.h"
 #include "SceneManager.h"
 
 SceneDuckShooting::SceneDuckShooting() : numLight{ 2 }
@@ -56,7 +54,7 @@ void SceneDuckShooting::Init()
 	// Generate a default VAO for now
 	glGenVertexArrays(1, &m_vertexArrayID);
 	glBindVertexArray(m_vertexArrayID);
-
+	
 	// Load the shader programs
 	m_programID = LoadShaders("Shader//Texture.vertexshader",
 		"Shader//MainShader.fragmentshader");
@@ -225,8 +223,6 @@ void SceneDuckShooting::Init()
 		objInScene[CONVEYOR] = new DS_Conveyor;
 		objInScene[PILLAR] = new DS_Pillar;
 		objInScene[PILLAR2] = new DS_Pillar;
-		objInScene[DUCK] = new DS_Duck;
-		objInScene[BULLET] = new DS_Bullet;
 	}
 
 	// Modify objects in scene:
@@ -252,20 +248,15 @@ void SceneDuckShooting::Init()
 
 	GameObjectManager::GetInstance()->IniAll();
 
-	// Ducks Collision Ignore:
-	{
-		// Ducks:
-		objInScene[DUCK]->rb->setIgnoreCollisionCheck(objInScene[PILLAR]->rb, true);
-		objInScene[DUCK]->rb->setIgnoreCollisionCheck(objInScene[PILLAR2]->rb, true);
-		objInScene[DUCK]->rb->setIgnoreCollisionCheck(objInScene[CONVEYOR]->rb, true);
-	}
-
 	bulletSpeed = 20;
 	recoil = false;
 	recoilBack = false;
 	recoilTime = 0;
 	cooldownTimer = 0;
 	gameComplete = false;
+	spawnRate = 0.5;
+
+	points = 0;
 }
 
 void SceneDuckShooting::Update()
@@ -307,7 +298,7 @@ void SceneDuckShooting::Update()
 	//}
 
 
-	float speed = 2 * Time::deltaTime;
+	float speed = 20 * Time::deltaTime;
 	if (KeyboardController::GetInstance()->IsKeyDown('I'))
 		devVec.z += speed;
 	if (KeyboardController::GetInstance()->IsKeyDown('K'))
@@ -323,9 +314,6 @@ void SceneDuckShooting::Update()
 
 	//lights[0].m_transform.m_position = devVec;
 	std::cout << devVec.x << ", " << devVec.y << ", " << devVec.z << std::endl;
-
-
-
 
 	GameObjectManager::GetInstance()->UpdateAll();
 
@@ -355,19 +343,44 @@ void SceneDuckShooting::Update()
 		}
 	}
 
+	// spawn ducks:
+	{
+		if (spawnTimer > 0) {
+			spawnTimer -= Time::deltaTime;
+		}
+		else {
+			spawnTimer = spawnRate;
+
+			GameObject* duck = GameObject::Instantiate<DS_Duck>();
+			for (int i = 0; i < ducks.size(); i++) {
+				DS_Duck* otherDuck = ducks[i];
+				duck->rb->setIgnoreCollisionCheck(otherDuck->rb	, true);
+			}
+
+			// Ducks Collision Ignore:
+			duck->rb->setIgnoreCollisionCheck(objInScene[PILLAR]->rb, true);
+			duck->rb->setIgnoreCollisionCheck(objInScene[PILLAR2]->rb, true);
+			duck->rb->setIgnoreCollisionCheck(objInScene[CONVEYOR]->rb, true);
+
+			DS_Duck* duckObj = dynamic_cast<DS_Duck*>(duck);
+			duck->rb->setGravity(btVector3(0, 0, 0));
+			ducks.push_back(duckObj);
+		}
+	}
+
 	// check bullet collision with duck:
 	{
-		DS_Duck* duck = dynamic_cast<DS_Duck*>(objInScene[DUCK]);
-		if (CheckCollisionWith(duck->rb, objInScene[BULLET]->rb)) {
-			if (!duck->hit) {
-				duck->hit = true;
-				//duck->rb->setIgnoreCollisionCheck(objInScene[BULLET]->rb, true);
-				std::cout << "Touch" << std::endl;
+		for (int i = 0; i < ducks.size(); i++) {
+			DS_Duck* duck = ducks[i];
+			for (int x = 0; x < bullets.size(); x++) {
+				DS_Bullet* bullet = bullets[x];
+				if (CheckCollisionWith(duck->rb, bullet->rb)) {
+					if (!duck->hit && !bullet->hit) {
+						duck->hit = true;
+						bullet->hit = true;
+					}
+				}
 			}
-		}
-
-		if (duck->hit == false) {
-			//duck->rb->setIgnoreCollisionCheck(objInScene[BULLET]->rb, false);
 		}
 	}
 }
@@ -393,6 +406,23 @@ void SceneDuckShooting::LateUpdate()
 	}
 
 
+	// Remove bullets after timeout:
+	{
+		for (int i = 0; i < bullets.size(); i++) {
+			DS_Bullet* bullet = bullets[i];
+			if (bullet->timeoutTime < bullet->timeout) {
+				bullet->timeoutTime += Time::deltaTime;
+			}
+			else {
+				btCollisionShape* collider = bullet->rb->getCollisionShape();
+				GameObjectManager::GetInstance()->removeItem(bullet);
+				ColliderManager::GetInstance()->RemoveCollider(collider);
+				bullets.remove(bullet);
+			}
+		}
+	}
+
+
 	if (cooldownTimer > 0) {
 		cooldownTimer -= Time::deltaTime;
 	}
@@ -405,24 +435,46 @@ void SceneDuckShooting::LateUpdate()
 		if (cooldownTimer <= 0) {
 			if (MouseController::GetInstance()->IsButtonReleased(0))
 			{
-				cooldownTimer = 1;
+				cooldownTimer = 0.25;
 				recoil = true;
 
 				// Shoot:
-				//std::cout << "Pew" << std::endl;
-
-			//	if (objInScene[BULLET] == nullptr)
-			//		objInScene[BULLET] = new DS_Bullet;
+				GameObject* bullet = GameObject::Instantiate<DS_Bullet>();
+				for (int i = 0; i < bullets.size(); i++) {
+					DS_Bullet* otherBullet = bullets[i];
+					bullet->rb->setIgnoreCollisionCheck(otherBullet->rb, true);
+				}
 
 				glm::vec3 bulletOffset = mainCamera.right * 0.165f + mainCamera.up * -0.075f + mainCamera.view * 1.f;
 				glm::vec3 origin = mainCamera.m_transform.m_position + bulletOffset;
 				glm::vec3 direction = glm::normalize(mainCamera.target - origin);
 
-				objInScene[BULLET]->rb->setSleepingThresholds(0.8, 1);
-				objInScene[BULLET]->SetRigidbodyPosition(origin);
-				objInScene[BULLET]->rb->setLinearVelocity(btVector3(direction.x, direction.y, direction.z) * bulletSpeed);
-				objInScene[BULLET]->rb->activate();
+				bullet->rb->setSleepingThresholds(0.8, 1);
+				bullet->SetRigidbodyPosition(origin);
+				bullet->rb->setLinearVelocity(btVector3(direction.x, direction.y, direction.z) * bulletSpeed);
+				bullet->rb->activate();
 
+				bullets.push_back((DS_Bullet*)bullet);
+			}
+		}
+
+		// Move ducks:
+		{
+			for (int i = 0; i < ducks.size(); i++) {
+				DS_Duck* duck = ducks[i];
+
+				if (duck->GetRigidbodyPosition().x < 24.3538 * 0.5 + 2.5 * 0.5) {
+					duck->SetRigidbodyPosition(duck->GetRigidbodyPosition() + glm::vec3(duck->speed * Time::fixedDeltaTime, 0, 0));
+				}
+				else {
+					btCollisionShape* collider = duck->rb->getCollisionShape();
+					GameObjectManager::GetInstance()->removeItem(duck);
+					ColliderManager::GetInstance()->RemoveCollider(collider);
+					ducks.remove(duck);
+					return;
+				}
+
+				duck->SetRigidbodyRotation(duck->animTime / duck->duration * -90, 0, 0);
 			}
 		}
 	}
@@ -493,6 +545,8 @@ void SceneDuckShooting::Render()
 		modelStack.PopMatrix();
 	}
 	
+	
+
 	// Light:
 	{
 		modelStack.PushMatrix();
@@ -546,8 +600,10 @@ void SceneDuckShooting::Render()
 	//	modelStack.PopMatrix();
 	}
 
+
 	// Render hitboxes:
 	GameObjectManager::GetInstance()->RenderAll(*this);
+
 
 #ifdef DRAW_HITBOX
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -662,25 +718,25 @@ void SceneDuckShooting::RenderSkybox(void)
 	modelStack.PopMatrix();
 }
 
-void SceneDuckShooting::RenderMeshOnScreen(Mesh* mesh, float x, float y, float width, float height, glm::vec2 anchorPoint)
-{
-	glDisable(GL_DEPTH_TEST);
-	glm::mat4 ortho = glm::ortho(0.f, 800.f, 0.f, 600.f, -
-		1000.f, 1000.f); // dimension of screen UI
-	projectionStack.PushMatrix();
-	projectionStack.LoadMatrix(ortho);
-	viewStack.PushMatrix();
-	viewStack.LoadIdentity(); //No need camera for ortho mode
-	modelStack.PushMatrix();
-	modelStack.LoadIdentity();
-
-	// To do: Use modelStack to position GUI on screen
-	modelStack.Translate(x * 800 - width * anchorPoint.x, y * 600 - height * anchorPoint.y, 0);
-	// To do: Use modelStack to scale the GUI
-	modelStack.Scale(width, height, 1);
-	RenderMesh(mesh, false); //UI should not have light
-	projectionStack.PopMatrix();
-	viewStack.PopMatrix();
-	modelStack.PopMatrix();
-	glEnable(GL_DEPTH_TEST);
-}
+//void SceneDuckShooting::RenderMeshOnScreen(Mesh* mesh, float x, float y, float width, float height, glm::vec2 anchorPoint)
+//{
+//	glDisable(GL_DEPTH_TEST);
+//	glm::mat4 ortho = glm::ortho(0.f, (float)Application::m_consoleWidth, 0.f, (float)Application::m_consoleHeight, -
+//		1000.f, 1000.f); // dimension of screen UI
+//	projectionStack.PushMatrix();
+//	projectionStack.LoadMatrix(ortho);
+//	viewStack.PushMatrix();
+//	viewStack.LoadIdentity(); //No need camera for ortho mode
+//	modelStack.PushMatrix();
+//	modelStack.LoadIdentity();
+//
+//	// To do: Use modelStack to position GUI on screen
+//	modelStack.Translate(x * (float)Application::m_consoleWidth - width * anchorPoint.x, y * (float)Application::m_consoleHeight - height * anchorPoint.y, 0);
+//	// To do: Use modelStack to scale the GUI
+//	modelStack.Scale(width, height, 1);
+//	RenderMesh(mesh, false); //UI should not have light
+//	projectionStack.PopMatrix();
+//	viewStack.PopMatrix();
+//	modelStack.PopMatrix();
+//	glEnable(GL_DEPTH_TEST);
+//}

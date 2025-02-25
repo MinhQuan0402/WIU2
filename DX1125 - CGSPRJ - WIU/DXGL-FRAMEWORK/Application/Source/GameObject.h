@@ -129,7 +129,7 @@ public:
 	static void MoveObj(Transform& transform);
 
 	template<typename T, typename ...Args>
-	inline GameObject* Instantiate(void);
+	static inline GameObject* Instantiate(void);
 };
 
 template<typename T, typename ...Args>

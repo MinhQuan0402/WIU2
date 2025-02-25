@@ -207,10 +207,10 @@ void GameObjectManager::LateUpdateAll(void)
 		GameObjectManager::GetInstance()->m_allGOs[i]->LateUpdate();
 	}
 }
-void GameObjectManager::LateUpdateAll(void)
-{
-	for (GameObject*& value : GameObjectManager::GetInstance()->m_allGOs) { if (value) value->LateUpdate(); }
-}
+//void GameObjectManager::LateUpdateAll(void)
+//{
+//	for (GameObject*& value : GameObjectManager::GetInstance()->m_allGOs) { if (value) value->LateUpdate(); }
+//}
 void GameObjectManager::RenderAll(Scene& scene)
 {
 	for (size_t i = 0; i < GameObjectManager::GetInstance()->m_allGOs.size(); ++i)

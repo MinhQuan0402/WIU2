@@ -7,6 +7,9 @@
 #include "GameObject.h"
 #include "RigidBody.h"
 #include "Time.h"
+#include "UnorderedVector.h"
+#include "DS_Duck.h"
+#include "DS_Bullet.h"
 
 class SceneDuckShooting : public Scene
 {
@@ -58,7 +61,7 @@ public:
 
 private:
 	void RenderSkybox(void);
-	void RenderMeshOnScreen(Mesh* mesh, float x, float y, float width, float height, glm::vec2 anchorPoint);
+	//void RenderMeshOnScreen(Mesh* mesh, float x, float y, float width, float height, glm::vec2 anchorPoint);
 
 	int numLight;
 	Transform player;
@@ -76,8 +79,6 @@ private:
 		CONVEYOR,
 		PILLAR,
 		PILLAR2,
-		DUCK,
-		BULLET,
 
 		NUM_OBJ
 	};
@@ -85,13 +86,23 @@ private:
 	GameObject* objInScene[NUM_OBJ];
 
 	Transform gunTransform;
+
 	float bulletSpeed;
 	bool recoil;
 	bool recoilBack;
 	float recoilTime;
 	const float recoilDuration = 0.1f;
 
+	UnorderedVector<DS_Duck*> ducks;
+	UnorderedVector<DS_Bullet*> bullets;
+
+	float spawnTimer;
+	float spawnRate;
+	const float minSpawnRate = 0.25f;
+
 	float cooldownTimer;
+
+	float points;
 
 	bool gameComplete;
 

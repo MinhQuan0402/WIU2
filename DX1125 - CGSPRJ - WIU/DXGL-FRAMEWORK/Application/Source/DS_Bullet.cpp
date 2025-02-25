@@ -2,7 +2,7 @@
 #include "GameObjectManager.h"
 #include "SceneDuckShooting.h"
 
-DS_Bullet::DS_Bullet() 
+DS_Bullet::DS_Bullet() : hit{}, timeoutTime{}
 {	
 	GameObjectManager::GetInstance()->addItem(this);
 }
