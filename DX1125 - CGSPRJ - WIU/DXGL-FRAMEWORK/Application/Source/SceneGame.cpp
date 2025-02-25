@@ -298,6 +298,7 @@ void SceneGame::Render()
 
 void SceneGame::Exit()
 {
+	GameObjectManager::removeItem(objInScene[SPHERE]);
 	Scene::Exit();
 	// Cleanup VBO here
 	for (int i = 0; i < NUM_GEOMETRY; ++i) { if (meshList[i]) delete meshList[i]; }

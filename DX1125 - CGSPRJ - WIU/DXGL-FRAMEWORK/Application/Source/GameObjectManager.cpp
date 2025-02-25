@@ -164,9 +164,8 @@ void GameObjectManager::addItem(GameObject* obj)
 }
 void GameObjectManager::removeItem(GameObject* obj)
 {
-	CQuad* quad = GameObjectManager::GetInstance()->findQuad(GameObjectManager::GetInstance()->m_root, obj);
-	GameObjectManager::GetInstance()->postorderDeleteGO(quad, obj);
-	GameObjectManager::GetInstance()->m_allGOs.remove(obj); 
+	GameObjectManager::GetInstance()->m_allGOs.remove(obj);
+	delete obj;
 }
 bool GameObjectManager::findObjInList(const GameObject& value, int& index)
 {
