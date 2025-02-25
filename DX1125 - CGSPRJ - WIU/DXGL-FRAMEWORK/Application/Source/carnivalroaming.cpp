@@ -27,6 +27,7 @@
 #include "SceneCanKnockdown.h"
 #include "CircusTent.h"
 #include "MeshManager.h"
+#include "SceneRingToss.h"
 
 
 carnivalroaming::carnivalroaming() : numLight{ 2 }
@@ -332,6 +333,8 @@ void carnivalroaming::LateUpdate()
 	if (CheckCollisionWith(objInscene[PLAYERBOX]->getObject(), objInscene[BOX2]->getObject()) and KeyboardController::GetInstance()->IsKeyDown('E'))
 	{
 		std::cout << "Colliding with ring toss" << std::endl;
+		SceneManager::GetInstance()->ChangeState(new SceneRingToss);
+		return;
 	
 	}
 	if (CheckCollisionWith(objInscene[PLAYERBOX]->getObject(), objInscene[BOX3]->getObject()) and KeyboardController::GetInstance()->IsKeyDown('E'))

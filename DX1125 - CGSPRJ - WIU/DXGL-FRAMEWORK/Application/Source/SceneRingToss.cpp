@@ -21,6 +21,7 @@
 #include "RigidBody.h"
 #include "ColliderManager.h"
 #include "TossBoard.h"
+#include "MeshManager.h"
 
 SceneRingToss::SceneRingToss()
 	: numLight{ 25 }, isShoot{ false }, isPickable{ true },
@@ -126,24 +127,7 @@ void SceneRingToss::Init()
 	meshList[GEO_LIGHT] = MeshBuilder::GenerateSphere("Sphere", WHITE, 0.5f, 50, 50);
 	meshList[GEO_TEXT] = MeshBuilder::GenerateText("text", 16, 16);
 	meshList[GEO_TEXT]->textureID = LoadTGA("Images//calibri.tga");
-	meshList[GEO_PLANE] = MeshBuilder::GenerateQuad("Quad", WHITE, 75.f);
-	meshList[GEO_PLANE]->textureID = LoadPNG("Images//ground.png");
-	meshList[GEO_BOARD] = MeshBuilder::GenerateOBJ("board", "Models//ring_toss_rack.obj");
-	meshList[GEO_BOARD]->textureID = LoadPNG("Images//wood.png");
-	meshList[GEO_BOTTLE] = MeshBuilder::GenerateOBJ("Bottle", "Models//ring_toss_bottle.obj");
-	meshList[GEO_RING] = MeshBuilder::GenerateOBJ("Ring", "Models//ring_toss_rope.obj");
-	meshList[GEO_RING]->textureID = LoadPNG("Images//rope.png");
-	meshList[GEO_TIE] = MeshBuilder::GenerateOBJ("Tie", "Models//ring_toss_tie.obj");
-	meshList[GEO_TIE]->textureID = LoadPNG("Images//tie.png");
-	meshList[GEO_TABLE] = MeshBuilder::GenerateOBJ("Table", "Models//ring_toss_table.obj");
-	meshList[GEO_TABLE]->textureID = LoadPNG("Images//wood.png");
-	meshList[GEO_TABLECLOTH] = MeshBuilder::GenerateOBJ("Table cloth", "Models//ring_toss_tablecloth.obj");
-	meshList[GEO_TABLECLOTH]->textureID = LoadPNG("Images//tablecloth.png");
-	meshList[GEO_COUNTER] = MeshBuilder::GenerateOBJ("Counter", "Models//ring_toss_counter.obj");
-	meshList[GEO_COUNTER]->textureID = LoadPNG("Images//counter.png");
-	meshList[GEO_LIGHTPOLE] = MeshBuilder::GenerateOBJMTL("Light pole", "Models//ring_toss_lightpole.obj", "Models//ring_toss_lightpole.mtl");
 
-	meshList[GEO_BOARD]->material = Material::Wood(WHITE);
 
 	mainCamera.Init(glm::vec3(0, 10, 25.0f), glm::vec3(0, 10, 0), VECTOR3_UP);
 	mainCamera.constraintYaw = 0.5f;
@@ -203,7 +187,7 @@ void SceneRingToss::Init()
 
 	for (int i = 1; i <= 12; ++i)
 	{
-		meshList[GEO_LIGHTPOLE]->materials[i - 1].kEmission = glm::vec3(0.5f, 0.5f, 0.5f);
+		MeshManager::GetInstance()->meshList[MeshManager::GEO_RT_LIGHTPOLE]->materials[i - 1].kEmission = glm::vec3(0.5f, 0.5f, 0.5f);
 
 		glm::vec3 randColor = glm::vec3{
 			Math::RandFloatMinMax(0.0f, 1.0f),
@@ -211,7 +195,7 @@ void SceneRingToss::Init()
 			Math::RandFloatMinMax(0.0f, 1.0f)
 		};
 
-		meshList[GEO_LIGHTPOLE]->materials[i - 1].kAmbient = glm::vec3(randColor);
+		MeshManager::GetInstance()->meshList[MeshManager::GEO_RT_LIGHTPOLE]->materials[i - 1].kAmbient = glm::vec3(randColor);
 		lights[i].color = randColor;
 		lights[12 + i].color = randColor;
 	}
@@ -339,7 +323,7 @@ void SceneRingToss::Update()
 	{
 		for (int i = 1; i <= 12; ++i)
 		{
-			meshList[GEO_LIGHTPOLE]->materials[i - 1].kEmission = glm::vec3(0.5f, 0.5f, 0.5f);
+			MeshManager::GetInstance()->meshList[MeshManager::GEO_RT_LIGHTPOLE]->materials[i - 1].kEmission = glm::vec3(0.5f, 0.5f, 0.5f);
 
 			glm::vec3 randColor = glm::vec3{
 				Math::RandFloatMinMax(0.0f, 1.0f),
@@ -347,7 +331,7 @@ void SceneRingToss::Update()
 				Math::RandFloatMinMax(0.0f, 1.0f)
 			};
 
-			meshList[GEO_LIGHTPOLE]->materials[i - 1].kAmbient = glm::vec3(randColor);
+			MeshManager::GetInstance()->meshList[MeshManager::GEO_RT_LIGHTPOLE]->materials[i - 1].kAmbient = glm::vec3(randColor);
 			lights[i].color = randColor;
 			glUniform3fv(m_parameters[U_LIGHT0_COLOR + U_LIGHT0_EXPONENT * i], 1, &lights[i].color.r);
 
@@ -441,18 +425,18 @@ void SceneRingToss::Render()
 	modelStack.Translate(6.0f, 0.0f, 0.0f);
 	modelStack.Rotate(-90.0f, .0f, 1.0f, 0.0f);
 	modelStack.Scale(7.f, 7.f, 7.f);
-	RenderMesh(meshList[GEO_LIGHTPOLE], enableLight);
+	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_RT_LIGHTPOLE], enableLight);
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
 	modelStack.Translate(-6.0f, 0.0f, 0.0f);
 	modelStack.Rotate(-90.0f, .0f, 1.0f, 0.0f);
 	modelStack.Scale(7.f, 7.f, 7.f);
-	RenderMesh(meshList[GEO_LIGHTPOLE], enableLight);
+	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_RT_LIGHTPOLE], enableLight);
 	modelStack.PopMatrix();
 
-	meshList[GEO_COUNTER]->material = Material::Wood(WHITE);
-	RenderMesh(meshList[GEO_COUNTER], enableLight, objInScene[COUNTER]->m_transform);
+	MeshManager::GetInstance()->meshList[MeshManager::GEO_RT_COUNTER]->material = Material::Wood(WHITE);
+	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_RT_COUNTER], enableLight, objInScene[COUNTER]->m_transform);
 	GameObjectManager::RenderAll(*this);
 
 	if (isInView)
@@ -607,7 +591,7 @@ void SceneRingToss::RenderGround(int size)
 	int valueToMul = (size - 1) / 2;
 	glm::vec3 originPos = glm::vec3{ 75.0f * (float)valueToMul, 0.0f, 75.0f * (float)valueToMul };
 	float orignalX = originPos.x;
-	meshList[GEO_PLANE]->material = Material::Wood(WHITE);
+	MeshManager::GetInstance()->meshList[MeshManager::GEO_RT_PLANE]->material = Material::Wood(WHITE);
 	for (int i = 0; i < size; i++)
 	{
 		originPos.x = orignalX;
@@ -617,7 +601,7 @@ void SceneRingToss::RenderGround(int size)
 			modelStack.PushMatrix();
 			modelStack.Translate(originPos.x, originPos.y, originPos.z);
 			modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
-			RenderMesh(meshList[GEO_PLANE], enableLight);
+			RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_RT_PLANE], enableLight);
 			modelStack.PopMatrix();
 
 			originPos.x -= 75.0f;

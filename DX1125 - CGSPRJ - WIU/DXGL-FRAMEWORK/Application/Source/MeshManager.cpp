@@ -235,4 +235,24 @@ void MeshManager::Init()
 	meshList[GEO_LIGHTBULB] = MeshBuilder::GenerateOBJMTL("Lamp", "Models//CK_LightBulb.obj", "Models//CK_LightBulb.mtl");
 	meshList[GEO_LIGHTBULB]->material = Material::Wood(WHITE);
 
+	//ring toss
+	meshList[GEO_RT_PLANE] = MeshBuilder::GenerateQuad("Quad", WHITE, 75.f);
+	meshList[GEO_RT_PLANE]->textureID = LoadPNG("Images//ground.png");
+	meshList[GEO_RT_BOARD] = MeshBuilder::GenerateOBJ("board", "Models//ring_toss_rack.obj");
+	meshList[GEO_RT_BOARD]->textureID = LoadPNG("Images//wood.png");
+	meshList[GEO_RT_BOTTLE] = MeshBuilder::GenerateOBJ("Bottle", "Models//ring_toss_bottle.obj");
+	meshList[GEO_RT_RING] = MeshBuilder::GenerateOBJ("Ring", "Models//ring_toss_rope.obj");
+	meshList[GEO_RT_RING]->textureID = LoadPNG("Images//rope.png");
+	meshList[GEO_RT_TIE] = MeshBuilder::GenerateOBJ("Tie", "Models//ring_toss_tie.obj");
+	meshList[GEO_RT_TIE]->textureID = LoadPNG("Images//tie.png");
+	meshList[GEO_RT_TABLE] = MeshBuilder::GenerateOBJ("Table", "Models//ring_toss_table.obj");
+	meshList[GEO_RT_TABLE]->textureID = LoadPNG("Images//wood.png");
+	meshList[GEO_RT_TABLECLOTH] = MeshBuilder::GenerateOBJ("Table cloth", "Models//ring_toss_tablecloth.obj");
+	meshList[GEO_RT_TABLECLOTH]->textureID = LoadPNG("Images//tablecloth.png");
+	meshList[GEO_RT_COUNTER] = MeshBuilder::GenerateOBJ("Counter", "Models//ring_toss_counter.obj");
+	meshList[GEO_RT_COUNTER]->textureID = LoadPNG("Images//counter.png");
+	meshList[GEO_RT_LIGHTPOLE] = MeshBuilder::GenerateOBJMTL("Light pole", "Models//ring_toss_lightpole.obj", "Models//ring_toss_lightpole.mtl");
+
+	meshList[GEO_RT_BOARD]->material = Material::Wood(WHITE);
+
 }

@@ -8,6 +8,7 @@
 #include "Utility.h"
 #include "MeshBuilder.h"
 #include <MyMath.h>
+#include "MeshManager.h"
 
 btCompoundShape* Bottle::GenerateCollider(void)
 {
@@ -84,8 +85,8 @@ void Bottle::LateUpdate(void)
 
 void Bottle::Render(Scene& scene)
 {
-	scene.meshList[SceneRingToss::GEO_BOTTLE]->material = Material::Metal(m_color);
-	scene.RenderRigidMesh(scene.meshList[SceneRingToss::GEO_BOTTLE], scene.enableLight, m_transform, rb);
+	MeshManager::GetInstance()->meshList[MeshManager::GEO_RT_BOTTLE]->material = Material::Metal(m_color);
+	scene.RenderRigidMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_RT_BOTTLE], scene.enableLight, m_transform, rb);
 }
 
 btCompoundShape* TossBoard::GenerateCollider(void)
@@ -244,7 +245,7 @@ void TossBoard::LateUpdate(void)
 
 void TossBoard::Render(Scene& scene)
 {
-	scene.RenderMesh(scene.meshList[SceneRingToss::GEO_BOARD], scene.enableLight, m_transform);
+	scene.RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_RT_BOARD], scene.enableLight, m_transform);
 }
 
 btCompoundShape* Ring::GenerateCollider(void)
@@ -317,10 +318,10 @@ void Ring::LateUpdate(void)
 
 void Ring::Render(Scene& scene)
 {
-	scene.meshList[SceneRingToss::GEO_TIE]->material = Material::Metal(WHITE);
-	scene.meshList[SceneRingToss::GEO_RING]->material = Material::Wood(WHITE);
-	scene.RenderRigidMesh(scene.meshList[SceneRingToss::GEO_TIE], scene.enableLight, m_transform, rb);
-	scene.RenderRigidMesh(scene.meshList[SceneRingToss::GEO_RING], scene.enableLight, m_transform, rb);
+	MeshManager::GetInstance()->meshList[MeshManager::GEO_RT_TIE]->material = Material::Metal(WHITE);
+	MeshManager::GetInstance()->meshList[MeshManager::GEO_RT_RING]->material = Material::Wood(WHITE);
+	scene.RenderRigidMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_RT_TIE], scene.enableLight, m_transform, rb);
+	scene.RenderRigidMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_RT_RING], scene.enableLight, m_transform, rb);
 }
 
 btCompoundShape* TossTable::GenerateCollider(void)
@@ -403,8 +404,8 @@ void TossTable::LateUpdate(void)
 
 void TossTable::Render(Scene& scene)
 {
-	scene.meshList[SceneRingToss::GEO_TABLE]->material = Material::Wood(WHITE);
-	scene.meshList[SceneRingToss::GEO_TABLECLOTH]->material = Material::Wood(WHITE);
-	scene.RenderMesh(scene.meshList[SceneRingToss::GEO_TABLE], scene.enableLight, m_transform);
-	scene.RenderMesh(scene.meshList[SceneRingToss::GEO_TABLECLOTH], scene.enableLight, m_transform);
+	MeshManager::GetInstance()->meshList[MeshManager::GEO_RT_TABLE]->material = Material::Wood(WHITE);
+	MeshManager::GetInstance()->meshList[MeshManager::GEO_RT_TABLECLOTH]->material = Material::Wood(WHITE);
+	scene.RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_RT_TABLE], scene.enableLight, m_transform);
+	scene.RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_RT_TABLECLOTH], scene.enableLight, m_transform);
 }
