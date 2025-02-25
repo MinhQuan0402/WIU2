@@ -124,6 +124,17 @@ glm::vec3 GameObject::GetRigidbodyRotation(void) const
 	return glm::vec3(euler.x(), euler.y(), euler.z());
 }
 
+btCollisionObject* GameObject::getObject(void) const
+{
+	if (rb)
+	{
+		btCollisionObject* obj = rb;
+		return obj;
+	}
+
+	return nullptr;
+}
+
 void GameObject::AddChild(GameObject* child) 
 {
 	child->SetParent(this);
