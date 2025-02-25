@@ -151,6 +151,8 @@
     <ClCompile Include="Source\Application.cpp" />
     <ClCompile Include="Source\Balloon.cpp" />
     <ClCompile Include="Source\BalloonBoard.cpp" />
+    <ClCompile Include="Source\BP_Box.cpp" />
+    <ClCompile Include="Source\BP_Counter.cpp" />
     <ClCompile Include="Source\Camera.cpp" />
     <ClCompile Include="Source\ColliderManager.cpp" />
     <ClCompile Include="Source\CollisionManager.cpp" />
@@ -182,6 +184,8 @@
     <ClInclude Include="Source\Application.h" />
     <ClInclude Include="Source\Balloon.h" />
     <ClInclude Include="Source\BalloonBoard.h" />
+    <ClInclude Include="Source\BP_Box.h" />
+    <ClInclude Include="Source\BP_Counter.h" />
     <ClInclude Include="Source\Camera.h" />
     <ClInclude Include="Source\ColliderManager.h" />
     <ClInclude Include="Source\CollisionManager.h" />

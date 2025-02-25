@@ -12,14 +12,14 @@ Dart::Dart()
 void Dart::Start()
 {
 	PhysicsMaterial mat;
-	mat.m_mass = 1.f;
+	mat.m_mass = 1000.f;
 	mat.m_friction = 0.7f;
-	mat.m_bounciness = 0.1f;
 
 	m_transform.Rotate(0, 0, 90);
 
 	rb = addCylinderCollider(this, 0.77f, 0.05f, mat, glm::vec3(-0.19, 0.0131, 0));
-
+	rb->setSleepingThresholds(0, 0);
+	
 	//m_transform.Rotate(0, 90, 0);
 	//m_transform.Rotate(0, 0, -90);
 	m_transform.ScaleBy(0.2, 0.2, 0.2);

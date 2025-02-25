@@ -23,6 +23,8 @@
 #include "Balloon.h"
 #include "BalloonBoard.h"
 #include "Dart.h"
+#include "BP_Counter.h"
+#include "BP_Box.h"
 
 SceneBalloon::SceneBalloon() : numLight{ 2 }, currentDartIndex{ DART1 }
 {
@@ -106,6 +108,9 @@ void SceneBalloon::Init()
 	meshList[GEO_BP_POWERUI_FRAME] = MeshBuilder::GenerateQuad("PowerUi_Frame", glm::vec3(1, 1, 1), 1);
 	meshList[GEO_BP_POWERUI_FRAME]->textureID = LoadPNG("Images//CK_PowerUi_Frame.png");
 	meshList[GEO_BP_POWERUI_BAR] = MeshBuilder::GenerateQuad("PowerUi_Bar", glm::vec3(1, 1, 0), 1);
+	meshList[GEO_BP_COUNTER] = MeshBuilder::GenerateCube("Counter", glm::vec3(0.459, 0.302, 0), 1);
+	meshList[GEO_BP_COUNTER]->textureID = LoadPNG("Images//BP_Wood.png");
+	meshList[GEO_BP_COUNTER]->material = Material::Wood(glm::vec3(0.459, 0.302, 0));
 
 	meshList[GEO_TOP] = MeshBuilder::GenerateQuad("Plane", glm::vec3(1.f, 1.f, 1.f), 10.f);
 	meshList[GEO_TOP]->textureID = LoadPNG("Images//top.png");
@@ -120,7 +125,7 @@ void SceneBalloon::Init()
 	meshList[GEO_BACK] = MeshBuilder::GenerateQuad("Plane", glm::vec3(1.f, 1.f, 1.f), 10.f);
 	meshList[GEO_BACK]->textureID = LoadPNG("Images//left.png");
 
-	mainCamera.Init(glm::vec3(10, 4, 0), glm::vec3(0, 4, 0), VECTOR3_UP);
+	mainCamera.Init(glm::vec3(7, 4, 0), glm::vec3(0, 4, 0), VECTOR3_UP);
 	mainCamera.sensitivity = 15.f;
 	fov = 45.f;
 	
@@ -152,6 +157,11 @@ void SceneBalloon::Init()
 	enableLight = true;
 
 	objInScene[BALLOONBOARD] = new BalloonBoard();
+	objInScene[COUNTER] = new BP_Counter();
+	objInScene[BOXF] = new BP_Box();
+	objInScene[BOXB] = new BP_Box();
+	objInScene[BOXL] = new BP_Box();
+	objInScene[BOXR] = new BP_Box();
 	objInScene[DART1] = new Dart();
 	objInScene[DART2] = new Dart();
 	objInScene[DART3] = new Dart();
@@ -165,6 +175,19 @@ void SceneBalloon::Init()
 
 
 	objInScene[BALLOONBOARD]->m_transform.Translate(-5.2, 3.6, -0.3);
+	objInScene[COUNTER]->m_transform.Translate(5.2, 1.325, 0);
+	objInScene[BOXR]->m_transform.Translate(5.2, 2.66, -0.8);
+	objInScene[BOXL]->m_transform.Translate(5.2, 2.66, -2.3);
+	objInScene[BOXF]->m_transform.Translate(4.55, 2.66, -1.55);
+	objInScene[BOXF]->m_transform.Rotate(0, 90, 0);
+	objInScene[BOXB]->m_transform.Translate(5.85, 2.66, -1.55);
+	objInScene[BOXB]->m_transform.Rotate(0, 90, 0);
+	for (int i = 0; i < 10; i++) {
+		objInScene[currentDartIndex]->m_transform.Translate(5.2, 2.66, -1.3);
+		currentDartIndex++;
+	}
+
+	currentDartIndex = DART1;
 
 	GameObjectManager::GetInstance()->IniAll();
 
@@ -186,14 +209,14 @@ void SceneBalloon::Update()
 	HandleKeyPress();
 	mainCamera.Update();
 	glm::vec3 inputMovementDir{};
-	//if (KeyboardController::GetInstance()->IsKeyDown('W'))
-	//	inputMovementDir = mainCamera.view;
-	//if (KeyboardController::GetInstance()->IsKeyDown('S'))
-	//	inputMovementDir = -mainCamera.view;
-	//if (KeyboardController::GetInstance()->IsKeyDown('D'))
-	//	inputMovementDir = mainCamera.right;
-	//if (KeyboardController::GetInstance()->IsKeyDown('A'))
-	//	inputMovementDir = -mainCamera.right;
+	/*if (KeyboardController::GetInstance()->IsKeyDown('W'))
+		inputMovementDir = mainCamera.view;
+	if (KeyboardController::GetInstance()->IsKeyDown('S'))
+		inputMovementDir = -mainCamera.view;
+	if (KeyboardController::GetInstance()->IsKeyDown('D'))
+		inputMovementDir = mainCamera.right;
+	if (KeyboardController::GetInstance()->IsKeyDown('A'))
+		inputMovementDir = -mainCamera.right;*/
 	glm::vec3 finalForce = inputMovementDir * 10.0f * Time::deltaTime;
 	mainCamera.m_transform.Translate(finalForce);
 	glm::vec3 prevTarget = mainCamera.target;
@@ -206,7 +229,7 @@ void SceneBalloon::Update()
 		glm::vec3 lookVector = glm::normalize(mainCamera.target - mainCamera.m_transform.m_position);
 
 		float dotProduct = glm::dot(lookVector, toObject);
-		float threshold = glm::cos(glm::radians(fov * 0.5));
+		float threshold = glm::cos(glm::radians(fov * 0.7));
 
 		if (dotProduct <= threshold) // Rotated too much
 		{
@@ -226,7 +249,7 @@ void SceneBalloon::Update()
 			{
 				GameObjectManager::GetInstance()->removeItem(ballonList[i]);
 				((BalloonBoard*)objInScene[BALLOONBOARD])->balloons.remove(ballonList[i]);
-				//std::cout << "Collided" << std::endl;
+				score += 20;
 				break;
 			}
 		}
@@ -235,9 +258,16 @@ void SceneBalloon::Update()
 	if (CheckCollisionWith(objInScene[currentDartIndex]->getObject(), objInScene[BALLOONBOARD]->getObject()))
 	{
 		objInScene[currentDartIndex]->rb->setCollisionFlags(objInScene[currentDartIndex]->rb->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT);
-
-		std::cout << "Board Collided" << std::endl;
 	}
+
+	if (attemptsLeft < 0) {
+		gameEnd = true;
+	}
+
+	if (gameEnd) {
+		// GAME END
+	}
+		
 
 	GameObjectManager::GetInstance()->UpdateAll();
 }
@@ -271,7 +301,7 @@ void SceneBalloon::LateUpdate()
 		glm::vec3 up = mainCamera.up;
 
 		// Calculate world position of the ball
-		glm::vec3 newPos = cameraPos + (forward * 2.f) + (right * 1.f) + (up * -1.f);
+		glm::vec3 newPos = cameraPos + (forward * 2.f) + (right * 1.f) + (up * -0.6f);
 		glm::vec3 direction = glm::normalize(mainCamera.target - cameraPos);
 
 		glm::vec3 gunRotation;
@@ -285,8 +315,12 @@ void SceneBalloon::LateUpdate()
 			objInScene[currentDartIndex]->SetRigidbodyPosition(newPos);
 			objInScene[currentDartIndex]->SetRigidbodyRotation(gunRotation);
 			objInScene[currentDartIndex]->rb->clearGravity();
-			objInScene[currentDartIndex]->rb->setSleepingThresholds(0, 0);
 			objInScene[currentDartIndex]->rb->setAngularVelocity(btVector3(0, 0, 0));
+			objInScene[currentDartIndex]->rb->setIgnoreCollisionCheck(objInScene[BOXF]->getObject(), true);
+			objInScene[currentDartIndex]->rb->setIgnoreCollisionCheck(objInScene[BOXB]->getObject(), true);
+			objInScene[currentDartIndex]->rb->setIgnoreCollisionCheck(objInScene[BOXL]->getObject(), true);
+			objInScene[currentDartIndex]->rb->setIgnoreCollisionCheck(objInScene[BOXR]->getObject(), true);
+			objInScene[currentDartIndex]->rb->setIgnoreCollisionCheck(objInScene[COUNTER]->getObject(), true);
 		}
 
 		if (cooldownTimer <= 0) {
@@ -305,7 +339,6 @@ void SceneBalloon::LateUpdate()
 				isShooting = true;
 				cooldownTimer = 3;
 				glm::vec3 look = mainCamera.view * power;
-				objInScene[currentDartIndex]->rb->setSleepingThresholds(0.8, 1);
 				objInScene[currentDartIndex]->rb->setLinearVelocity(btVector3(look.x - 3, look.y + 3, look.z));
 				objInScene[currentDartIndex]->rb->activate();
 				power = 0;
@@ -390,6 +423,7 @@ void SceneBalloon::Render()
 		}
 	}
 
+	RenderTextOnScreen(meshList[GEO_TEXT], "Score:" + std::to_string(score), RED, 30, 1000, 600);
 
 #ifdef DRAW_HITBOX
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);

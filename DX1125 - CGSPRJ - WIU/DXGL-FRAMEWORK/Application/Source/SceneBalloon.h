@@ -31,6 +31,7 @@ public:
 		GEO_BP_BOOTHROOF,
 		GEO_BP_POWERUI_FRAME,
 		GEO_BP_POWERUI_BAR,
+		GEO_BP_COUNTER,
 		NUM_GEOMETRY
 	};
 
@@ -54,7 +55,9 @@ private:
 	bool gameComplete;
 	int attemptsLeft;
 	float power;
+	int score;
 	const float maxPower = 25.f;
+	bool gameEnd = false;
 
 
 	
@@ -63,6 +66,11 @@ private:
 		GROUND,
 		BALLOON,
 		BALLOONBOARD,
+		COUNTER,
+		BOXF,
+		BOXB,
+		BOXL,
+		BOXR,
 		DART1,
 		DART2,
 		DART3,

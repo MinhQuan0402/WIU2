@@ -31,13 +31,13 @@ void Balloon::Update()
 	if (setColour == false) 
 	{
 		colourR = ((float)rand() / (RAND_MAX));
-		std::cout << colourR << std::endl;
+		//std::cout << colourR << std::endl;
 
 		colourG = ((float)rand() / (RAND_MAX));
-		std::cout << colourG << std::endl;
+		//std::cout << colourG << std::endl;
 
 		colourB = ((float)rand() / (RAND_MAX));
-		std::cout << colourB << std::endl;
+		//std::cout << colourB << std::endl;
 
 		setColour = true;
 	}
