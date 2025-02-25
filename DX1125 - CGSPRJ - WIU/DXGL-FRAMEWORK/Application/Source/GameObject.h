@@ -127,5 +127,15 @@ public:
 	bool operator==(const GameObject& rhs);
 
 	static void MoveObj(Transform& transform);
+
+	template<typename T, typename ...Args>
+	inline GameObject* Instantiate(void);
 };
 
+template<typename T, typename ...Args>
+inline GameObject* GameObject::Instantiate(void)
+{
+	GameObject* clone = new T();
+	clone->Start();
+	return clone;
+}

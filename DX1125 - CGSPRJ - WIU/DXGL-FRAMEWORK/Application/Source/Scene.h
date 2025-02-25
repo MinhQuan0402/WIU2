@@ -6,6 +6,7 @@
 #include "Mesh.h"
 #include "Light.h"
 #include "FPCamera.h"
+#include "BulletCollision/CollisionShapes/btCollisionShape.h"
 
 class Scene
 {
@@ -14,6 +15,20 @@ public:
 	{
 		U_MVP = 0,
 
+		U_LIGHT0_TYPE,
+		U_LIGHT0_POSITION,
+		U_LIGHT0_COLOR,
+		U_LIGHT0_POWER,
+		U_LIGHT0_KC,
+		U_LIGHT0_KL,
+		U_LIGHT0_KQ,
+		U_LIGHT0_SPOTDIRECTION,
+		U_LIGHT0_COSCUTOFF,
+		U_LIGHT0_COSINNER,
+		U_LIGHT0_EXPONENT,
+
+		NUMLIGHT = U_LIGHT0_EXPONENT * 25,
+
 		// Add the following constants
 		U_MODELVIEW,
 		U_MODELVIEW_INVERSE_TRANSPOSE,
@@ -21,39 +36,7 @@ public:
 		U_MATERIAL_DIFFUSE,
 		U_MATERIAL_SPECULAR,
 		U_MATERIAL_SHININESS,
-
-		U_LIGHT0_TYPE,
-		U_LIGHT1_TYPE,
-
-		U_LIGHT0_POSITION,
-		U_LIGHT1_POSITION,
-
-		U_LIGHT0_COLOR,
-		U_LIGHT1_COLOR,
-
-		U_LIGHT0_POWER,
-		U_LIGHT1_POWER,
-
-		U_LIGHT0_KC,
-		U_LIGHT1_KC,
-
-		U_LIGHT0_KL,
-		U_LIGHT1_KL,
-
-		U_LIGHT0_KQ,
-		U_LIGHT1_KQ,
-
-		U_LIGHT0_SPOTDIRECTION,
-		U_LIGHT1_SPOTDIRECTION,
-
-		U_LIGHT0_COSCUTOFF,
-		U_LIGHT1_COSCUTOFF,
-
-		U_LIGHT0_COSINNER,
-		U_LIGHT1_COSINNER,
-
-		U_LIGHT0_EXPONENT,
-		U_LIGHT1_EXPONENT,
+		U_MATERIAL_EMISSION,
 
 		U_LIGHTENABLED,
 		U_NUMLIGHTS,
@@ -91,6 +74,7 @@ public:
 	void RenderText(Mesh* mesh, std::string text, glm::vec3 color);
 	void RenderTextOnScreen(Mesh* mesh, std::string text, glm::vec3 color, float size, float x, float y);
 	void RenderLine(glm::vec3 startPoint, glm::vec3 endPoint, float thickness, glm::vec3 color, float depth);
+	void RenderChildCollider(btCollisionShape* shape, float matrix[16]);
 protected:
 	bool isFillMode;
 	enum HITBOX_TYPE

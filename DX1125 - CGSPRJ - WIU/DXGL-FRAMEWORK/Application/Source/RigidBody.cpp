@@ -174,6 +174,38 @@ btRigidBody* addStaticPlane(GameObject* go, glm::vec3 normal, PhysicsMaterial& m
 	return rb;
 }
 
+btRigidBody* addCapsuleCollider(GameObject* go, const float& rad, const float& height, PhysicsMaterial& mat, const glm::vec3& offset)
+{
+	if (!go) return nullptr;
+	go->colliderOffset = offset;
+	btTransform t;
+	t.setIdentity();
+	btVector3 finalPosition = btVector3(go->m_transform.m_position.x + offset.x, go->m_transform.m_position.y + offset.y, go->m_transform.m_position.z + offset.z);
+	t.setOrigin(btVector3(finalPosition));
+	btQuaternion rotationX = btQuaternion(btVector3(1, 0, 0), glm::radians(go->m_transform.m_rotation.x));
+	btQuaternion rotationY = btQuaternion(btVector3(0, 1, 0), glm::radians(go->m_transform.m_rotation.y));
+	btQuaternion rotationZ = btQuaternion(btVector3(0, 0, 1), glm::radians(go->m_transform.m_rotation.z));
+	btQuaternion finalRotation = rotationX * rotationY * rotationZ;
+	t.setRotation(finalRotation);
+	btCapsuleShape* capsuleCollider = new btCapsuleShape(rad, height);
+	capsuleCollider->setUserPointer(go);
+	ColliderManager::GetInstance()->AddCollider(capsuleCollider);
+	btVector3 inertia(0.f, 0.f, 0.f);
+	if (mat.m_mass != 0.0f) capsuleCollider->calculateLocalInertia(mat.m_mass, inertia);
+	btMotionState* motion = new btDefaultMotionState(t);
+	btRigidBody::btRigidBodyConstructionInfo info(mat.m_mass, motion, capsuleCollider, inertia);
+
+	mat.m_bounciness = glm::clamp(mat.m_bounciness, 0.0f, 1.0f);
+	mat.m_friction = glm::clamp(mat.m_friction, 0.0f, 1.0f);
+	info.m_restitution = mat.m_bounciness;
+	info.m_friction = mat.m_friction;
+
+	btRigidBody* rb = new btRigidBody(info);
+	CollisionManager::GetInstance()->GetDynamicsWorld()->addRigidBody(rb);
+	rb->setUserPointer(go);
+	return rb;
+}
+
 bool CheckCollisionWith(btCollisionObject* obj1, btCollisionObject* obj2)
 {
 	MyContactResultCallback result;

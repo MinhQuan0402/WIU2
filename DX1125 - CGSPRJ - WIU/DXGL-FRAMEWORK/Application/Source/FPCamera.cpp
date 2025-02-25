@@ -7,7 +7,7 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 
-FPCamera::FPCamera() : isDirty(false), right{}, view{}, sensitivity{ 10.0f }, forward{}
+FPCamera::FPCamera() : isDirty(false), right{}, view{}, sensitivity{ 10.0f }, forward{}, constraintYaw {0.0f}
 {
 	this->target = glm::vec3(0, 0, 0);
 	this->up = glm::vec3(0, 1, 0);
@@ -49,6 +49,14 @@ void FPCamera::UpdateCameraRotation(void)
 
 	//Yaw update
 	float yawAngle = -deltaX * sensitivity * (float)Time::deltaTime;
+
+	if (constraintYaw)
+	{
+		if ((forward.x >= constraintYaw && deltaX > 0.0f) || (forward.x <= -constraintYaw && deltaX < 0.0f))
+			yawAngle = 0.0f;
+	}
+
+	m_transform.m_rotation.y = yawAngle;
 
 	glm::mat4 yaw = glm::rotate(glm::mat4(1.0f), glm::radians(yawAngle), up);
 	glm::vec3 yawView = yaw * glm::vec4(view, 0.f);

@@ -41,7 +41,7 @@ void CollisionManager::SetUpDynamicWorld(const float& gravity)
 void CollisionManager::UpdateCollision(void)
 {
 	if (!m_world) return;
-	m_world->stepSimulation(btScalar(Time::fixedDeltaTime), 10);
+	m_world->stepSimulation(btScalar(Time::fixedDeltaTime), 5);
 }
 
 btDynamicsWorld* CollisionManager::GetDynamicsWorld(void) { return m_world; }

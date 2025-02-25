@@ -27,6 +27,7 @@ struct Material {
 	vec3 kAmbient;
 	vec3 kDiffuse;
 	vec3 kSpecular;
+	vec3 kEmission;
 	float kShininess;
 };
 
@@ -34,7 +35,18 @@ float getAttenuation(Light light, float distance) {
 	if(light.type == 1)
 		return 1;
 	else
-		return 1 / max(1, light.kC + light.kL * distance + light.kQ * distance * distance);
+	{
+		float attenuation = 1.0 / max(1.0, light.kC + light.kL * distance + light.kQ * (distance * distance));
+
+		// Soft edge transition
+		float fadeStart = 8.0; // Distance where light starts fading
+		float fadeEnd = 12.0;   // Maximum range of the light
+		float fadeFactor = smoothstep(fadeEnd, fadeStart, distance);
+
+		attenuation *= fadeFactor;
+
+		return attenuation;
+	}
 }
 
 float getSpotlightEffect(Light light, vec3 lightDirection) {
@@ -45,7 +57,7 @@ float getSpotlightEffect(Light light, vec3 lightDirection) {
 }
 
 // Constant values
-const int MAX_LIGHTS = 8;
+const int MAX_LIGHTS = 50;
 
 // Values that stay constant for the whole mesh.
 uniform bool lightEnabled;
@@ -73,7 +85,7 @@ void main(){
 		
 		color = 
 			// Ambient : simulates indirect lighting
-			materialColor * vec4(material.kAmbient, 1);
+			materialColor * vec4(material.kAmbient, 1) + vec4(material.kEmission, 1);
 		
 		for(int i = 0; i < numLights; ++i)
 		{
@@ -108,6 +120,7 @@ void main(){
 				
 				// Specular : reflective highlight, like a mirror
 				vec4(material.kSpecular, materialColor.a) * vec4(lights[i].color, 1) * lights[i].power * pow(cosAlpha, material.kShininess) * attenuationFactor * spotlightEffect;
+			color += vec4(material.kEmission, 1);
 		}
 	}
 	else

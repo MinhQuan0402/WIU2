@@ -12,6 +12,8 @@
 #include "Time.h"
 #include <GLFW/glfw3.h>
 #include "Utility.h"
+#include "btBulletCollisionCommon.h"
+#include "ColliderManager.h"
 
 
 bool Scene::enableLight = true;
@@ -126,6 +128,8 @@ void Scene::RenderRigidMesh(Mesh* mesh, bool enableLight, Transform& transform, 
 	glm::mat4 MVP, modelView, modelView_inverse_transpose;
 	modelStack.LoadIdentity();
 	modelStack.LoadMatrix(GetTransformMatrix(body));
+	GameObject* userGO = static_cast<GameObject*>(body->getUserPointer());
+	modelStack.Translate(-userGO->colliderOffset.x, -userGO->colliderOffset.y, -userGO->colliderOffset.z);
 	modelStack.Scale(transform.m_scale.x, transform.m_scale.y, transform.m_scale.z);
 	MVP = projectionStack.Top() * viewStack.Top() * modelStack.Top();
 	glUniformMatrix4fv(m_parameters[U_MVP], 1, GL_FALSE, glm::value_ptr(MVP));
@@ -171,8 +175,8 @@ void Scene::RenderMeshOnScreen(Mesh* mesh, float x, float y, float sizex, float 
 	glEnable(GL_BLEND);
 	glDisable(GL_DEPTH_TEST);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	modelStack.LoadIdentity();
 	modelStack.PushMatrix();
+	modelStack.LoadIdentity();
 	glm::mat4 ortho = glm::ortho(0.f, (float)Application::m_consoleWidth, 0.f, (float)Application::m_consoleHeight, -
 		1000.f, 1000.f); // dimension of screen UI
 	projectionStack.PushMatrix();
@@ -198,7 +202,6 @@ void Scene::RenderText(Mesh* mesh, std::string text, glm::vec3 color)
 {
 	if (!mesh || mesh->textureID <= 0) //Proper error check
 		return;
-	modelStack.LoadIdentity();
 	modelStack.PushMatrix();
 	// Enable blending
 	glEnable(GL_BLEND);
@@ -235,8 +238,8 @@ void Scene::RenderTextOnScreen(Mesh* mesh, std::string text, glm::vec3 color, fl
 {
 	if (!mesh || mesh->textureID <= 0) //Proper error check
 		return;
-	modelStack.LoadIdentity();
 	modelStack.PushMatrix();
+	modelStack.LoadIdentity();
 	// Enable blending
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -293,6 +296,56 @@ void Scene::RenderLine(glm::vec3 startPoint, glm::vec3 endPoint, float thickness
 	//modelStack.Translate(0.5f, 0.f, 0.f); //changes origin of box
 	//RenderMesh(meshList[GEO_BOX], color);
 	//modelStack.PopMatrix();
+}
+
+void Scene::RenderChildCollider(btCollisionShape* childShape, float matrix[16])
+{
+	modelStack.PushMatrix();
+	if (childShape->getShapeType() == SPHERE_SHAPE_PROXYTYPE)
+	{
+		SphereCollider* sphereCollider = static_cast<SphereCollider*>(childShape);
+		float size = sphereCollider->GetRadius();
+		modelStack.MultMatrix(GetTransformMatrix(matrix));
+		modelStack.Scale(size, size, size);
+		modelStack.Scale(childShape->getLocalScaling().x(), childShape->getLocalScaling().y(), childShape->getLocalScaling().z());
+		RenderMesh(hitboxMeshList[HITBOX_SPHERE]);
+	}
+	else if (childShape->getShapeType() == BOX_SHAPE_PROXYTYPE)
+	{
+		BoxCollider* boxCollider = static_cast<BoxCollider*>(childShape);
+		float width, height, depth;
+		boxCollider->GetDimension(width, height, depth);
+		modelStack.MultMatrix(GetTransformMatrix(matrix));
+		modelStack.Scale(width, height, depth);
+		modelStack.Scale(childShape->getLocalScaling().x(), childShape->getLocalScaling().y(), childShape->getLocalScaling().z());
+		RenderMesh(hitboxMeshList[HITBOX_BOX]);
+	}
+	else if (childShape->getShapeType() == CYLINDER_SHAPE_PROXYTYPE)
+	{
+		CylinderCollider* cylinderCollider = static_cast<CylinderCollider*>(childShape);
+		float rad, height;
+		cylinderCollider->GetDimension(rad, height);
+		modelStack.MultMatrix(GetTransformMatrix(matrix));
+		modelStack.Scale(rad / 2.0f, height, rad / 2.0f);
+		modelStack.Scale(childShape->getLocalScaling().x(), childShape->getLocalScaling().y(), childShape->getLocalScaling().z());
+		RenderMesh(hitboxMeshList[HITBOX_CYLINDER]);
+	}
+	else
+	{
+		modelStack.MultMatrix(GetTransformMatrix(matrix));
+		modelStack.Scale(childShape->getLocalScaling().x(), childShape->getLocalScaling().y(), childShape->getLocalScaling().z());
+		btCompoundShape* compoundShape = static_cast<btCompoundShape*>(childShape);
+		for (unsigned i = 0; i < compoundShape->getNumChildShapes(); ++i)
+		{
+			btCollisionShape* subShape = compoundShape->getChildShape(i);
+			btTransform childTransform = compoundShape->getChildTransform(i);
+			float mat[16];
+			childTransform.getOpenGLMatrix(mat);
+
+			RenderChildCollider(subShape, mat);
+		}
+	}
+	modelStack.PopMatrix();
 }
 
 void Scene::HandleKeyPress(void)

@@ -154,7 +154,7 @@ void Application::Run()
 	MeshManager::GetInstance()->Init();
 	CollisionManager::GetInstance()->SetUpDynamicWorld(10.0f);
 	SceneManager::GetInstance()->PushState(new carnivalroaming); 
-	Time::fixedDeltaTime = FIXED_TIME_STEP;
+	Time::fixedDeltaTime = (float)FIXED_TIME_STEP;
 	m_timer.startTimer();    // Start timer to calculate how long it takes to render this frame
 	while (!glfwWindowShouldClose(m_window) && !IsKeyPressed(VK_ESCAPE))
 	{
@@ -167,7 +167,7 @@ void Application::Run()
 
 		Time::deltaTime = (float)m_timer.getElapsedTime();
 		Time::time += Time::deltaTime;
-
+		
 		SceneManager::GetInstance()->Update();
 		CollisionManager::GetInstance()->UpdateCollision();
 		SceneManager::GetInstance()->LateUpdate();

@@ -149,6 +149,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Source\Application.cpp" />
+    <ClCompile Include="Source\Button_UI.cpp" />
     <ClCompile Include="Source\Camera.cpp" />
     <ClCompile Include="Source\CarnivalHitBoxes.cpp" />
     <ClCompile Include="Source\CircusTent.cpp" />
@@ -190,14 +191,17 @@
     <ClCompile Include="Source\SceneGame.cpp" />
     <ClCompile Include="Source\SceneManager.cpp" />
     <ClCompile Include="Source\ScenePlinko.cpp" />
+    <ClCompile Include="Source\SceneRingToss.cpp" />
     <ClCompile Include="Source\shader.cpp" />
     <ClCompile Include="Source\Time.cpp" />
+    <ClCompile Include="Source\TossBoard.cpp" />
     <ClCompile Include="Source\Utility.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\..\..\..\School\DX1125 - CGSPRJ - WIU\DXGL-FRAMEWORK\Application\Source\CQuad.h" />
     <ClInclude Include="..\Common\Source\MyMath.h" />
     <ClInclude Include="Source\Application.h" />
+    <ClInclude Include="Source\Button_UI.h" />
     <ClInclude Include="Source\Camera.h" />
     <ClInclude Include="Source\CarnivalHitBoxes.h" />
     <ClInclude Include="Source\CircusTent.h" />
@@ -240,8 +244,10 @@
     <ClInclude Include="Source\SceneGame.h" />
     <ClInclude Include="Source\SceneManager.h" />
     <ClInclude Include="Source\ScenePlinko.h" />
+    <ClInclude Include="Source\SceneRingToss.h" />
     <ClInclude Include="Source\shader.hpp" />
     <ClInclude Include="Source\Time.h" />
+    <ClInclude Include="Source\TossBoard.h" />
     <ClInclude Include="Source\Utility.h" />
     <ClInclude Include="Source\Vertex.h" />
   </ItemGroup>

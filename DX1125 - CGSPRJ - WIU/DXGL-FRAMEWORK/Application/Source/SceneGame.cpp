@@ -106,7 +106,7 @@ void SceneGame::Init()
 	meshList[GEO_BACK] = MeshBuilder::GenerateQuad("Plane", glm::vec3(1.f, 1.f, 1.f), 10.f);
 	meshList[GEO_BACK]->textureID = LoadPNG("Images//left.png");
 
-	mainCamera.Init(glm::vec3(8, 6, 6), glm::vec3(0, 6, 0), VECTOR3_UP);
+	mainCamera.Init(glm::vec3(6, 12, 0), glm::vec3(0, 6, 0), VECTOR3_UP);
 	
 	glUniform1i(m_parameters[U_NUMLIGHTS], 2);
 

@@ -14,6 +14,7 @@ public:
     glm::vec3 up;
     glm::vec3 forward;
     float sensitivity; // Adjust sensitivity for both yaw and pitch
+    float constraintYaw;
 
     FPCamera();
     ~FPCamera();
