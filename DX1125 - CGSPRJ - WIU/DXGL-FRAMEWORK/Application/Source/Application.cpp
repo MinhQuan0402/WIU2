@@ -156,6 +156,7 @@ void Application::Run()
 	SceneManager::GetInstance()->PushState(new carnivalroaming); 
 	Time::fixedDeltaTime = (float)FIXED_TIME_STEP;
 	m_timer.startTimer();    // Start timer to calculate how long it takes to render this frame
+	float fps = 0;
 	while (!glfwWindowShouldClose(m_window) && !IsKeyPressed(VK_ESCAPE))
 	{
 		if (enableCursor == false)
@@ -182,6 +183,14 @@ void Application::Run()
 		glfwGetCursorPos(m_window, &mouse_x, &mouse_y);
 		MouseController::GetInstance()->UpdateMousePosition(mouse_x, mouse_y);
 		
+		float temp = 1.f / Time::deltaTime;
+		fps = glm::round(temp * 1.f) / 1.f;
+
+		std::string title;
+		title = "OpenGL Window - FPS: " + std::to_string(fps);
+
+		glfwSetWindowTitle(m_window, title.c_str());
+
 		//Get and organize events, like keyboard and mouse input, window resizing, etc...
 		glfwPollEvents();
         m_timer.waitUntil(frameTime);       // Frame rate limiter. Limits each frame to a specified time in ms.   

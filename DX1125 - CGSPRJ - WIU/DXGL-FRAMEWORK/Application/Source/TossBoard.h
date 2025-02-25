@@ -10,6 +10,8 @@ private:
     void GenerateRigidbody(void);
 
 public:
+    GameObject* trigger;
+
     Ring(void);
     ~Ring(void) = default;
 
