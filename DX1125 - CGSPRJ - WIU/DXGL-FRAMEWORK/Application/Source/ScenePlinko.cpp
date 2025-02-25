@@ -217,9 +217,7 @@ void ScenePlinko::LateUpdate()
 
 			// Win
 			if (currentBallIndex == BALL3) {
-				if (plinkoScore >= 100) {
-					gameEnd = true;
-				}
+				gameEnd = true;
 			}
 
 			if (currentBallIndex < 2) {

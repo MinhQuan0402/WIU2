@@ -25,7 +25,7 @@ public:
 		GEO_MODEL1,
 		GEO_PLANE,
 		GEO_CUBE,
-
+		GEO_TICKET,
 
 		NUM_GEOMETRY
 	};
@@ -47,6 +47,12 @@ private:
 	float ducksX[10];
 	float ducksY[10];
 
+	bool CanEnterCircus = false;
+	float timer = 0.0f;
+
+	float energy;
+	const float maxEnergy = 100;
+
 	enum OBJSCENE
 	{
 		CIRCLE,
@@ -62,6 +68,7 @@ private:
 		BOX10,
 		BOX11,
 		BOX12,
+		BOX13,
 
 		PLAYERBOX,
 		GROUND,

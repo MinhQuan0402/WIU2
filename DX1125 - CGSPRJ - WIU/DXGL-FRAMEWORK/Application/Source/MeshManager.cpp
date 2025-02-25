@@ -164,12 +164,34 @@ void MeshManager::Init()
 	meshList[GEO_RING]->textureID = LoadPNG("Images//CR_rope.png");
 	meshList[GEO_RING]->material = Material::Wood(WHITE);
 
+
+	meshList[GEO_TICKETBOOTHFRAME] = MeshBuilder::GenerateOBJ("Ticket booth frame", "Models//CR_ticketboothframe2.obj");
+	meshList[GEO_TICKETBOOTHFRAME]->textureID = LoadPNG("Images//CR_ticketboothframe.png");
+	meshList[GEO_TICKETBOOTHFRAME]->material = Material::Wood(WHITE);
+
+	meshList[GEO_TICKETBOOTHBOX] = MeshBuilder::GenerateOBJ("Ticket booth box", "Models//CR_ticketboothbox.obj");
+	meshList[GEO_TICKETBOOTHBOX]->textureID = LoadPNG("Images//CR_ticketboothbox.png");
+	meshList[GEO_TICKETBOOTHBOX]->material = Material::Wood(WHITE);
+
+	meshList[GEO_TICKETBOOTHLIGHTS] = MeshBuilder::GenerateOBJ("Ticket booth lights", "Models//CR_ticketboothlights2.obj");
+	meshList[GEO_TICKETBOOTHLIGHTS]->textureID = LoadPNG("Images//CR_ticketboothlight.png");
+	meshList[GEO_TICKETBOOTHLIGHTS]->material = Material::Wood(WHITE);
+
+	meshList[GEO_TICKETBOOTHWINDOWS] = MeshBuilder::GenerateOBJ("Ticket booth windows", "Models//CR_ticketboothwindows2.obj");
+	meshList[GEO_TICKETBOOTHWINDOWS]->textureID = LoadPNG("Images//CR_ticketboothwindow.png");
+	meshList[GEO_TICKETBOOTHWINDOWS]->material = Material::Wood(WHITE);
+
+
 	meshList[GEO_GRASS] = MeshBuilder::GenerateCube("Cube", YELLOW, 1.0f);
 	meshList[GEO_GRASS]->textureID = LoadPNG("Images//CR_grass.png"); meshList[GEO_CIRCUSTENT] = MeshBuilder::GenerateCircle("Circle", WHITE, 200);
 	meshList[GEO_CIRCUSTENT] = MeshBuilder::GenerateOBJMTL("CircusTent", "Models//CR_circusTentTest.obj", "Models//CR_circusTentTest.mtl");
 	meshList[GEO_CIRCUSTENT]->textureID = LoadPNG("Images//CR_CircusTentTest.png");
 
 	
+	meshList[GEO_ENERGYFRAME] = MeshBuilder::GenerateQuad("EnergyFrame", WHITE, 1.0f);
+	meshList[GEO_ENERGYFRAME]->textureID = LoadPNG("Images//EnergyFrame.png");
+	meshList[GEO_ENERGYBAR] = MeshBuilder::GenerateQuad("EnergyBar", glm::vec3(0.62, 0.208, 0.62), 1.0f); 
+
 
 	//plinko
 	meshList[GEO_PLINKO] = MeshBuilder::GenerateOBJ("Plinko", "Models//plinko.obj");

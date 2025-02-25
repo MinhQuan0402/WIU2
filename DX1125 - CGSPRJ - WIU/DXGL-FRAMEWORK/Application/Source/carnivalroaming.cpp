@@ -109,6 +109,9 @@ void carnivalroaming::Init()
 	meshList[GEO_SPHERE] = MeshBuilder::GenerateSphere("Sphere", WHITE, 1.0f, 100, 100);
 	meshList[GEO_CUBE] = MeshBuilder::GenerateCube("Cube", YELLOW, 1.0f);
 
+	meshList[GEO_TICKET] = MeshBuilder::GenerateQuad("Quad", YELLOW, 1.0f);
+	meshList[GEO_TICKET]->textureID = LoadPNG("Images//ticket.png");
+
 	meshList[GEO_PLANE] = MeshBuilder::GenerateQuad("Quad", WHITE, 1.0f);
 	meshList[GEO_PLANE]->textureID = LoadPNG("Images//CR_grass.png");
 	meshList[GEO_PLANE]->material = Material::Wood(WHITE); 
@@ -167,6 +170,7 @@ void carnivalroaming::Init()
 	objInscene[BOX10] = new CarnivalHitBoxes();
 	objInscene[BOX11] = new CarnivalHitBoxes();
 	objInscene[BOX12] = new CarnivalHitBoxes();
+	objInscene[BOX13] = new CarnivalHitBoxes();
 
 
 	objInscene[PLAYERBOX] = new PlayerHitBox();
@@ -228,6 +232,9 @@ void carnivalroaming::Init()
 	objInscene[BOX12]->m_transform.ScaleBy(1500.0f, 20.f, 1.0f);
 	objInscene[BOX12]->rb = addBoxCollider(objInscene[BOX12], 1500.0f, 20.f, 1.0f, mat);
 
+	objInscene[BOX13]->m_transform.Translate(-150.0f, 0.5f, -200.0f);
+	objInscene[BOX13]->m_transform.ScaleBy(40.0f, 30.f, 40.0f);
+	objInscene[BOX13]->rb = addBoxCollider(objInscene[BOX13], 40.0f, 30.f, 40.0f, mat);
 
 	mat.m_mass = 1.0f;
 	float playerColliderHeight = 35.5f;
@@ -259,7 +266,7 @@ void carnivalroaming::Init()
 		ducksY[i] = y;
 
 	}
-	
+	energy = maxEnergy; 
 	std::cout << GameManager::GetInstance()->GetPoints() << std::endl;
 
 }
@@ -356,6 +363,18 @@ void carnivalroaming::LateUpdate()
 	{
 		std::cout << "Colliding with food truck" << std::endl;
 	}
+	if (CheckCollisionWith(objInscene[PLAYERBOX]->getObject(), objInscene[BOX13]->getObject()) and KeyboardController::GetInstance()->IsKeyDown('E')) 
+	{
+		std::cout << "Colliding with Ticket booth" << std::endl;
+	}
+	if (CheckCollisionWith(objInscene[PLAYERBOX]->getObject(), objInscene[CIRCLE]->getObject()) and KeyboardController::GetInstance()->IsKeyDown('E') and CanEnterCircus == true)
+	{
+		std::cout << "Colliding with CircusTent" << std::endl;
+	}
+	if (CanEnterCircus == true)
+	{
+		timer += Time::deltaTime; 
+	}
 }
 
 void carnivalroaming::Render()
@@ -423,898 +442,941 @@ void carnivalroaming::Render()
 	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CIRCUSNAME],true); 
 	modelStack.PopMatrix();
 
-	//can game
 	modelStack.PushMatrix();
-	modelStack.Translate(-512.5f, 0.5f, 405.0f);
+	modelStack.Translate(-150.0f, 0.5f, -200.0f);
 	modelStack.Rotate(180.0f, 0.0f, 1.0f, 0.0f);
-	modelStack.Scale(20, 7, 6);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CANTENT],true);
-	modelStack.PushMatrix();
-	//modelStack.Translate(-512.5f, 0.5f, 405.0f);
-	//modelStack.Rotate(180.0f, 0.0f, 1.0f, 0.0f);
-	//modelStack.Scale(20, 7, 6);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CANTENTROOF], true);
-	modelStack.PopMatrix();
-	modelStack.PopMatrix();
+	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_TICKETBOOTHFRAME], true);
 
-	modelStack.PushMatrix();
-	modelStack.Translate(-512.0f, 0.5f, 378.0f);
-	modelStack.Scale(200, 70, 5);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_TABLECAN], true);
-	modelStack.PopMatrix();
+	{
+		modelStack.PushMatrix();
+		//modelStack.Translate(0.0f, 0.5f, -400.0f);
+		//modelStack.Scale(45, 45, 45);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_TICKETBOOTHBOX], true);
+		modelStack.PopMatrix();
 
-	modelStack.PushMatrix();
-	modelStack.Translate(-400.5f, 5.5f, 405.0f);
-	modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
-	modelStack.Scale(2, 1, 1);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_STRIPEWALL], true);
-	modelStack.PopMatrix();
-	
-	modelStack.PushMatrix();
-	modelStack.Translate(-634.5f, 5.5f, 405.0f);
-	modelStack.Rotate(-90.0f, 0.0f, 1.0f, 0.0f);
-	modelStack.Scale(2, 1, 1);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_STRIPEWALL], true);
-	modelStack.PopMatrix(); 
+		modelStack.PushMatrix();
+		//modelStack.Translate(0.0f, 0.5f, -400.0f);
+		//modelStack.Scale(45, 45, 45);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_TICKETBOOTHLIGHTS], true);
+		modelStack.PopMatrix();
 
-	modelStack.PushMatrix();
-	modelStack.Translate(-512.5f, 5.5f, 370.0f);
-	//modelStack.Rotate(-90.0f, 0.0f, 0.0f, 1.0f);
-	//modelStack.Rotate(-90.0f, 1.0f, 0.0f, 0.0f);
-	modelStack.Scale(2, 1, 1);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_STRIPEWALL], true);
-	modelStack.PopMatrix();
-
-	modelStack.PushMatrix();
-	modelStack.Translate(-434.5f, 5.5f, 370.0f);
-	//modelStack.Rotate(-90.0f, 0.0f, 0.0f, 1.0f);
-	//modelStack.Rotate(-90.0f, 1.0f, 0.0f, 0.0f);
-	modelStack.Scale(2.5, 1, 1);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_STRIPEWALL], true);
-	modelStack.PopMatrix();
-
-	modelStack.PushMatrix();
-	modelStack.Translate(-590.5f, 5.5f, 370.0f);
-	//modelStack.Rotate(-90.0f, 0.0f, 0.0f, 1.0f);
-	//modelStack.Rotate(-90.0f, 1.0f, 0.0f, 0.0f);
-	modelStack.Scale(2.5, 1, 1);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_STRIPEWALL], true);
-	modelStack.PopMatrix();
-
-	modelStack.PushMatrix();
-	modelStack.Translate(-512.5f, 0.5f, 430.0f);
-	modelStack.Scale(200, 70, 20);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_TABLECAN], true);
-	modelStack.PopMatrix();
-
-	modelStack.PushMatrix();
-	modelStack.Translate(-512.5f, 24.0f, 430.0f);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CAN], true);
-
-	modelStack.PushMatrix();
-	modelStack.Translate(-6.5f, .0f, 0.0f);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CAN], true);
-	modelStack.PopMatrix();
-
-	modelStack.PushMatrix();
-	modelStack.Translate(6.5f, .0f, 0.0f);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CAN], true);
-	modelStack.PopMatrix();
-
-	modelStack.PushMatrix();
-	modelStack.Translate(3.5f, 7.0f, 0.0f);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CAN], true);
-	modelStack.PopMatrix();
-
-	modelStack.PushMatrix();
-	modelStack.Translate(-3.5f, 7.0f, 0.0f);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CAN], true);
-	modelStack.PopMatrix();
-
-	modelStack.PushMatrix();
-	modelStack.Translate(0.0f, 14.0f, 0.0f);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CAN], true);
-	modelStack.PopMatrix();
+		modelStack.PushMatrix();
+		//modelStack.Translate(0.0f, 0.5f, -400.0f);
+		//modelStack.Scale(45, 45, 45);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_TICKETBOOTHWINDOWS], true);
+		modelStack.PopMatrix();
+	}
 
 	modelStack.PopMatrix();
 
+	//can game
+	{
+		modelStack.PushMatrix();
+		modelStack.Translate(-512.5f, 0.5f, 405.0f);
+		modelStack.Rotate(180.0f, 0.0f, 1.0f, 0.0f);
+		modelStack.Scale(20, 7, 6);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CANTENT], true);
+		modelStack.PushMatrix();
+		//modelStack.Translate(-512.5f, 0.5f, 405.0f);
+		//modelStack.Rotate(180.0f, 0.0f, 1.0f, 0.0f);
+		//modelStack.Scale(20, 7, 6);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CANTENTROOF], true);
+		modelStack.PopMatrix();
+		modelStack.PopMatrix();
+
+		modelStack.PushMatrix();
+		modelStack.Translate(-512.0f, 0.5f, 378.0f);
+		modelStack.Scale(200, 70, 5);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_TABLECAN], true);
+		modelStack.PopMatrix();
+
+		modelStack.PushMatrix();
+		modelStack.Translate(-400.5f, 5.5f, 405.0f);
+		modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+		modelStack.Scale(2, 1, 1);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_STRIPEWALL], true);
+		modelStack.PopMatrix();
+
+		modelStack.PushMatrix();
+		modelStack.Translate(-634.5f, 5.5f, 405.0f);
+		modelStack.Rotate(-90.0f, 0.0f, 1.0f, 0.0f);
+		modelStack.Scale(2, 1, 1);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_STRIPEWALL], true);
+		modelStack.PopMatrix();
+
+		modelStack.PushMatrix();
+		modelStack.Translate(-512.5f, 5.5f, 370.0f);
+		//modelStack.Rotate(-90.0f, 0.0f, 0.0f, 1.0f);
+		//modelStack.Rotate(-90.0f, 1.0f, 0.0f, 0.0f);
+		modelStack.Scale(2, 1, 1);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_STRIPEWALL], true);
+		modelStack.PopMatrix();
+
+		modelStack.PushMatrix();
+		modelStack.Translate(-434.5f, 5.5f, 370.0f);
+		//modelStack.Rotate(-90.0f, 0.0f, 0.0f, 1.0f);
+		//modelStack.Rotate(-90.0f, 1.0f, 0.0f, 0.0f);
+		modelStack.Scale(2.5, 1, 1);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_STRIPEWALL], true);
+		modelStack.PopMatrix();
+
+		modelStack.PushMatrix();
+		modelStack.Translate(-590.5f, 5.5f, 370.0f);
+		//modelStack.Rotate(-90.0f, 0.0f, 0.0f, 1.0f);
+		//modelStack.Rotate(-90.0f, 1.0f, 0.0f, 0.0f);
+		modelStack.Scale(2.5, 1, 1);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_STRIPEWALL], true);
+		modelStack.PopMatrix();
+
+		modelStack.PushMatrix();
+		modelStack.Translate(-512.5f, 0.5f, 430.0f);
+		modelStack.Scale(200, 70, 20);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_TABLECAN], true);
+		modelStack.PopMatrix();
+
+		modelStack.PushMatrix();
+		modelStack.Translate(-512.5f, 24.0f, 430.0f);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CAN], true);
+
+		modelStack.PushMatrix();
+		modelStack.Translate(-6.5f, .0f, 0.0f);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CAN], true);
+		modelStack.PopMatrix();
+
+		modelStack.PushMatrix();
+		modelStack.Translate(6.5f, .0f, 0.0f);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CAN], true);
+		modelStack.PopMatrix();
+
+		modelStack.PushMatrix();
+		modelStack.Translate(3.5f, 7.0f, 0.0f);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CAN], true);
+		modelStack.PopMatrix();
+
+		modelStack.PushMatrix();
+		modelStack.Translate(-3.5f, 7.0f, 0.0f);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CAN], true);
+		modelStack.PopMatrix();
+
+		modelStack.PushMatrix();
+		modelStack.Translate(0.0f, 14.0f, 0.0f);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CAN], true);
+		modelStack.PopMatrix();
+
+		modelStack.PopMatrix();
 
 
-	modelStack.PushMatrix();
-	modelStack.Translate(-450.5f, 24.0f, 430.0f);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CAN], true);
 
-	modelStack.PushMatrix();
-	modelStack.Translate(-6.5f, .0f, 0.0f);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CAN], true);
-	modelStack.PopMatrix();
+		modelStack.PushMatrix();
+		modelStack.Translate(-450.5f, 24.0f, 430.0f);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CAN], true);
 
-	modelStack.PushMatrix();
-	modelStack.Translate(6.5f, .0f, 0.0f);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CAN], true);
-	modelStack.PopMatrix();
+		modelStack.PushMatrix();
+		modelStack.Translate(-6.5f, .0f, 0.0f);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CAN], true);
+		modelStack.PopMatrix();
 
-	modelStack.PushMatrix();
-	modelStack.Translate(3.5f, 7.0f, 0.0f);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CAN], true);
-	modelStack.PopMatrix();
+		modelStack.PushMatrix();
+		modelStack.Translate(6.5f, .0f, 0.0f);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CAN], true);
+		modelStack.PopMatrix();
 
-	modelStack.PushMatrix();
-	modelStack.Translate(-3.5f, 7.0f, 0.0f);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CAN], true);
-	modelStack.PopMatrix();
+		modelStack.PushMatrix();
+		modelStack.Translate(3.5f, 7.0f, 0.0f);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CAN], true);
+		modelStack.PopMatrix();
 
-	modelStack.PushMatrix();
-	modelStack.Translate(0.0f, 14.0f, 0.0f);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CAN], true);
-	modelStack.PopMatrix();
+		modelStack.PushMatrix();
+		modelStack.Translate(-3.5f, 7.0f, 0.0f);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CAN], true);
+		modelStack.PopMatrix();
 
-	modelStack.PopMatrix();
+		modelStack.PushMatrix();
+		modelStack.Translate(0.0f, 14.0f, 0.0f);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CAN], true);
+		modelStack.PopMatrix();
+
+		modelStack.PopMatrix();
 
 
-	modelStack.PushMatrix();
-	modelStack.Translate(-570.5f, 24.0f, 430.0f);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CAN], true);
+		modelStack.PushMatrix();
+		modelStack.Translate(-570.5f, 24.0f, 430.0f);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CAN], true);
 
-	modelStack.PushMatrix();
-	modelStack.Translate(-6.5f, .0f, 0.0f);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CAN], true);
-	modelStack.PopMatrix();
+		modelStack.PushMatrix();
+		modelStack.Translate(-6.5f, .0f, 0.0f);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CAN], true);
+		modelStack.PopMatrix();
 
-	modelStack.PushMatrix();
-	modelStack.Translate(6.5f, .0f, 0.0f);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CAN], true);
-	modelStack.PopMatrix();
+		modelStack.PushMatrix();
+		modelStack.Translate(6.5f, .0f, 0.0f);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CAN], true);
+		modelStack.PopMatrix();
 
-	modelStack.PushMatrix();
-	modelStack.Translate(3.5f, 7.0f, 0.0f);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CAN], true);
-	modelStack.PopMatrix();
+		modelStack.PushMatrix();
+		modelStack.Translate(3.5f, 7.0f, 0.0f);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CAN], true);
+		modelStack.PopMatrix();
 
-	modelStack.PushMatrix();
-	modelStack.Translate(-3.5f, 7.0f, 0.0f);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CAN], true);
-	modelStack.PopMatrix();
+		modelStack.PushMatrix();
+		modelStack.Translate(-3.5f, 7.0f, 0.0f);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CAN], true);
+		modelStack.PopMatrix();
 
-	modelStack.PushMatrix();
-	modelStack.Translate(0.0f, 14.0f, 0.0f);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CAN], true);
-	modelStack.PopMatrix();
+		modelStack.PushMatrix();
+		modelStack.Translate(0.0f, 14.0f, 0.0f);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CAN], true);
+		modelStack.PopMatrix();
 
-	modelStack.PopMatrix();
+		modelStack.PopMatrix();
+	}
 
 
 	//duck shooting
-	modelStack.PushMatrix();
-	modelStack.Translate(0.0f, 0.5f, 400.0f);
-	modelStack.Rotate(180.0f, 0.0f, 1.0f, 0.0f);
-	modelStack.Scale(20, 7, 6);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CANTENT], true);
+	{
+		modelStack.PushMatrix();
+		modelStack.Translate(0.0f, 0.5f, 400.0f);
+		modelStack.Rotate(180.0f, 0.0f, 1.0f, 0.0f);
+		modelStack.Scale(20, 7, 6);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CANTENT], true);
 
-	modelStack.PushMatrix();
-	//modelStack.Translate(-512.5f, 0.5f, 405.0f);
-	//modelStack.Rotate(180.0f, 0.0f, 1.0f, 0.0f);
-	//modelStack.Scale(20, 7, 6);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CANTENTROOF], true);
-	modelStack.PopMatrix(); 
-	modelStack.PopMatrix();
-	
-	modelStack.PushMatrix();
-	modelStack.Translate(-122.f, 5.5f, 402.0f);
-	modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
-	modelStack.Scale(2, 1, 1);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_STRIPEWALL], true);
-	modelStack.PopMatrix();
+		modelStack.PushMatrix();
+		//modelStack.Translate(-512.5f, 0.5f, 405.0f);
+		//modelStack.Rotate(180.0f, 0.0f, 1.0f, 0.0f);
+		//modelStack.Scale(20, 7, 6);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CANTENTROOF], true);
+		modelStack.PopMatrix();
+		modelStack.PopMatrix();
 
-	modelStack.PushMatrix();
-	modelStack.Translate(112.f, 5.5f, 402.0f);
-	modelStack.Rotate(-90.0f, 0.0f, 1.0f, 0.0f);
-	modelStack.Scale(2, 1, 1);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_STRIPEWALL], true);
-	modelStack.PopMatrix();
+		modelStack.PushMatrix();
+		modelStack.Translate(-122.f, 5.5f, 402.0f);
+		modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+		modelStack.Scale(2, 1, 1);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_STRIPEWALL], true);
+		modelStack.PopMatrix();
+
+		modelStack.PushMatrix();
+		modelStack.Translate(112.f, 5.5f, 402.0f);
+		modelStack.Rotate(-90.0f, 0.0f, 1.0f, 0.0f);
+		modelStack.Scale(2, 1, 1);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_STRIPEWALL], true);
+		modelStack.PopMatrix();
 
 
-	modelStack.PushMatrix();
-	modelStack.Translate(0.0f, 7.5f, 370.0f);
-	//modelStack.Rotate(-90.0f, 0.0f, 0.0f, 1.0f);
-	//modelStack.Rotate(-90.0f, 1.0f, 0.0f, 0.0f);
-	modelStack.Scale(2.5, 1, 1);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_STRIPEWALL], true);
-	modelStack.PopMatrix();
+		modelStack.PushMatrix();
+		modelStack.Translate(0.0f, 7.5f, 370.0f);
+		//modelStack.Rotate(-90.0f, 0.0f, 0.0f, 1.0f);
+		//modelStack.Rotate(-90.0f, 1.0f, 0.0f, 0.0f);
+		modelStack.Scale(2.5, 1, 1);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_STRIPEWALL], true);
+		modelStack.PopMatrix();
 
-	modelStack.PushMatrix();
-	modelStack.Translate(65.f, 7.5f, 370.0f);
-	//modelStack.Rotate(-90.0f, 0.0f, 0.0f, 1.0f);
-	//modelStack.Rotate(-90.0f, 1.0f, 0.0f, 0.0f);
-	modelStack.Scale(2.5, 1, 1);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_STRIPEWALL], true);
-	modelStack.PopMatrix();
+		modelStack.PushMatrix();
+		modelStack.Translate(65.f, 7.5f, 370.0f);
+		//modelStack.Rotate(-90.0f, 0.0f, 0.0f, 1.0f);
+		//modelStack.Rotate(-90.0f, 1.0f, 0.0f, 0.0f);
+		modelStack.Scale(2.5, 1, 1);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_STRIPEWALL], true);
+		modelStack.PopMatrix();
 
-	modelStack.PushMatrix();
-	modelStack.Translate(-72.f, 7.5f, 370.0f);
-	//modelStack.Rotate(-90.0f, 0.0f, 0.0f, 1.0f);
-	//modelStack.Rotate(-90.0f, 1.0f, 0.0f, 0.0f);
-	modelStack.Scale(2.5, 1, 1);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_STRIPEWALL], true);
-	modelStack.PopMatrix();
+		modelStack.PushMatrix();
+		modelStack.Translate(-72.f, 7.5f, 370.0f);
+		//modelStack.Rotate(-90.0f, 0.0f, 0.0f, 1.0f);
+		//modelStack.Rotate(-90.0f, 1.0f, 0.0f, 0.0f);
+		modelStack.Scale(2.5, 1, 1);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_STRIPEWALL], true);
+		modelStack.PopMatrix();
+}
 
 	
 
 	//food1
-	modelStack.PushMatrix();
-	modelStack.Translate(-660.5f, 30.f, -300.0f);
-	modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
-	modelStack.Scale(6, 5, 5);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_TOPCOTTONCANDY], true);
-	modelStack.PopMatrix();
+	{
+		modelStack.PushMatrix();
+		modelStack.Translate(-660.5f, 30.f, -300.0f);
+		modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+		modelStack.Scale(6, 5, 5);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_TOPCOTTONCANDY], true);
+		modelStack.PopMatrix();
 
-	modelStack.PushMatrix();
-	modelStack.Translate(-660.5f, 30.f, -300.0f);
-	modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
-	modelStack.Scale(6, 5, 5);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_MIDDLECOTTONCANDY], true);
-	modelStack.PopMatrix();
+		modelStack.PushMatrix();
+		modelStack.Translate(-660.5f, 30.f, -300.0f);
+		modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+		modelStack.Scale(6, 5, 5);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_MIDDLECOTTONCANDY], true);
+		modelStack.PopMatrix();
 
-	modelStack.PushMatrix();
-	modelStack.Translate(-660.5f, 30.f, -300.0f);
-	modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
-	modelStack.Scale(6, 5, 5);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_INNERMIDDLECOTTONCANDY], true);
-	modelStack.PopMatrix();
+		modelStack.PushMatrix();
+		modelStack.Translate(-660.5f, 30.f, -300.0f);
+		modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+		modelStack.Scale(6, 5, 5);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_INNERMIDDLECOTTONCANDY], true);
+		modelStack.PopMatrix();
 
-	modelStack.PushMatrix();
-	modelStack.Translate(-660.5f, 30.f, -300.0f);
-	modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
-	modelStack.Scale(6, 5, 5);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_COTTONCANDYS], true);
-	modelStack.PopMatrix();
+		modelStack.PushMatrix();
+		modelStack.Translate(-660.5f, 30.f, -300.0f);
+		modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+		modelStack.Scale(6, 5, 5);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_COTTONCANDYS], true);
+		modelStack.PopMatrix();
 
-	modelStack.PushMatrix();
-	modelStack.Translate(-660.5f, 30.f, -300.0f);
-	modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
-	modelStack.Scale(6, 5, 5);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_COTTONCANDYMACHINE], true);
-	modelStack.PopMatrix();
+		modelStack.PushMatrix();
+		modelStack.Translate(-660.5f, 30.f, -300.0f);
+		modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+		modelStack.Scale(6, 5, 5);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_COTTONCANDYMACHINE], true);
+		modelStack.PopMatrix();
 
-	modelStack.PushMatrix();
-	modelStack.Translate(-660.5f, 30.f, -300.0f);
-	modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
-	modelStack.Scale(6, 5, 5);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CARAMELAPPLE], true);
-	modelStack.PopMatrix();
+		modelStack.PushMatrix();
+		modelStack.Translate(-660.5f, 30.f, -300.0f);
+		modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+		modelStack.Scale(6, 5, 5);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CARAMELAPPLE], true);
+		modelStack.PopMatrix();
 
-	modelStack.PushMatrix();
-	modelStack.Translate(-660.5f, 30.f, -300.0f);
-	modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
-	modelStack.Scale(6, 5, 5);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CARAMELAPPLESTAND],true);
-	modelStack.PopMatrix();
+		modelStack.PushMatrix();
+		modelStack.Translate(-660.5f, 30.f, -300.0f);
+		modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+		modelStack.Scale(6, 5, 5);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CARAMELAPPLESTAND], true);
+		modelStack.PopMatrix();
 
-	modelStack.PushMatrix();
-	modelStack.Translate(-660.5f, 30.f, -300.0f);
-	modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
-	modelStack.Scale(6, 5, 5);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_BOTTOMCOTTONCANDY], true);
-	modelStack.PopMatrix();
+		modelStack.PushMatrix();
+		modelStack.Translate(-660.5f, 30.f, -300.0f);
+		modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+		modelStack.Scale(6, 5, 5);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_BOTTOMCOTTONCANDY], true);
+		modelStack.PopMatrix();
 
-	//food2
-	modelStack.PushMatrix();
-	modelStack.Translate(660.5f, 30.f, -300.0f);
-	modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
-	modelStack.Scale(6, 5, 5);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_TOPCOTTONCANDY], true);
-	modelStack.PopMatrix();
+		//food2
+		modelStack.PushMatrix();
+		modelStack.Translate(660.5f, 30.f, -300.0f);
+		modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+		modelStack.Scale(6, 5, 5);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_TOPCOTTONCANDY], true);
+		modelStack.PopMatrix();
 
-	modelStack.PushMatrix();
-	modelStack.Translate(660.5f, 30.f, -300.0f);
-	modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
-	modelStack.Scale(6, 5, 5);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_MIDDLECOTTONCANDY], true);
-	modelStack.PopMatrix();
+		modelStack.PushMatrix();
+		modelStack.Translate(660.5f, 30.f, -300.0f);
+		modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+		modelStack.Scale(6, 5, 5);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_MIDDLECOTTONCANDY], true);
+		modelStack.PopMatrix();
 
-	modelStack.PushMatrix();
-	modelStack.Translate(660.5f, 30.f, -300.0f);
-	modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
-	modelStack.Scale(6, 5, 5);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_INNERMIDDLECOTTONCANDY], true);
-	modelStack.PopMatrix();
+		modelStack.PushMatrix();
+		modelStack.Translate(660.5f, 30.f, -300.0f);
+		modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+		modelStack.Scale(6, 5, 5);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_INNERMIDDLECOTTONCANDY], true);
+		modelStack.PopMatrix();
 
-	modelStack.PushMatrix();
-	modelStack.Translate(660.5f, 30.f, -300.0f);
-	modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
-	modelStack.Scale(6, 5, 5);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_COTTONCANDYS], true);
-	modelStack.PopMatrix();
+		modelStack.PushMatrix();
+		modelStack.Translate(660.5f, 30.f, -300.0f);
+		modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+		modelStack.Scale(6, 5, 5);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_COTTONCANDYS], true);
+		modelStack.PopMatrix();
 
-	modelStack.PushMatrix();
-	modelStack.Translate(660.5f, 30.f, -300.0f);
-	modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
-	modelStack.Scale(6, 5, 5);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_COTTONCANDYMACHINE], true);
-	modelStack.PopMatrix();
+		modelStack.PushMatrix();
+		modelStack.Translate(660.5f, 30.f, -300.0f);
+		modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+		modelStack.Scale(6, 5, 5);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_COTTONCANDYMACHINE], true);
+		modelStack.PopMatrix();
 
-	modelStack.PushMatrix();
-	modelStack.Translate(660.5f, 30.f, -300.0f);
-	modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
-	modelStack.Scale(6, 5, 5);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CARAMELAPPLE], true);
-	modelStack.PopMatrix();
+		modelStack.PushMatrix();
+		modelStack.Translate(660.5f, 30.f, -300.0f);
+		modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+		modelStack.Scale(6, 5, 5);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CARAMELAPPLE], true);
+		modelStack.PopMatrix();
 
-	modelStack.PushMatrix();
-	modelStack.Translate(660.5f, 30.f, -300.0f);
-	modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
-	modelStack.Scale(6, 5, 5);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CARAMELAPPLESTAND], true);
-	modelStack.PopMatrix();
+		modelStack.PushMatrix();
+		modelStack.Translate(660.5f, 30.f, -300.0f);
+		modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+		modelStack.Scale(6, 5, 5);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CARAMELAPPLESTAND], true);
+		modelStack.PopMatrix();
 
-	modelStack.PushMatrix();
-	modelStack.Translate(660.5f, 30.f, -300.0f);
-	modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
-	modelStack.Scale(6, 5, 5);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_BOTTOMCOTTONCANDY], true);
-	modelStack.PopMatrix();
+		modelStack.PushMatrix();
+		modelStack.Translate(660.5f, 30.f, -300.0f);
+		modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+		modelStack.Scale(6, 5, 5);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_BOTTOMCOTTONCANDY], true);
+		modelStack.PopMatrix();
 
+	}
 
 
 
 	//plinko
-	modelStack.PushMatrix();
-	modelStack.Translate(-650.5f, 0.5f, 250.0f);
-	modelStack.Scale(10, 10, 10);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CR_PLINKO], true);
-	modelStack.PopMatrix();
+	{
+		modelStack.PushMatrix();
+		modelStack.Translate(-650.5f, 0.5f, 250.0f);
+		modelStack.Scale(10, 10, 10);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CR_PLINKO], true);
+		modelStack.PopMatrix();
 
-	modelStack.PushMatrix();
-	modelStack.Translate(-650.5f, 0.5f, 250.0f);
-	modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
-	modelStack.Scale(7, 7, 3);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CANTENT], true);
-	modelStack.PushMatrix();
-	//modelStack.Translate(-512.5f, 0.5f, 405.0f);
-	//modelStack.Rotate(180.0f, 0.0f, 1.0f, 0.0f);
-	//modelStack.Scale(20, 7, 6);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CANTENTROOF], true);
-	modelStack.PopMatrix();
-	modelStack.PopMatrix();
+		modelStack.PushMatrix();
+		modelStack.Translate(-650.5f, 0.5f, 250.0f);
+		modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+		modelStack.Scale(7, 7, 3);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CANTENT], true);
+		modelStack.PushMatrix();
+		//modelStack.Translate(-512.5f, 0.5f, 405.0f);
+		//modelStack.Rotate(180.0f, 0.0f, 1.0f, 0.0f);
+		//modelStack.Scale(20, 7, 6);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CANTENTROOF], true);
+		modelStack.PopMatrix();
+		modelStack.PopMatrix();
 
-	modelStack.PushMatrix();
-	modelStack.Translate(-650.5f, 3.5f, 207.0f);
-	//modelStack.Rotate(-90.0f, 0.0f, 0.0f, 1.0f);
-	//modelStack.Rotate(-90.0f, 1.0f, 0.0f, 0.0f);
-	modelStack.Scale(1, 1, 1);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_STRIPEWALL],true);
-	modelStack.PopMatrix();
+		modelStack.PushMatrix();
+		modelStack.Translate(-650.5f, 3.5f, 207.0f);
+		//modelStack.Rotate(-90.0f, 0.0f, 0.0f, 1.0f);
+		//modelStack.Rotate(-90.0f, 1.0f, 0.0f, 0.0f);
+		modelStack.Scale(1, 1, 1);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_STRIPEWALL], true);
+		modelStack.PopMatrix();
 
-	modelStack.PushMatrix();
-	modelStack.Translate(-650.5f, 3.5f, 290.0f);
-	//modelStack.Rotate(-90.0f, 0.0f, 0.0f, 1.0f);
-	//modelStack.Rotate(-90.0f, 1.0f, 0.0f, 0.0f);
-	modelStack.Scale(1, 1, 1);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_STRIPEWALL], true);
-	modelStack.PopMatrix();
+		modelStack.PushMatrix();
+		modelStack.Translate(-650.5f, 3.5f, 290.0f);
+		//modelStack.Rotate(-90.0f, 0.0f, 0.0f, 1.0f);
+		//modelStack.Rotate(-90.0f, 1.0f, 0.0f, 0.0f);
+		modelStack.Scale(1, 1, 1);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_STRIPEWALL], true);
+		modelStack.PopMatrix();
+}
 
 	//duckfishing
 
-	modelStack.PushMatrix();
-	modelStack.Translate(-650.5f, 0.5f, 0.0f);
-	modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
-	modelStack.Scale(20, 7, 7);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CANTENT], true);
-	modelStack.PushMatrix();
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CANTENTROOF], true);
-	modelStack.PopMatrix();
-	modelStack.PopMatrix();
-
-	modelStack.PushMatrix();
-	modelStack.Translate(-650.5f, 3.5f, 115.0f);
-	modelStack.Scale(2,1,1);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_STRIPEWALL], true);
-	modelStack.PopMatrix();
-
-	modelStack.PushMatrix();
-	modelStack.Translate(-650.5f, 3.5f, -120.0f);
-	modelStack.Scale(2,1,1);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_STRIPEWALL], true);
-	modelStack.PopMatrix();
-	
-
-	modelStack.PushMatrix();
-	modelStack.Translate(-650.5f, 10.5f, 0.0f);
-	modelStack.Scale(2, 2, 5);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_POOL], true);
-	modelStack.PopMatrix();
-
-	modelStack.PushMatrix();
-	modelStack.Translate(-650.5f, 10.5f, 0.0f);
-	modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
-	modelStack.Scale(40, 90, 40);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_POOLWATER], true);
-	modelStack.PopMatrix();
-
-	for (int i = 0; i < 10; i++)
 	{
 		modelStack.PushMatrix();
-		modelStack.Translate(-650.5f + ducksX[i], 13.5f, -45.0f + ducksY[i]);
-		//modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
-		modelStack.Scale(2, 2, 2);
-		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_DUCKY], true);
-		modelStack.PopMatrix();
-	}
-	
-	for (int i = 0; i < 10; i++)
-	{
+		modelStack.Translate(-650.5f, 0.5f, 0.0f);
+		modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+		modelStack.Scale(20, 7, 7);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CANTENT], true);
 		modelStack.PushMatrix();
-		modelStack.Translate(-650.5f + ducksX[i], 13.5f, 45.0f + ducksY[i]);
-		modelStack.Rotate(60.0f, 0.0f, 1.0f, 0.0f);
-		modelStack.Scale(2, 2, 2);
-		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_DUCKY], true);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CANTENTROOF], true);
 		modelStack.PopMatrix();
-	}
-	
-	for (int i = 0; i < 10; i++)
-	{
+		modelStack.PopMatrix();
+
 		modelStack.PushMatrix();
-		modelStack.Translate(-650.5f + ducksX[i], 13.5f, 0.0f + ducksY[i]);
-		modelStack.Rotate(60.0f, 0.0f, 1.0f, 0.0f);
-		modelStack.Scale(2, 2, 2);
-		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_DUCKY], true);
+		modelStack.Translate(-650.5f, 3.5f, 115.0f);
+		modelStack.Scale(2, 1, 1);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_STRIPEWALL], true);
 		modelStack.PopMatrix();
+
+		modelStack.PushMatrix();
+		modelStack.Translate(-650.5f, 3.5f, -120.0f);
+		modelStack.Scale(2, 1, 1);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_STRIPEWALL], true);
+		modelStack.PopMatrix();
+
+
+		modelStack.PushMatrix();
+		modelStack.Translate(-650.5f, 10.5f, 0.0f);
+		modelStack.Scale(2, 2, 5);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_POOL], true);
+		modelStack.PopMatrix();
+
+		modelStack.PushMatrix();
+		modelStack.Translate(-650.5f, 10.5f, 0.0f);
+		modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
+		modelStack.Scale(40, 90, 40);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_POOLWATER], true);
+		modelStack.PopMatrix();
+
+		for (int i = 0; i < 10; i++)
+		{
+			modelStack.PushMatrix();
+			modelStack.Translate(-650.5f + ducksX[i], 13.5f, -45.0f + ducksY[i]);
+			//modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
+			modelStack.Scale(2, 2, 2);
+			RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_DUCKY], true);
+			modelStack.PopMatrix();
+		}
+
+		for (int i = 0; i < 10; i++)
+		{
+			modelStack.PushMatrix();
+			modelStack.Translate(-650.5f + ducksX[i], 13.5f, 45.0f + ducksY[i]);
+			modelStack.Rotate(60.0f, 0.0f, 1.0f, 0.0f);
+			modelStack.Scale(2, 2, 2);
+			RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_DUCKY], true);
+			modelStack.PopMatrix();
+		}
+
+		for (int i = 0; i < 10; i++)
+		{
+			modelStack.PushMatrix();
+			modelStack.Translate(-650.5f + ducksX[i], 13.5f, 0.0f + ducksY[i]);
+			modelStack.Rotate(60.0f, 0.0f, 1.0f, 0.0f);
+			modelStack.Scale(2, 2, 2);
+			RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_DUCKY], true);
+			modelStack.PopMatrix();
+		}
 	}
 
 	//duckshooting
 
-	modelStack.PushMatrix();
-	modelStack.Translate(-0.0f, 0.5f, 381.0f);
-	modelStack.Scale(200, 70, 10);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_TABLECAN], true);
-	modelStack.PopMatrix();
+	{
+		modelStack.PushMatrix();
+		modelStack.Translate(-0.0f, 0.5f, 381.0f);
+		modelStack.Scale(200, 70, 10);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_TABLECAN], true);
+		modelStack.PopMatrix();
 
-	modelStack.PushMatrix();
-	modelStack.Translate(-0.0f, 24.5f, 380.0f);
-	modelStack.Rotate(60.0f, 0, 1, 0);
-	modelStack.Rotate(90.0f, 0, 0, 1);
-	modelStack.Scale(40, 40, 40);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_GUN], true);
-	modelStack.PopMatrix();
+		modelStack.PushMatrix();
+		modelStack.Translate(-0.0f, 24.5f, 380.0f);
+		modelStack.Rotate(60.0f, 0, 1, 0);
+		modelStack.Rotate(90.0f, 0, 0, 1);
+		modelStack.Scale(40, 40, 40);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_GUN], true);
+		modelStack.PopMatrix();
 
-	modelStack.PushMatrix();
-	modelStack.Translate(0.0f, 26.5f, 415.0f);
-	modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
-	modelStack.Scale(0.3, 5, 5);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_DUCKY], true);
-	modelStack.PopMatrix();
-	modelStack.PushMatrix();
-	modelStack.Translate(0.0f, 26.5f, 414.5f);
-	//modelStack.Rotate(180.0f, 0.0f, 1.0f, 0.0f);
-	modelStack.Scale(3, 3, 3);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_TARGET], true);
-	modelStack.PopMatrix();
-
-
-	modelStack.PushMatrix();
-	modelStack.Translate(30.0f, 26.5f, 415.0f);
-	modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
-	modelStack.Scale(0.3, 5, 5);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_DUCKY], true);
-	modelStack.PopMatrix();
-	modelStack.PushMatrix();
-	modelStack.Translate(30.0f, 26.5f, 414.5f);
-	//modelStack.Rotate(180.0f, 0.0f, 1.0f, 0.0f);
-	modelStack.Scale(3, 3, 3);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_TARGET], true);
-	modelStack.PopMatrix();
-
-	modelStack.PushMatrix();
-	modelStack.Translate(60.0f, 26.5f, 415.0f);
-	modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
-	modelStack.Scale(0.3, 5, 5);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_DUCKY], true);
-	modelStack.PopMatrix();
-	modelStack.PushMatrix();
-	modelStack.Translate(60.0f, 26.5f, 414.5f);
-	//modelStack.Rotate(180.0f, 0.0f, 1.0f, 0.0f);
-	modelStack.Scale(3, 3, 3);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_TARGET], true);
-	modelStack.PopMatrix();
-
-	modelStack.PushMatrix();
-	modelStack.Translate(90.0f, 26.5f, 415.0f);
-	modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
-	modelStack.Scale(0.3, 5, 5);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_DUCKY], true);
-	modelStack.PopMatrix();
-	modelStack.PushMatrix();
-	modelStack.Translate(90.0f, 26.5f, 414.5f);
-	//modelStack.Rotate(180.0f, 0.0f, 1.0f, 0.0f);
-	modelStack.Scale(3, 3, 3);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_TARGET], true);
-	modelStack.PopMatrix();
-	
-	modelStack.PushMatrix();
-	modelStack.Translate(-30.0f, 26.5f, 415.0f);
-	modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
-	modelStack.Scale(0.3, 5, 5);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_DUCKY], true);
-	modelStack.PopMatrix();
-	modelStack.PushMatrix();
-	modelStack.Translate(-30.0f, 26.5f, 414.5f);
-	//modelStack.Rotate(180.0f, 0.0f, 1.0f, 0.0f);
-	modelStack.Scale(3, 3, 3);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_TARGET], true);
-	modelStack.PopMatrix();
-
-	modelStack.PushMatrix();
-	modelStack.Translate(-60.0f, 26.5f, 415.0f);
-	modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
-	modelStack.Scale(0.3, 5, 5);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_DUCKY], true);
-	modelStack.PopMatrix();
-	modelStack.PushMatrix();
-	modelStack.Translate(-60.0f, 26.5f, 414.5f);
-	//modelStack.Rotate(180.0f, 0.0f, 1.0f, 0.0f);
-	modelStack.Scale(3, 3, 3);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_TARGET], true);
-	modelStack.PopMatrix();
-
-	modelStack.PushMatrix();
-	modelStack.Translate(-90.0f, 26.5f, 415.0f);
-	modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
-	modelStack.Scale(0.3, 5, 5);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_DUCKY], true);
-	modelStack.PopMatrix();
-	modelStack.PushMatrix();
-	modelStack.Translate(-90.0f, 26.5f, 414.5f);
-	//modelStack.Rotate(180.0f, 0.0f, 1.0f, 0.0f);
-	modelStack.Scale(3, 3, 3);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_TARGET], true);
-	modelStack.PopMatrix();
+		modelStack.PushMatrix();
+		modelStack.Translate(0.0f, 26.5f, 415.0f);
+		modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+		modelStack.Scale(0.3, 5, 5);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_DUCKY], true);
+		modelStack.PopMatrix();
+		modelStack.PushMatrix();
+		modelStack.Translate(0.0f, 26.5f, 414.5f);
+		//modelStack.Rotate(180.0f, 0.0f, 1.0f, 0.0f);
+		modelStack.Scale(3, 3, 3);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_TARGET], true);
+		modelStack.PopMatrix();
 
 
-	modelStack.PushMatrix();
-	modelStack.Translate(-8.0f, 0.5f, 420.0f);
-	modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
-	modelStack.Scale(0.5, 0.7, 0.7);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CONVEYER], true);
-	modelStack.PopMatrix();
+		modelStack.PushMatrix();
+		modelStack.Translate(30.0f, 26.5f, 415.0f);
+		modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+		modelStack.Scale(0.3, 5, 5);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_DUCKY], true);
+		modelStack.PopMatrix();
+		modelStack.PushMatrix();
+		modelStack.Translate(30.0f, 26.5f, 414.5f);
+		//modelStack.Rotate(180.0f, 0.0f, 1.0f, 0.0f);
+		modelStack.Scale(3, 3, 3);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_TARGET], true);
+		modelStack.PopMatrix();
+
+		modelStack.PushMatrix();
+		modelStack.Translate(60.0f, 26.5f, 415.0f);
+		modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+		modelStack.Scale(0.3, 5, 5);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_DUCKY], true);
+		modelStack.PopMatrix();
+		modelStack.PushMatrix();
+		modelStack.Translate(60.0f, 26.5f, 414.5f);
+		//modelStack.Rotate(180.0f, 0.0f, 1.0f, 0.0f);
+		modelStack.Scale(3, 3, 3);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_TARGET], true);
+		modelStack.PopMatrix();
+
+		modelStack.PushMatrix();
+		modelStack.Translate(90.0f, 26.5f, 415.0f);
+		modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+		modelStack.Scale(0.3, 5, 5);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_DUCKY], true);
+		modelStack.PopMatrix();
+		modelStack.PushMatrix();
+		modelStack.Translate(90.0f, 26.5f, 414.5f);
+		//modelStack.Rotate(180.0f, 0.0f, 1.0f, 0.0f);
+		modelStack.Scale(3, 3, 3);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_TARGET], true);
+		modelStack.PopMatrix();
+
+		modelStack.PushMatrix();
+		modelStack.Translate(-30.0f, 26.5f, 415.0f);
+		modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+		modelStack.Scale(0.3, 5, 5);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_DUCKY], true);
+		modelStack.PopMatrix();
+		modelStack.PushMatrix();
+		modelStack.Translate(-30.0f, 26.5f, 414.5f);
+		//modelStack.Rotate(180.0f, 0.0f, 1.0f, 0.0f);
+		modelStack.Scale(3, 3, 3);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_TARGET], true);
+		modelStack.PopMatrix();
+
+		modelStack.PushMatrix();
+		modelStack.Translate(-60.0f, 26.5f, 415.0f);
+		modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+		modelStack.Scale(0.3, 5, 5);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_DUCKY], true);
+		modelStack.PopMatrix();
+		modelStack.PushMatrix();
+		modelStack.Translate(-60.0f, 26.5f, 414.5f);
+		//modelStack.Rotate(180.0f, 0.0f, 1.0f, 0.0f);
+		modelStack.Scale(3, 3, 3);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_TARGET], true);
+		modelStack.PopMatrix();
+
+		modelStack.PushMatrix();
+		modelStack.Translate(-90.0f, 26.5f, 415.0f);
+		modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+		modelStack.Scale(0.3, 5, 5);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_DUCKY], true);
+		modelStack.PopMatrix();
+		modelStack.PushMatrix();
+		modelStack.Translate(-90.0f, 26.5f, 414.5f);
+		//modelStack.Rotate(180.0f, 0.0f, 1.0f, 0.0f);
+		modelStack.Scale(3, 3, 3);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_TARGET], true);
+		modelStack.PopMatrix();
+
+
+		modelStack.PushMatrix();
+		modelStack.Translate(-8.0f, 0.5f, 420.0f);
+		modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+		modelStack.Scale(0.5, 0.7, 0.7);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CONVEYER], true);
+		modelStack.PopMatrix();
+	}
 
 	//balloon
 
-	modelStack.PushMatrix();
-	modelStack.Translate(650.5f, 0.5f, 0.0f);
-	modelStack.Rotate(-90.0f, 0.0f, 1.0f, 0.0f);
-	modelStack.Scale(20, 7, 7);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CANTENT], true);
-	modelStack.PushMatrix();
-	//modelStack.Translate(-512.5f, 0.5f, 405.0f);
-	//modelStack.Rotate(180.0f, 0.0f, 1.0f, 0.0f);
-	//modelStack.Scale(20, 7, 6);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CANTENTROOF], true);
-	modelStack.PopMatrix();
-	modelStack.PopMatrix();
-
-	modelStack.PushMatrix();
-	modelStack.Translate(690.5f, 30.5f, 0.0f);
-	modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
-	modelStack.Scale(0.5, 0.4, 0.2);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_BOARD], true);
-	modelStack.PopMatrix();
-
-	for (int i = 0; i < 3; i++)
 	{
 		modelStack.PushMatrix();
-		modelStack.Translate(685.5f, 30.5f + (10*i), 0.0f);
-		modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
-		modelStack.Scale(20, 20, 20);
-		MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON]->material = Material::Sillicon(RED);
-		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON], true);
-		modelStack.PopMatrix();
+		modelStack.Translate(650.5f, 0.5f, 0.0f);
+		modelStack.Rotate(-90.0f, 0.0f, 1.0f, 0.0f);
+		modelStack.Scale(20, 7, 7);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CANTENT], true);
 		modelStack.PushMatrix();
-		modelStack.Translate(685.5f, 30.5f + (10 * i), 10.0f);
-		modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
-		modelStack.Scale(20, 20, 20);
-		MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON]->material = Material::Sillicon(YELLOW);
-
-		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON], true);
+		//modelStack.Translate(-512.5f, 0.5f, 405.0f);
+		//modelStack.Rotate(180.0f, 0.0f, 1.0f, 0.0f);
+		//modelStack.Scale(20, 7, 6);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CANTENTROOF], true);
+		modelStack.PopMatrix();
 		modelStack.PopMatrix();
 
 		modelStack.PushMatrix();
-		modelStack.Translate(685.5f, 30.5f + (10 * i), 20.0f);
+		modelStack.Translate(690.5f, 30.5f, 0.0f);
 		modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
-		modelStack.Scale(20, 20, 20);
-		MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON]->material = Material::Sillicon(BLUE);
-		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON], true);
+		modelStack.Scale(0.5, 0.4, 0.2);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_BOARD], true);
+		modelStack.PopMatrix();
+
+		for (int i = 0; i < 3; i++)
+		{
+			modelStack.PushMatrix();
+			modelStack.Translate(685.5f, 30.5f + (10 * i), 0.0f);
+			modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+			modelStack.Scale(20, 20, 20);
+			MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON]->material = Material::Sillicon(RED);
+			RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON], true);
+			modelStack.PopMatrix();
+			modelStack.PushMatrix();
+			modelStack.Translate(685.5f, 30.5f + (10 * i), 10.0f);
+			modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+			modelStack.Scale(20, 20, 20);
+			MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON]->material = Material::Sillicon(YELLOW);
+
+			RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON], true);
+			modelStack.PopMatrix();
+
+			modelStack.PushMatrix();
+			modelStack.Translate(685.5f, 30.5f + (10 * i), 20.0f);
+			modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+			modelStack.Scale(20, 20, 20);
+			MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON]->material = Material::Sillicon(BLUE);
+			RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON], true);
+			modelStack.PopMatrix();
+
+			modelStack.PushMatrix();
+			modelStack.Translate(685.5f, 30.5f + (10 * i), 30.0f);
+			modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+			modelStack.Scale(20, 20, 20);
+			MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON]->material = Material::Sillicon(GREEN);
+			RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON], true);
+			modelStack.PopMatrix();
+
+			modelStack.PushMatrix();
+			modelStack.Translate(685.5f, 30.5f + (10 * i), 40.0f);
+			modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+			modelStack.Scale(20, 20, 20);
+			MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON]->material = Material::Sillicon(GREY);
+			RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON], true);
+			modelStack.PopMatrix();
+
+			modelStack.PushMatrix();
+			modelStack.Translate(685.5f, 30.5f + (10 * i), 50.0f);
+			modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+			modelStack.Scale(20, 20, 20);
+			MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON]->material = Material::Sillicon(BRIGHTBLUE);
+			RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON], true);
+			modelStack.PopMatrix();
+
+
+			modelStack.PushMatrix();
+			modelStack.Translate(685.5f, 30.5f + (10 * i), -10.0f);
+			modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+			modelStack.Scale(20, 20, 20);
+			MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON]->material = Material::Sillicon(YELLOW);
+
+			RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON], true);
+			modelStack.PopMatrix();
+
+			modelStack.PushMatrix();
+			modelStack.Translate(685.5f, 30.5f + (10 * i), -20.0f);
+			modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+			modelStack.Scale(20, 20, 20);
+			MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON]->material = Material::Sillicon(BLUE);
+			RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON], true);
+			modelStack.PopMatrix();
+
+			modelStack.PushMatrix();
+			modelStack.Translate(685.5f, 30.5f + (10 * i), -30.0f);
+			modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+			modelStack.Scale(20, 20, 20);
+			MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON]->material = Material::Sillicon(GREEN);
+			RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON], true);
+			modelStack.PopMatrix();
+
+			modelStack.PushMatrix();
+			modelStack.Translate(685.5f, 30.5f + (10 * i), -40.0f);
+			modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+			modelStack.Scale(20, 20, 20);
+			MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON]->material = Material::Sillicon(GREY);
+			RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON], true);
+			modelStack.PopMatrix();
+
+			modelStack.PushMatrix();
+			modelStack.Translate(685.5f, 30.5f + (10 * i), -50.0f);
+			modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+			modelStack.Scale(20, 20, 20);
+			MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON]->material = Material::Sillicon(BRIGHTBLUE);
+			RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON], true);
+			modelStack.PopMatrix();
+
+		}
+
+		for (int i = 0; i > -3; i--)
+		{
+			modelStack.PushMatrix();
+			modelStack.Translate(685.5f, 30.5f + (10 * i), 0.0f);
+			modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+			modelStack.Scale(20, 20, 20);
+			MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON]->material = Material::Sillicon(RED);
+			RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON], true);
+			modelStack.PopMatrix();
+			modelStack.PushMatrix();
+			modelStack.Translate(685.5f, 30.5f + (10 * i), 10.0f);
+			modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+			modelStack.Scale(20, 20, 20);
+			MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON]->material = Material::Sillicon(YELLOW);
+
+			RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON], true);
+			modelStack.PopMatrix();
+
+			modelStack.PushMatrix();
+			modelStack.Translate(685.5f, 30.5f + (10 * i), 20.0f);
+			modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+			modelStack.Scale(20, 20, 20);
+			MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON]->material = Material::Sillicon(BLUE);
+			RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON], true);
+			modelStack.PopMatrix();
+
+			modelStack.PushMatrix();
+			modelStack.Translate(685.5f, 30.5f + (10 * i), 30.0f);
+			modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+			modelStack.Scale(20, 20, 20);
+			MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON]->material = Material::Sillicon(GREEN);
+			RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON], true);
+			modelStack.PopMatrix();
+
+			modelStack.PushMatrix();
+			modelStack.Translate(685.5f, 30.5f + (10 * i), 40.0f);
+			modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+			modelStack.Scale(20, 20, 20);
+			MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON]->material = Material::Sillicon(GREY);
+			RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON], true);
+			modelStack.PopMatrix();
+
+			modelStack.PushMatrix();
+			modelStack.Translate(685.5f, 30.5f + (10 * i), 50.0f);
+			modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+			modelStack.Scale(20, 20, 20);
+			MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON]->material = Material::Sillicon(BRIGHTBLUE);
+			RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON], true);
+			modelStack.PopMatrix();
+
+
+			modelStack.PushMatrix();
+			modelStack.Translate(685.5f, 30.5f + (10 * i), -10.0f);
+			modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+			modelStack.Scale(20, 20, 20);
+			MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON]->material = Material::Sillicon(YELLOW);
+
+			RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON], true);
+			modelStack.PopMatrix();
+
+			modelStack.PushMatrix();
+			modelStack.Translate(685.5f, 30.5f + (10 * i), -20.0f);
+			modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+			modelStack.Scale(20, 20, 20);
+			MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON]->material = Material::Sillicon(BLUE);
+			RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON], true);
+			modelStack.PopMatrix();
+
+			modelStack.PushMatrix();
+			modelStack.Translate(685.5f, 30.5f + (10 * i), -30.0f);
+			modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+			modelStack.Scale(20, 20, 20);
+			MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON]->material = Material::Sillicon(GREEN);
+			RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON], true);
+			modelStack.PopMatrix();
+
+			modelStack.PushMatrix();
+			modelStack.Translate(685.5f, 30.5f + (10 * i), -40.0f);
+			modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+			modelStack.Scale(20, 20, 20);
+			MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON]->material = Material::Sillicon(GREY);
+			RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON], true);
+			modelStack.PopMatrix();
+
+			modelStack.PushMatrix();
+			modelStack.Translate(685.5f, 30.5f + (10 * i), -50.0f);
+			modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+			modelStack.Scale(20, 20, 20);
+			MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON]->material = Material::Sillicon(BRIGHTBLUE);
+			RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON], true);
+			modelStack.PopMatrix();
+
+		}
+
+		modelStack.PushMatrix();
+		modelStack.Translate(650.5f, 3.5f, 120.0f);
+		modelStack.Scale(2, 1, 1);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_STRIPEWALL], true);
 		modelStack.PopMatrix();
 
 		modelStack.PushMatrix();
-		modelStack.Translate(685.5f, 30.5f + (10 * i), 30.0f);
-		modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
-		modelStack.Scale(20, 20, 20);
-		MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON]->material = Material::Sillicon(GREEN);
-		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON], true);
+		modelStack.Translate(650.5f, 3.5f, -115.0f);
+		modelStack.Scale(2.2, 1, 1);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_STRIPEWALL], true);
 		modelStack.PopMatrix();
 
 		modelStack.PushMatrix();
-		modelStack.Translate(685.5f, 30.5f + (10 * i), 40.0f);
+		modelStack.Translate(610.5f, 3.5f, 0.0f);
 		modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
-		modelStack.Scale(20, 20, 20);
-		MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON]->material = Material::Sillicon(GREY);
-		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON], true);
+		modelStack.Scale(2.5, 1, 1);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_STRIPEWALL], true);
 		modelStack.PopMatrix();
 
 		modelStack.PushMatrix();
-		modelStack.Translate(685.5f, 30.5f + (10 * i), 50.0f);
+		modelStack.Translate(610.5f, 3.5f, 70.0f);
 		modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
-		modelStack.Scale(20, 20, 20);
-		MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON]->material = Material::Sillicon(BRIGHTBLUE);
-		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON], true);
-		modelStack.PopMatrix();
-
-
-		modelStack.PushMatrix();
-		modelStack.Translate(685.5f, 30.5f + (10 * i), -10.0f);
-		modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
-		modelStack.Scale(20, 20, 20);
-		MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON]->material = Material::Sillicon(YELLOW);
-
-		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON], true);
+		modelStack.Scale(2.5, 1, 1);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_STRIPEWALL], true);
 		modelStack.PopMatrix();
 
 		modelStack.PushMatrix();
-		modelStack.Translate(685.5f, 30.5f + (10 * i), -20.0f);
+		modelStack.Translate(610.5f, 3.5f, -70.0f);
 		modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
-		modelStack.Scale(20, 20, 20);
-		MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON]->material = Material::Sillicon(BLUE);
-		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON], true);
+		modelStack.Scale(2.5, 1, 1);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_STRIPEWALL], true);
 		modelStack.PopMatrix();
-
-		modelStack.PushMatrix();
-		modelStack.Translate(685.5f, 30.5f + (10 * i), -30.0f);
-		modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
-		modelStack.Scale(20, 20, 20);
-		MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON]->material = Material::Sillicon(GREEN);
-		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON], true);
-		modelStack.PopMatrix();
-
-		modelStack.PushMatrix();
-		modelStack.Translate(685.5f, 30.5f + (10 * i), -40.0f);
-		modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
-		modelStack.Scale(20, 20, 20);
-		MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON]->material = Material::Sillicon(GREY);
-		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON], true);
-		modelStack.PopMatrix();
-
-		modelStack.PushMatrix();
-		modelStack.Translate(685.5f, 30.5f + (10 * i), -50.0f);
-		modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
-		modelStack.Scale(20, 20, 20);
-		MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON]->material = Material::Sillicon(BRIGHTBLUE);
-		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON], true);
-		modelStack.PopMatrix();
-
 	}
-	
-	for (int i = 0; i > -3; i--)
-	{
-		modelStack.PushMatrix();
-		modelStack.Translate(685.5f, 30.5f + (10 * i), 0.0f);
-		modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
-		modelStack.Scale(20, 20, 20);
-		MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON]->material = Material::Sillicon(RED);
-		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON], true);
-		modelStack.PopMatrix();
-		modelStack.PushMatrix();
-		modelStack.Translate(685.5f, 30.5f + (10 * i), 10.0f);
-		modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
-		modelStack.Scale(20, 20, 20);
-		MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON]->material = Material::Sillicon(YELLOW);
-
-		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON], true);
-		modelStack.PopMatrix();
-
-		modelStack.PushMatrix();
-		modelStack.Translate(685.5f, 30.5f + (10 * i), 20.0f);
-		modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
-		modelStack.Scale(20, 20, 20);
-		MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON]->material = Material::Sillicon(BLUE);
-		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON], true);
-		modelStack.PopMatrix();
-
-		modelStack.PushMatrix();
-		modelStack.Translate(685.5f, 30.5f + (10 * i), 30.0f);
-		modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
-		modelStack.Scale(20, 20, 20);
-		MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON]->material = Material::Sillicon(GREEN);
-		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON], true);
-		modelStack.PopMatrix();
-
-		modelStack.PushMatrix();
-		modelStack.Translate(685.5f, 30.5f + (10 * i), 40.0f);
-		modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
-		modelStack.Scale(20, 20, 20);
-		MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON]->material = Material::Sillicon(GREY);
-		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON], true);
-		modelStack.PopMatrix();
-
-		modelStack.PushMatrix();
-		modelStack.Translate(685.5f, 30.5f + (10 * i), 50.0f);
-		modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
-		modelStack.Scale(20, 20, 20);
-		MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON]->material = Material::Sillicon(BRIGHTBLUE);
-		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON], true);
-		modelStack.PopMatrix();
-
-
-		modelStack.PushMatrix();
-		modelStack.Translate(685.5f, 30.5f + (10 * i), -10.0f);
-		modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
-		modelStack.Scale(20, 20, 20);
-		MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON]->material = Material::Sillicon(YELLOW);
-
-		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON], true);
-		modelStack.PopMatrix();
-
-		modelStack.PushMatrix();
-		modelStack.Translate(685.5f, 30.5f + (10 * i), -20.0f);
-		modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
-		modelStack.Scale(20, 20, 20);
-		MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON]->material = Material::Sillicon(BLUE);
-		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON], true);
-		modelStack.PopMatrix();
-
-		modelStack.PushMatrix();
-		modelStack.Translate(685.5f, 30.5f + (10 * i), -30.0f);
-		modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
-		modelStack.Scale(20, 20, 20);
-		MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON]->material = Material::Sillicon(GREEN);
-		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON], true);
-		modelStack.PopMatrix();
-
-		modelStack.PushMatrix();
-		modelStack.Translate(685.5f, 30.5f + (10 * i), -40.0f);
-		modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
-		modelStack.Scale(20, 20, 20);
-		MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON]->material = Material::Sillicon(GREY);
-		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON], true);
-		modelStack.PopMatrix();
-
-		modelStack.PushMatrix();
-		modelStack.Translate(685.5f, 30.5f + (10 * i), -50.0f);
-		modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
-		modelStack.Scale(20, 20, 20);
-		MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON]->material = Material::Sillicon(BRIGHTBLUE);
-		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_BALLOON], true);
-		modelStack.PopMatrix();
-
-	}
-
-	modelStack.PushMatrix();
-	modelStack.Translate(650.5f, 3.5f, 120.0f);
-	modelStack.Scale(2, 1, 1);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_STRIPEWALL], true);
-	modelStack.PopMatrix();
-
-	modelStack.PushMatrix();
-	modelStack.Translate(650.5f, 3.5f, -115.0f);
-	modelStack.Scale(2.2, 1, 1);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_STRIPEWALL], true);
-	modelStack.PopMatrix();
-
-	modelStack.PushMatrix();
-	modelStack.Translate(610.5f, 3.5f, 0.0f);
-	modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
-	modelStack.Scale(2.5, 1, 1);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_STRIPEWALL], true);
-	modelStack.PopMatrix();
-
-	modelStack.PushMatrix();
-	modelStack.Translate(610.5f, 3.5f, 70.0f);
-	modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
-	modelStack.Scale(2.5, 1, 1);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_STRIPEWALL], true);
-	modelStack.PopMatrix();
-
-	modelStack.PushMatrix();
-	modelStack.Translate(610.5f, 3.5f, -70.0f);
-	modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
-	modelStack.Scale(2.5, 1, 1);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_STRIPEWALL], true);
-	modelStack.PopMatrix();
 
 	//ring toss
 
-	modelStack.PushMatrix();
-	modelStack.Translate(512.5f, 0.5f, 400.0f);
-	modelStack.Rotate(-90.0f, 0.0f, 1.0f, 0.0f);
-	modelStack.Scale(7, 7, 20);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CANTENT], true);
-	modelStack.PushMatrix();
-	//modelStack.Translate(-512.5f, 0.5f, 405.0f);
-	//modelStack.Rotate(180.0f, 0.0f, 1.0f, 0.0f);
-	//modelStack.Scale(20, 7, 6);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CANTENTROOF], true);
-	modelStack.PopMatrix();
-	modelStack.PopMatrix();
+	{
+		modelStack.PushMatrix();
+		modelStack.Translate(512.5f, 0.5f, 400.0f);
+		modelStack.Rotate(-90.0f, 0.0f, 1.0f, 0.0f);
+		modelStack.Scale(7, 7, 20);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CANTENT], true);
+		modelStack.PushMatrix();
+		//modelStack.Translate(-512.5f, 0.5f, 405.0f);
+		//modelStack.Rotate(180.0f, 0.0f, 1.0f, 0.0f);
+		//modelStack.Scale(20, 7, 6);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CANTENTROOF], true);
+		modelStack.PopMatrix();
+		modelStack.PopMatrix();
 
-	modelStack.PushMatrix();
-	modelStack.Translate(602.5f, 0.5f, 400.0f);
-	modelStack.Rotate(-90.0f, 0.0f, 1.0f, 0.0f);
-	modelStack.Scale(0.5, 0.5, 0.5);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_BOTTLES], true);
+		modelStack.PushMatrix();
+		modelStack.Translate(602.5f, 0.5f, 400.0f);
+		modelStack.Rotate(-90.0f, 0.0f, 1.0f, 0.0f);
+		modelStack.Scale(0.5, 0.5, 0.5);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_BOTTLES], true);
 
-	modelStack.PushMatrix();
-	//modelStack.Translate(610.5f, 3.5f, -70.0f);
-	//modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
-	//modelStack.Scale(2.5, 1, 1);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_RACK], true);
-	modelStack.PopMatrix();
+		modelStack.PushMatrix();
+		//modelStack.Translate(610.5f, 3.5f, -70.0f);
+		//modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+		//modelStack.Scale(2.5, 1, 1);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_RACK], true);
+		modelStack.PopMatrix();
 
-	modelStack.PopMatrix();
+		modelStack.PopMatrix();
 
-	modelStack.PushMatrix();
-	modelStack.Translate(602.5f, 0.5f, 375.0f);
-	modelStack.Rotate(-90.0f, 0.0f, 1.0f, 0.0f);
-	modelStack.Scale(0.5, 0.5, 0.5);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_BOTTLES], true);
-	modelStack.PushMatrix();
-	//modelStack.Translate(610.5f, 3.5f, -70.0f);
-	//modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
-	//modelStack.Scale(2.5, 1, 1);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_RACK], true);
-	modelStack.PopMatrix();
-	modelStack.PopMatrix();
+		modelStack.PushMatrix();
+		modelStack.Translate(602.5f, 0.5f, 375.0f);
+		modelStack.Rotate(-90.0f, 0.0f, 1.0f, 0.0f);
+		modelStack.Scale(0.5, 0.5, 0.5);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_BOTTLES], true);
+		modelStack.PushMatrix();
+		//modelStack.Translate(610.5f, 3.5f, -70.0f);
+		//modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+		//modelStack.Scale(2.5, 1, 1);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_RACK], true);
+		modelStack.PopMatrix();
+		modelStack.PopMatrix();
 
-	modelStack.PushMatrix();
-	modelStack.Translate(602.5f, 0.5f, 425.0f);
-	modelStack.Rotate(-90.0f, 0.0f, 1.0f, 0.0f);
-	modelStack.Scale(0.5, 0.5, 0.5);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_BOTTLES], true);
-	modelStack.PushMatrix();
-	//modelStack.Translate(610.5f, 3.5f, -70.0f);
-	//modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
-	//modelStack.Scale(2.5, 1, 1);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_RACK], true);
-	modelStack.PopMatrix();
-	modelStack.PopMatrix();
+		modelStack.PushMatrix();
+		modelStack.Translate(602.5f, 0.5f, 425.0f);
+		modelStack.Rotate(-90.0f, 0.0f, 1.0f, 0.0f);
+		modelStack.Scale(0.5, 0.5, 0.5);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_BOTTLES], true);
+		modelStack.PushMatrix();
+		//modelStack.Translate(610.5f, 3.5f, -70.0f);
+		//modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+		//modelStack.Scale(2.5, 1, 1);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_RACK], true);
+		modelStack.PopMatrix();
+		modelStack.PopMatrix();
 
-	modelStack.PushMatrix();
-	modelStack.Translate(512.5f, 0.5f, 400.0f);
-	modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
-	modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
-	modelStack.Scale(2., 7, 1);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_STRIPEWALL], true);
-	modelStack.PopMatrix();
+		modelStack.PushMatrix();
+		modelStack.Translate(512.5f, 0.5f, 400.0f);
+		modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+		modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
+		modelStack.Scale(2., 7, 1);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_STRIPEWALL], true);
+		modelStack.PopMatrix();
 
-	modelStack.PushMatrix();
-	modelStack.Translate(402.5f, 0.5f, 402.0f);
-	modelStack.Rotate(-90.0f, 0.0f, 1.0f, 0.0f);
-	//modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
-	modelStack.Scale(3.5, 1, 1);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_COUNTER], true);
-	modelStack.PopMatrix();
+		modelStack.PushMatrix();
+		modelStack.Translate(402.5f, 0.5f, 402.0f);
+		modelStack.Rotate(-90.0f, 0.0f, 1.0f, 0.0f);
+		//modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
+		modelStack.Scale(3.5, 1, 1);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_COUNTER], true);
+		modelStack.PopMatrix();
 
-	modelStack.PushMatrix();
-	modelStack.Translate(402.5f, 20.5f, 430.0f);
-	//modelStack.Rotate(-130.0f, 0.0f, 1.0f, 0.0f);
-	//modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
-	//modelStack.Scale(2., 7, 1);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_RING], true);
-	modelStack.PopMatrix();
+		modelStack.PushMatrix();
+		modelStack.Translate(402.5f, 20.5f, 430.0f);
+		//modelStack.Rotate(-130.0f, 0.0f, 1.0f, 0.0f);
+		//modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
+		//modelStack.Scale(2., 7, 1);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_RING], true);
+		modelStack.PopMatrix();
 
-	modelStack.PushMatrix();
-	modelStack.Translate(402.5f, 20.5f, 400.0f);
-	//modelStack.Rotate(-130.0f, 0.0f, 1.0f, 0.0f);
-	//modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
-	//modelStack.Scale(2., 7, 1);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_RING], true);
-	modelStack.PopMatrix();
+		modelStack.PushMatrix();
+		modelStack.Translate(402.5f, 20.5f, 400.0f);
+		//modelStack.Rotate(-130.0f, 0.0f, 1.0f, 0.0f);
+		//modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
+		//modelStack.Scale(2., 7, 1);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_RING], true);
+		modelStack.PopMatrix();
 
-	modelStack.PushMatrix();
-	modelStack.Translate(402.5f, 20.5f, 370.0f);
-	//modelStack.Rotate(-130.0f, 0.0f, 1.0f, 0.0f);
-	//modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
-	//modelStack.Scale(2., 7, 1);
-	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_RING], true);
-	modelStack.PopMatrix();
+		modelStack.PushMatrix();
+		modelStack.Translate(402.5f, 20.5f, 370.0f);
+		//modelStack.Rotate(-130.0f, 0.0f, 1.0f, 0.0f);
+		//modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
+		//modelStack.Scale(2., 7, 1);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_RING], true);
+		modelStack.PopMatrix();
+}
 
 	//shooting
 	//modelStack.PushMatrix();
@@ -1386,11 +1448,36 @@ void carnivalroaming::Render()
 	RenderMesh(meshList[GEO_CUBE]);
 	modelStack.PopMatrix();
 
-
-	
-
+	if (CheckCollisionWith(objInscene[PLAYERBOX]->getObject(), objInscene[BOX13]->getObject()) and KeyboardController::GetInstance()->IsKeyDown('E'))
+	{
+		//std::cout << "Colliding with Ticket booth" << std::endl;
+		RenderTextOnScreen(meshList[GEO_TEXT], "2984 points for a ticket! (N to exchange)", YELLOW, 40, 100, 300);
+		RenderTextOnScreen(meshList[GEO_TEXT], std::to_string(GameManager::GetInstance()->GetPoints()) + " / 2984", YELLOW, 40, 550, 150);
+	}
+	if (CheckCollisionWith(objInscene[PLAYERBOX]->getObject(), objInscene[BOX13]->getObject()) and KeyboardController::GetInstance()->IsKeyDown('N') and (GameManager::GetInstance()->GetPoints() >= 2984))
+	{	
+		GameManager::GetInstance()->SetPoints(GameManager::GetInstance()->GetPoints() - 2984);
+		CanEnterCircus = true;
+	}
+	if (timer <= 5.0f and CanEnterCircus == true)
+		{
+			RenderMeshOnScreen(meshList[GEO_TICKET], 600, 350, 650, 400, glm::vec3(0, 1, 0));
+			std::cout << timer << std::endl;
+		}
+	RenderTextOnScreen(meshList[GEO_TEXT], "Points:" + std::to_string(GameManager::GetInstance()->GetPoints()), YELLOW, 40, 900, 600);
 
 	GameObjectManager::GetInstance()->RenderAll(*this);
+
+	// Render Energy UI:
+	{
+		RenderMeshOnScreen(MeshManager::GetInstance()->meshList[MeshManager::GEO_ENERGYFRAME], 175, 53, 288, 53);
+
+		float maxWidth = 275;
+		float barWidth = energy / maxEnergy * maxWidth;
+		float posX = 175 - (maxWidth / 2) + (barWidth / 2);
+
+		RenderMeshOnScreen(MeshManager::GetInstance()->meshList[MeshManager::GEO_ENERGYBAR], posX, 53, barWidth, 39); 
+	}
 
 #ifdef DRAW_HITBOX
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -1440,7 +1527,7 @@ void carnivalroaming::Exit()
 {
 	GameManager::GetInstance()->SetPlayerPosition(mainCamera.m_transform.m_position.x, mainCamera.m_transform.m_position.y, mainCamera.m_transform.m_position.z);
 	GameManager::GetInstance()->SetCameraTarget(mainCamera.target.x, mainCamera.target.y, mainCamera.target.z);
-	//GameManager::GetInstance()->SetPoints();
+	GameManager::GetInstance()->SetPoints(3000);
 	
 	// Cleanup VBO here
 	for (int i = 0; i < NUM_GEOMETRY; ++i) { if (meshList[i]) delete meshList[i]; }
