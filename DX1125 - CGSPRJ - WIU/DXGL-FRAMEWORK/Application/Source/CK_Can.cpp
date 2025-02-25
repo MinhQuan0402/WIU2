@@ -1,6 +1,8 @@
 #include "CK_Can.h"
 #include "GameObjectManager.h"
 #include "SceneCanKnockdown.h"
+#include "RigidBody.h"
+#include "MeshManager.h"
 
 CK_Can::CK_Can() {
 	GameObjectManager::GetInstance()->addItem(this);
@@ -21,5 +23,5 @@ void CK_Can::Update()
 
 void CK_Can::Render(Scene& scene)
 {
-	scene.RenderRigidMesh(scene.meshList[SceneCanKnockdown::GEO_CAN], scene.enableLight, m_transform, rb);
+	scene.RenderRigidMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CK_CAN], scene.enableLight, m_transform, rb);
 }

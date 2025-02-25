@@ -26,6 +26,7 @@
 #include "GameManager.h"
 #include "SceneManager.h"
 #include "carnivalroaming.h"
+#include "MeshManager.h"
 
 ScenePlinko::ScenePlinko() : numLight{ 2 }, ballZ{ 0.0f }, currentBallIndex{ BALL1 }, plinkoScore{ 0 }
 {
@@ -113,16 +114,7 @@ void ScenePlinko::Init()
 	meshList[GEO_PLANE]->material.kShininess = 1;
 
 	meshList[GEO_CYLINDER] = MeshBuilder::GenerateCylinder("Cylinder", WHITE, 100, 1.f, 2.f);
-	meshList[GEO_PLINKO] = MeshBuilder::GenerateOBJ("Plinko", "Models//plinko.obj");
-	meshList[GEO_PLINKO]->material.kDiffuse = WHITE;
-	meshList[GEO_PLINKO]->material.kAmbient = GREY;
-	meshList[GEO_PLINKO]->material.kSpecular = glm::vec3(0.1, 0.1, 0.1);
-	meshList[GEO_PLINKO]->material.kShininess = 1;
-
-	meshList[GEO_PLINKO]->textureID = LoadPNG("Images//Atlas_1_baseColor.png");
-	meshList[GEO_BOOTHROOF] = MeshBuilder::GenerateOBJMTL("BoothRoof", "Models//Plinko_BoothRoof.obj", "Models//Plinko_BoothRoof.mtl");
-	meshList[GEO_BOOTHROOF]->textureID = LoadPNG("Images//Plinko_BoothRoof.png");
-	meshList[GEO_BOOTHGUARDS] = MeshBuilder::GenerateOBJMTL("BoothGuards", "Models//Plinko_BoothGuards.obj", "Models//Plinko_BoothGuards.mtl");
+	
 	mainCamera.Init(glm::vec3(7, 4, 0), glm::vec3(0, 4, 0), VECTOR3_UP);
 	
 	mainCamera.sensitivity = 15.f;
@@ -348,16 +340,16 @@ void ScenePlinko::Render()
 
 	modelStack.PushMatrix();
 	modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
-	RenderMesh(meshList[GEO_BOOTHROOF], enableLight);
-	RenderMesh(meshList[GEO_BOOTHGUARDS], enableLight);
-	meshList[GEO_BOOTHROOF]->material.kAmbient = glm::vec3(0.1f, 0.1f, 0.1f);
-	meshList[GEO_BOOTHROOF]->material.kDiffuse = glm::vec3(0.4f, 0.4f, 0.4f);
-	meshList[GEO_BOOTHROOF]->material.kSpecular = glm::vec3(0.1f, 0.1f, 0.1f);
-	meshList[GEO_BOOTHROOF]->material.kShininess = 2.0f;
-	meshList[GEO_BOOTHGUARDS]->material.kAmbient = glm::vec3(0.1f, 0.1f, 0.1f);
-	meshList[GEO_BOOTHGUARDS]->material.kDiffuse = glm::vec3(0.4f, 0.4f, 0.4f);
-	meshList[GEO_BOOTHGUARDS]->material.kSpecular = glm::vec3(0.1f, 0.1f, 0.1f);
-	meshList[GEO_BOOTHGUARDS]->material.kShininess = 2.0f;
+	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_PLINKO_BOOTHROOF], enableLight);
+	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_PLINKO_BOOTHGUARDS], enableLight);
+	MeshManager::GetInstance()->meshList[MeshManager::GEO_PLINKO_BOOTHROOF]->material.kAmbient = glm::vec3(0.1f, 0.1f, 0.1f);
+	MeshManager::GetInstance()->meshList[MeshManager::GEO_PLINKO_BOOTHROOF]->material.kDiffuse = glm::vec3(0.4f, 0.4f, 0.4f);
+	MeshManager::GetInstance()->meshList[MeshManager::GEO_PLINKO_BOOTHROOF]->material.kSpecular = glm::vec3(0.1f, 0.1f, 0.1f);
+	MeshManager::GetInstance()->meshList[MeshManager::GEO_PLINKO_BOOTHROOF]->material.kShininess = 2.0f;
+	MeshManager::GetInstance()->meshList[MeshManager::GEO_PLINKO_BOOTHGUARDS]->material.kAmbient = glm::vec3(0.1f, 0.1f, 0.1f);
+	MeshManager::GetInstance()->meshList[MeshManager::GEO_PLINKO_BOOTHGUARDS]->material.kDiffuse = glm::vec3(0.4f, 0.4f, 0.4f);
+	MeshManager::GetInstance()->meshList[MeshManager::GEO_PLINKO_BOOTHGUARDS]->material.kSpecular = glm::vec3(0.1f, 0.1f, 0.1f);
+	MeshManager::GetInstance()->meshList[MeshManager::GEO_PLINKO_BOOTHGUARDS]->material.kShininess = 2.0f;
 	modelStack.PopMatrix();
 
 	RenderTextOnScreen(meshList[GEO_TEXT], "Score:" + std::to_string(plinkoScore), RED, 40, 980, 600);

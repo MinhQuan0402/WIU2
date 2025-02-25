@@ -1,6 +1,7 @@
 #include "CK_BoothRoof.h"
 #include "GameObjectManager.h"
 #include "SceneCanKnockdown.h"
+#include "RigidBody.h"
 
 CK_BoothRoof::CK_BoothRoof() {
 	

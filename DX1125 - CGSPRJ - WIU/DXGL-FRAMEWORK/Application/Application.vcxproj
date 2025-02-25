@@ -153,6 +153,14 @@
     <ClCompile Include="Source\CarnivalHitBoxes.cpp" />
     <ClCompile Include="Source\CircusTent.cpp" />
     <ClCompile Include="Source\carnivalroaming.cpp" />
+    <ClCompile Include="Source\CK_Ball.cpp" />
+    <ClCompile Include="Source\CK_BoothRoof.cpp" />
+    <ClCompile Include="Source\CK_BoothWall.cpp" />
+    <ClCompile Include="Source\CK_Can.cpp" />
+    <ClCompile Include="Source\CK_Counter.cpp" />
+    <ClCompile Include="Source\CK_Counter2.cpp" />
+    <ClCompile Include="Source\CK_Floor.cpp" />
+    <ClCompile Include="Source\CK_Table.cpp" />
     <ClCompile Include="Source\ColliderManager.cpp" />
     <ClCompile Include="Source\CollisionManager.cpp" />
     <ClCompile Include="Source\CQuad.cpp" />
@@ -168,6 +176,7 @@
     <ClCompile Include="Source\Material.cpp" />
     <ClCompile Include="Source\Mesh.cpp" />
     <ClCompile Include="Source\MeshBuilder.cpp" />
+    <ClCompile Include="Source\MeshManager.cpp" />
     <ClCompile Include="Source\PlayerHitBox.cpp" />
     <ClCompile Include="Source\PlinkoBall.cpp" />
     <ClCompile Include="Source\PlinkoBoard.cpp" />
@@ -177,6 +186,7 @@
     <ClCompile Include="Source\PlinkoWall.cpp" />
     <ClCompile Include="Source\RigidBody.cpp" />
     <ClCompile Include="Source\Scene.cpp" />
+    <ClCompile Include="Source\SceneCanKnockdown.cpp" />
     <ClCompile Include="Source\SceneGame.cpp" />
     <ClCompile Include="Source\SceneManager.cpp" />
     <ClCompile Include="Source\ScenePlinko.cpp" />
@@ -192,6 +202,14 @@
     <ClInclude Include="Source\CarnivalHitBoxes.h" />
     <ClInclude Include="Source\CircusTent.h" />
     <ClInclude Include="Source\carnivalroaming.h" />
+    <ClInclude Include="Source\CK_Ball.h" />
+    <ClInclude Include="Source\CK_BoothRoof.h" />
+    <ClInclude Include="Source\CK_BoothWall.h" />
+    <ClInclude Include="Source\CK_Can.h" />
+    <ClInclude Include="Source\CK_Counter.h" />
+    <ClInclude Include="Source\CK_Counter2.h" />
+    <ClInclude Include="Source\CK_Floor.h" />
+    <ClInclude Include="Source\CK_Table.h" />
     <ClInclude Include="Source\ColliderManager.h" />
     <ClInclude Include="Source\CollisionManager.h" />
     <ClInclude Include="Source\FPCamera.h" />
@@ -208,6 +226,7 @@
     <ClInclude Include="Source\Material.h" />
     <ClInclude Include="Source\Mesh.h" />
     <ClInclude Include="Source\MeshBuilder.h" />
+    <ClInclude Include="Source\MeshManager.h" />
     <ClInclude Include="Source\PlayerHitBox.h" />
     <ClInclude Include="Source\PlinkoBall.h" />
     <ClInclude Include="Source\PlinkoBoard.h" />
@@ -217,6 +236,7 @@
     <ClInclude Include="Source\PlinkoWall.h" />
     <ClInclude Include="Source\RigidBody.h" />
     <ClInclude Include="Source\Scene.h" />
+    <ClInclude Include="Source\SceneCanKnockdown.h" />
     <ClInclude Include="Source\SceneGame.h" />
     <ClInclude Include="Source\SceneManager.h" />
     <ClInclude Include="Source\ScenePlinko.h" />

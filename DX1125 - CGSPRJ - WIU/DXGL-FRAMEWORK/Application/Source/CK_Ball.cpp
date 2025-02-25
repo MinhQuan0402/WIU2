@@ -1,6 +1,8 @@
 #include "CK_Ball.h"
 #include "GameObjectManager.h"
 #include "SceneCanKnockdown.h"
+#include "RigidBody.h"
+#include "MeshManager.h"
 
 CK_Ball::CK_Ball() {
 	GameObjectManager::GetInstance()->addItem(this);
@@ -21,5 +23,5 @@ void CK_Ball::Update()
 
 void CK_Ball::Render(Scene& scene)
 {
-	scene.RenderRigidMesh(scene.meshList[SceneCanKnockdown::GEO_BALL], scene.enableLight, m_transform, rb);
+	scene.RenderRigidMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_BALL], scene.enableLight, m_transform, rb);
 }

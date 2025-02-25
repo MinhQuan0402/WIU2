@@ -5,7 +5,7 @@
 #include "Mesh.h"
 #include "Transform.h"
 #include "GameObject.h"
-#include "RigidBody.h"
+
 
 class SceneCanKnockdown : public Scene
 {
@@ -29,16 +29,7 @@ public:
 		GEO_CUBE,
 		GEO_CYLINDER,
 
-		GEO_POWERUI_FRAME,
-		GEO_POWERUI_BAR,
-
-		GEO_BALL,
-		GEO_TABLE,
-		GEO_CAN,
-		GEO_BOOTHROOF,
-		GEO_BOOTHGUARDS,
-		GEO_COUNTER,
-		GEO_LIGHTBULB,
+		
 
 		NUM_GEOMETRY
 	};

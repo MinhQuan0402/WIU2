@@ -29,6 +29,10 @@
 #include "CK_BoothRoof.h"
 #include "SceneManager.h"
 
+#include "GameManager.h"
+#include "carnivalroaming.h"
+#include "RigidBody.h"
+#include "MeshManager.h"
 SceneCanKnockdown::SceneCanKnockdown() : numLight{ 2 }
 {
 	meshList.resize(NUM_GEOMETRY);
@@ -125,34 +129,7 @@ void SceneCanKnockdown::Init()
 	meshList[GEO_PLANE]->material = Material::Concrete(GREY);
 
 
-	meshList[GEO_POWERUI_FRAME] = MeshBuilder::GenerateQuad("PowerUi_Frame", glm::vec3(1, 1, 1), 1);
-	meshList[GEO_POWERUI_FRAME]->textureID = LoadPNG("Images//CK_PowerUi_Frame.png");
-	meshList[GEO_POWERUI_BAR] = MeshBuilder::GenerateQuad("PowerUi_Bar", glm::vec3(1, 1, 0), 1);
 
-	meshList[GEO_BALL] = MeshBuilder::GenerateSphere("Ball", WHITE, 1.0f, 100, 100);
-	meshList[GEO_BALL]->material = Material::Plastic(BLUE);
-
-	meshList[GEO_TABLE] = MeshBuilder::GenerateOBJMTL("Table", "Models//CK_Table.obj", "Models//CK_Table.mtl");
-	meshList[GEO_TABLE]->textureID = LoadPNG("Images//CK_Table.png");
-	meshList[GEO_TABLE]->material = Material::Wood(WHITE);
-
-	meshList[GEO_CAN] = MeshBuilder::GenerateOBJMTL("Can", "Models//CK_Can.obj", "Models//CK_Can.mtl");
-	meshList[GEO_CAN]->textureID = LoadPNG("Images//CK_Can.png");
-	meshList[GEO_CAN]->material = Material::Wood(WHITE);
-
-	meshList[GEO_BOOTHROOF] = MeshBuilder::GenerateOBJMTL("BoothRoof", "Models//CK_BoothRoof.obj", "Models//CK_BoothRoof.mtl");
-	meshList[GEO_BOOTHROOF]->textureID = LoadPNG("Images//CK_BoothRoof.png");
-	meshList[GEO_BOOTHROOF]->material = Material::Wood(WHITE);
-
-	meshList[GEO_BOOTHGUARDS] = MeshBuilder::GenerateOBJMTL("BoothGuards", "Models//CK_BoothGuards.obj", "Models//CK_BoothGuards.mtl");
-	meshList[GEO_BOOTHGUARDS]->material = Material::Metal(GREY);
-
-	meshList[GEO_COUNTER] = MeshBuilder::GenerateCube("Counter", glm::vec3(0.459, 0.302, 0), 1);
-	meshList[GEO_COUNTER]->textureID = LoadPNG("Images//CK_Wood.png");
-	meshList[GEO_COUNTER]->material = Material::Wood(glm::vec3(0.459, 0.302, 0));
-
-	meshList[GEO_LIGHTBULB] = MeshBuilder::GenerateOBJMTL("Lamp", "Models//CK_LightBulb.obj", "Models//CK_LightBulb.mtl");
-	meshList[GEO_LIGHTBULB]->material = Material::Wood(WHITE);
 
 	mainCamera.Init(glm::vec3(0, 4, 7.5), glm::vec3(0, 4, 0), VECTOR3_UP);
 	mainCamera.sensitivity = 50.0f;
@@ -350,6 +327,8 @@ void SceneCanKnockdown::Update()
 		if (cansFallen == 6) {
 			std::cout << "Game complete" << std::endl;
 			gameComplete = true;
+			SceneManager::GetInstance()->PushState(new carnivalroaming);
+			return;
 		}
 	}
 
@@ -368,8 +347,10 @@ void SceneCanKnockdown::LateUpdate()
 
 		if (attemptsLeft < 0 && gameComplete == false) {
 			SceneManager::GetInstance()->PopState();
-			SceneManager::GetInstance()->PushState(new SceneCanKnockdown);
+			SceneManager::GetInstance()->PushState(new carnivalroaming);
+			return;
 		}
+		
 	}
 
 	float powerIncreaseSpeed = maxPower;
@@ -497,8 +478,8 @@ void SceneCanKnockdown::Render()
 	{
 		modelStack.PushMatrix();
 		modelStack.Translate(0,0,0);
-		RenderMesh(meshList[GEO_BOOTHROOF], enableLight);
-		RenderMesh(meshList[GEO_BOOTHGUARDS], enableLight);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CK_BOOTHROOF], enableLight);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CK_BOOTHGUARDS], enableLight);
 		modelStack.PopMatrix();
 	}
 
@@ -508,7 +489,7 @@ void SceneCanKnockdown::Render()
 		modelStack.Translate(0.102714, 11.9211, 0.0587656);
 		modelStack.Rotate(180, 1, 0, 0);
 		modelStack.Scale(7, 7, 7);
-		RenderMesh(meshList[GEO_LIGHTBULB], enableLight);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_LIGHTBULB], enableLight);
 		modelStack.PopMatrix();
 	}
 
@@ -518,7 +499,7 @@ void SceneCanKnockdown::Render()
 			modelStack.PushMatrix();
 			modelStack.Translate(0 - objInScene[BALL]->m_transform.m_scale.x * 2.5 * i, 2.8615, 4.83625);
 			modelStack.Scale(objInScene[BALL]->m_transform.m_scale.x, objInScene[BALL]->m_transform.m_scale.y, objInScene[BALL]->m_transform.m_scale.z);
-			RenderMesh(meshList[GEO_BALL], enableLight);
+			RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_BALL], enableLight);
 			modelStack.PopMatrix();
 		}
 		
@@ -530,57 +511,59 @@ void SceneCanKnockdown::Render()
 	// Render ui:
 	{
 		if (power > 5) {
-			RenderMeshOnScreen(meshList[GEO_POWERUI_FRAME], 0.5, 0.3, 100 * 1.25, 25 * 1.25, glm::vec2(0, 0));
-			RenderMeshOnScreen(meshList[GEO_POWERUI_BAR], 0.425, 0.3, power / maxPower * 120, 25, glm::vec2(-0.5, 0));
+			RenderMeshOnScreen(MeshManager::GetInstance()->meshList[MeshManager::GEO_POWERUI_FRAME], 0.5, 0.3, 100 * 1.25, 25 * 1.25, glm::vec2(0, 0));
+			RenderMeshOnScreen(MeshManager::GetInstance()->meshList[MeshManager::GEO_POWERUI_BAR], 0.425, 0.3, power / maxPower * 120, 25, glm::vec2(-0.5, 0));
 		}
 	}
 
-#ifdef DRAW_HITBOX
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	for (btCollisionShape* shape : ColliderManager::GetInstance()->colliders)
-	{
-		modelStack.PushMatrix();
-		modelStack.LoadIdentity();
-		GameObject* userGO = static_cast<GameObject*>(shape->getUserPointer());
-		modelStack.LoadMatrix(GetTransformMatrix(userGO->rb));
-		if (shape->getShapeType() == SPHERE_SHAPE_PROXYTYPE)
-		{
-			SphereCollider* sphereCollider = static_cast<SphereCollider*>(shape);
-			float size = sphereCollider->GetRadius();
-			modelStack.Scale(size, size, size);
-			RenderMesh(hitboxMeshList[HITBOX_SPHERE]);
-		}
-		else if (shape->getShapeType() == BOX_SHAPE_PROXYTYPE)
-		{
-			BoxCollider* boxCollider = static_cast<BoxCollider*>(shape);
-			float width, height, depth;
-			boxCollider->GetDimension(width, height, depth);
-			modelStack.Scale(width, height, depth);
-			RenderMesh(hitboxMeshList[HITBOX_BOX]);
-		}
-		else if (shape->getShapeType() == CYLINDER_SHAPE_PROXYTYPE)
-		{
-			CylinderCollider* cylinderCollider = static_cast<CylinderCollider*>(shape);
-			float rad, height;
-			cylinderCollider->GetDimension(rad, height);
-			modelStack.Scale(rad / 2.0f, height, rad / 2.0f);
-			RenderMesh(hitboxMeshList[HITBOX_CYLINDER]);
-		}
-		else if (shape->getShapeType() == STATIC_PLANE_PROXYTYPE)
-		{
-			modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
-			RenderMesh(hitboxMeshList[HITBOX_GROUND]);
-		}
-		modelStack.PopMatrix();
-	}
-
-	if (isFillMode)
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-#endif
+//#ifdef DRAW_HITBOX
+//	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+//	for (btCollisionShape* shape : ColliderManager::GetInstance()->colliders)
+//	{
+//		modelStack.PushMatrix();
+//		modelStack.LoadIdentity();
+//		GameObject* userGO = static_cast<GameObject*>(shape->getUserPointer());
+//		modelStack.LoadMatrix(GetTransformMatrix(userGO->rb));
+//		if (shape->getShapeType() == SPHERE_SHAPE_PROXYTYPE)
+//		{
+//			SphereCollider* sphereCollider = static_cast<SphereCollider*>(shape);
+//			float size = sphereCollider->GetRadius();
+//			modelStack.Scale(size, size, size);
+//			RenderMesh(hitboxMeshList[HITBOX_SPHERE]);
+//		}
+//		else if (shape->getShapeType() == BOX_SHAPE_PROXYTYPE)
+//		{
+//			BoxCollider* boxCollider = static_cast<BoxCollider*>(shape);
+//			float width, height, depth;
+//			boxCollider->GetDimension(width, height, depth);
+//			modelStack.Scale(width, height, depth);
+//			RenderMesh(hitboxMeshList[HITBOX_BOX]);
+//		}
+//		else if (shape->getShapeType() == CYLINDER_SHAPE_PROXYTYPE)
+//		{
+//			CylinderCollider* cylinderCollider = static_cast<CylinderCollider*>(shape);
+//			float rad, height;
+//			cylinderCollider->GetDimension(rad, height);
+//			modelStack.Scale(rad / 2.0f, height, rad / 2.0f);
+//			RenderMesh(hitboxMeshList[HITBOX_CYLINDER]);
+//		}
+//		else if (shape->getShapeType() == STATIC_PLANE_PROXYTYPE)
+//		{
+//			modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
+//			RenderMesh(hitboxMeshList[HITBOX_GROUND]);
+//		}
+//		modelStack.PopMatrix();
+//	}
+//
+//	if (isFillMode)
+//		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+//#endif
 }
 
 void SceneCanKnockdown::Exit()
 {
+	//GameManager::GetInstance()->SetPoints(GameManager::GetInstance()->GetPoints() + );
+
 	// Cleanup VBO here
 	for (int i = 0; i < NUM_GEOMETRY; ++i) { if (meshList[i]) delete meshList[i]; }
 	meshList.clear();

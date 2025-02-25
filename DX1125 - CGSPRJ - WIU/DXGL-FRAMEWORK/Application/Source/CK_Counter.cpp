@@ -1,6 +1,8 @@
 #include "CK_Counter.h"
 #include "GameObjectManager.h"
 #include "SceneCanKnockdown.h"
+#include "RigidBody.h"
+#include "MeshManager.h"
 
 CK_Counter::CK_Counter() {
 	
@@ -21,5 +23,5 @@ void CK_Counter::Update()
 
 void CK_Counter::Render(Scene& scene)
 {
-	scene.RenderMesh(scene.meshList[SceneCanKnockdown::GEO_COUNTER], scene.enableLight, m_transform);
+	scene.RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CK_COUNTER], scene.enableLight, m_transform);
 }

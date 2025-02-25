@@ -21,12 +21,13 @@
 #include "CollisionManager.h"
 #include "ColliderManager.h"
 #include "GameManager.h"
+#include "MeshManager.h"
 
 GLFWmonitor* primaryMonitor;
 const GLFWvidmode* videoMode;
 GLFWwindow* m_window;		
 const unsigned char FPS = 60; // FPS of this game
-const unsigned int frameTime = 1.0 / FPS; // time for each frame
+const unsigned int frameTime = 1000.0 / FPS; // time for each frame
 constexpr double FIXED_TIME_STEP = 1.0 / 60.0;
 
 int Application::m_consoleHeight = 0;
@@ -150,6 +151,7 @@ void Application::Init()
 void Application::Run()
 {
 	//Main Loop
+	MeshManager::GetInstance()->Init();
 	CollisionManager::GetInstance()->SetUpDynamicWorld(10.0f);
 	SceneManager::GetInstance()->PushState(new carnivalroaming); 
 	Time::fixedDeltaTime = FIXED_TIME_STEP;

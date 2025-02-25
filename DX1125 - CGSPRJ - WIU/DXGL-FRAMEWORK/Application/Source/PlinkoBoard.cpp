@@ -4,6 +4,7 @@
 #include "PlinkoCylinder.h"
 #include "PlinkoWall.h"
 #include "ScenePlinko.h"
+#include "MeshManager.h"
 
 PlinkoBoard::PlinkoBoard()
 {
@@ -146,5 +147,5 @@ void PlinkoBoard::Update()
 
 void PlinkoBoard::Render(Scene& scene)
 {
-	scene.RenderMesh(scene.meshList[ScenePlinko::GEO_PLINKO], true, m_transform);
+	scene.RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_PLINKO], true, m_transform);
 }

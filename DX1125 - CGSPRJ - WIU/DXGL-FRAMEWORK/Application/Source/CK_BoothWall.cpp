@@ -1,6 +1,7 @@
 #include "CK_BoothWall.h"
 #include "GameObjectManager.h"
 #include "SceneCanKnockdown.h"
+#include "RigidBody.h"
 
 CK_BoothWall::CK_BoothWall() {
 	

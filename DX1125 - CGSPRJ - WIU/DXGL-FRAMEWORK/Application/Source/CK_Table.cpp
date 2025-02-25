@@ -1,6 +1,8 @@
 #include "CK_Table.h"
 #include "GameObjectManager.h"
 #include "SceneCanKnockdown.h"
+#include "RigidBody.h"
+#include "MeshManager.h"
 
 CK_Table::CK_Table() 
 {
@@ -22,5 +24,5 @@ void CK_Table::Update()
 
 void CK_Table::Render(Scene& scene)
 {
-	scene.RenderMesh(scene.meshList[SceneCanKnockdown::GEO_TABLE], scene.enableLight, m_transform);
+	scene.RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CK_TABLE], scene.enableLight, m_transform);
 }

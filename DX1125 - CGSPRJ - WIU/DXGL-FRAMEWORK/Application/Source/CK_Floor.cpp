@@ -1,6 +1,7 @@
 #include "CK_Floor.h"
 #include "GameObjectManager.h"
 #include "SceneCanKnockdown.h"
+#include "RigidBody.h"
 
 CK_Floor::CK_Floor() {
 	
