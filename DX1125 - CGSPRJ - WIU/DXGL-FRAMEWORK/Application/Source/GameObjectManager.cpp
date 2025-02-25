@@ -1,5 +1,6 @@
 #include "GameObjectManager.h"
 #include "SceneGame.h"
+#include "ColliderManager.h"
 
 GameObjectManager* GameObjectManager::m_instance = NULL;
 
@@ -164,8 +165,11 @@ void GameObjectManager::addItem(GameObject* obj)
 }
 void GameObjectManager::removeItem(GameObject* obj)
 {
+	btCollisionShape* colliderShape = obj->rb->getCollisionShape();
 	GameObjectManager::GetInstance()->m_allGOs.remove(obj);
 	delete obj;
+	ColliderManager::GetInstance()->RemoveCollider(colliderShape);
+	delete colliderShape;
 }
 bool GameObjectManager::findObjInList(const GameObject& value, int& index)
 {

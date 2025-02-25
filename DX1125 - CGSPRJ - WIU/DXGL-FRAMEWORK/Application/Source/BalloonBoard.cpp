@@ -47,9 +47,9 @@ void BalloonBoard::Update()
 
 void BalloonBoard::Render(Scene& scene)
 {
-	scene.meshList[SceneBalloon::GEO_BALLOONBOARD]->material.kAmbient = glm::vec3(0.6, 0.6, 0.6);
-	scene.meshList[SceneBalloon::GEO_BALLOONBOARD]->material.kDiffuse = glm::vec3(0.7f, 0.7f, 0.7f);
-	scene.meshList[SceneBalloon::GEO_BALLOONBOARD]->material.kSpecular = glm::vec3(0.1f, 0.1f, 0.1f);
-	scene.meshList[SceneBalloon::GEO_BALLOONBOARD]->material.kShininess = 1.0f;
-	scene.RenderMesh(scene.meshList[SceneBalloon::GEO_BALLOONBOARD], true, m_transform);
+	scene.meshList[SceneBalloon::GEO_BP_BALLOONBOARD]->material.kAmbient = glm::vec3(0.6, 0.6, 0.6);
+	scene.meshList[SceneBalloon::GEO_BP_BALLOONBOARD]->material.kDiffuse = glm::vec3(0.7f, 0.7f, 0.7f);
+	scene.meshList[SceneBalloon::GEO_BP_BALLOONBOARD]->material.kSpecular = glm::vec3(0.1f, 0.1f, 0.1f);
+	scene.meshList[SceneBalloon::GEO_BP_BALLOONBOARD]->material.kShininess = 1.0f;
+	scene.RenderMesh(scene.meshList[SceneBalloon::GEO_BP_BALLOONBOARD], true, m_transform);
 }

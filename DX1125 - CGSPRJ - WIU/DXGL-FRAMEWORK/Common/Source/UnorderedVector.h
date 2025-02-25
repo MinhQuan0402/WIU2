@@ -12,13 +12,17 @@ public:
 		T* el = &element;
 		auto it = std::find(this->begin(), this->end(), element);
 
-		T* bck = &std::vector<T>::back();
+		T* bck = &this->back();
 
 		if (it == this->end()) 
 			return;
-		else 
-			*el = std::move(*bck);
+		else
+		{
+			T tmp(std::move(*el));
+			std::replace(this->begin(), this->end(), *el, *bck);
+			*bck = std::move(tmp);
+		}
 
-		std::vector<T>::pop_back();
+		this->pop_back();
 	}
 };

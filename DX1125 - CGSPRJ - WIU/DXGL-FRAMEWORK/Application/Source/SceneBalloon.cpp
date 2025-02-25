@@ -96,16 +96,16 @@ void SceneBalloon::Init()
 	meshList[GEO_CYLINDER] = MeshBuilder::GenerateCylinder("Cylinder", BLUE, 180, 1.0f, 1.0f);
 	meshList[GEO_PLANE] = MeshBuilder::GenerateQuad("Quad", GREY, 1000.0f);
 
-	meshList[GEO_BALLOON] = MeshBuilder::GenerateOBJMTL("Balloon", "Models//balloon.obj", "Models//balloon.mtl");
-	meshList[GEO_BPBOOTHGUARDS] = MeshBuilder::GenerateOBJMTL("BoothGuards", "Models//BP_BoothGuards.obj", "Models//BP_BoothGuards.mtl");
-	meshList[GEO_BPBOOTHROOF] = MeshBuilder::GenerateOBJMTL("BoothRoof", "Models//BP_BoothRoof.obj", "Models//BP_BoothRoof.mtl");
-	meshList[GEO_BPBOOTHROOF]->textureID = LoadPNG("Images//BP_BoothRoof.png");
-	meshList[GEO_BALLOONBOARD] = MeshBuilder::GenerateOBJ("BalloonBoard", "Models//noticeboard.obj");
-	meshList[GEO_BALLOONBOARD]->textureID = LoadPNG("Images//boardimage.png");
-	meshList[GEO_DART] = MeshBuilder::GenerateOBJMTL("Dart", "Models//dart.obj", "Models//dart.mtl");
-	meshList[GEO_POWERUI_FRAME] = MeshBuilder::GenerateQuad("PowerUi_Frame", glm::vec3(1, 1, 1), 1);
-	meshList[GEO_POWERUI_FRAME]->textureID = LoadPNG("Images//CK_PowerUi_Frame.png");
-	meshList[GEO_POWERUI_BAR] = MeshBuilder::GenerateQuad("PowerUi_Bar", glm::vec3(1, 1, 0), 1);
+	meshList[GEO_BP_BALLOON] = MeshBuilder::GenerateOBJMTL("Balloon", "Models//balloon.obj", "Models//balloon.mtl");
+	meshList[GEO_BP_BOOTHGUARDS] = MeshBuilder::GenerateOBJMTL("BoothGuards", "Models//BP_BoothGuards.obj", "Models//BP_BoothGuards.mtl");
+	meshList[GEO_BP_BOOTHROOF] = MeshBuilder::GenerateOBJMTL("BoothRoof", "Models//BP_BoothRoof.obj", "Models//BP_BoothRoof.mtl");
+	meshList[GEO_BP_BOOTHROOF]->textureID = LoadPNG("Images//BP_BoothRoof.png");
+	meshList[GEO_BP_BALLOONBOARD] = MeshBuilder::GenerateOBJ("BalloonBoard", "Models//noticeboard.obj");
+	meshList[GEO_BP_BALLOONBOARD]->textureID = LoadPNG("Images//boardimage.png");
+	meshList[GEO_BP_DART] = MeshBuilder::GenerateOBJMTL("Dart", "Models//dart.obj", "Models//dart.mtl");
+	meshList[GEO_BP_POWERUI_FRAME] = MeshBuilder::GenerateQuad("PowerUi_Frame", glm::vec3(1, 1, 1), 1);
+	meshList[GEO_BP_POWERUI_FRAME]->textureID = LoadPNG("Images//CK_PowerUi_Frame.png");
+	meshList[GEO_BP_POWERUI_BAR] = MeshBuilder::GenerateQuad("PowerUi_Bar", glm::vec3(1, 1, 0), 1);
 
 	meshList[GEO_TOP] = MeshBuilder::GenerateQuad("Plane", glm::vec3(1.f, 1.f, 1.f), 10.f);
 	meshList[GEO_TOP]->textureID = LoadPNG("Images//top.png");
@@ -186,52 +186,56 @@ void SceneBalloon::Update()
 	HandleKeyPress();
 	mainCamera.Update();
 	glm::vec3 inputMovementDir{};
-	if (KeyboardController::GetInstance()->IsKeyDown('W'))
-		inputMovementDir = mainCamera.view;
-	if (KeyboardController::GetInstance()->IsKeyDown('S'))
-		inputMovementDir = -mainCamera.view;
-	if (KeyboardController::GetInstance()->IsKeyDown('D'))
-		inputMovementDir = mainCamera.right;
-	if (KeyboardController::GetInstance()->IsKeyDown('A'))
-		inputMovementDir = -mainCamera.right;
+	//if (KeyboardController::GetInstance()->IsKeyDown('W'))
+	//	inputMovementDir = mainCamera.view;
+	//if (KeyboardController::GetInstance()->IsKeyDown('S'))
+	//	inputMovementDir = -mainCamera.view;
+	//if (KeyboardController::GetInstance()->IsKeyDown('D'))
+	//	inputMovementDir = mainCamera.right;
+	//if (KeyboardController::GetInstance()->IsKeyDown('A'))
+	//	inputMovementDir = -mainCamera.right;
 	glm::vec3 finalForce = inputMovementDir * 10.0f * Time::deltaTime;
 	mainCamera.m_transform.Translate(finalForce);
 	glm::vec3 prevTarget = mainCamera.target;
 	mainCamera.UpdateCameraRotation();
 
-	//// stop player rotating too far:
-	//{
-	//	glm::vec3 toObject = glm::normalize(glm::vec3(0, 3, 0) - mainCamera.m_transform.m_position);
-
-	//	glm::vec3 lookVector = glm::normalize(mainCamera.target - mainCamera.m_transform.m_position);
-
-	//	float dotProduct = glm::dot(lookVector, toObject);
-	//	float threshold = glm::cos(glm::radians(fov * 0.5));
-
-	//	if (dotProduct <= threshold) // Rotated too much
-	//	{
-	//		mainCamera.target = prevTarget;
-	//	}
-	//	else {
-	//		float closeness = (dotProduct - threshold) / (1.0f - threshold);
-	//		mainCamera.sensitivity = 10 + closeness * (50 - 10);
-	//	}
-	//}
-
-	for (Balloon* balloon : ((BalloonBoard*)objInScene[BALLOONBOARD])->balloons)
+	// stop player rotating too far:
 	{
-		if (balloon->getObject() != nullptr && objInScene[currentDartIndex]->getObject() != nullptr) {
-			if (CheckCollisionWith(balloon->getObject(), objInScene[currentDartIndex]->getObject()))
+		glm::vec3 toObject = glm::normalize(glm::vec3(0, 3, 0) - mainCamera.m_transform.m_position);
+
+		glm::vec3 lookVector = glm::normalize(mainCamera.target - mainCamera.m_transform.m_position);
+
+		float dotProduct = glm::dot(lookVector, toObject);
+		float threshold = glm::cos(glm::radians(fov * 0.5));
+
+		if (dotProduct <= threshold) // Rotated too much
+		{
+			mainCamera.target = prevTarget;
+		}
+		else {
+			float closeness = (dotProduct - threshold) / (1.0f - threshold);
+			mainCamera.sensitivity = 10 + closeness * (50 - 10);
+		}
+	}
+
+	UnorderedVector<Balloon*> ballonList = ((BalloonBoard*)objInScene[BALLOONBOARD])->balloons;
+	for (size_t i = 0; i < ballonList.size(); ++i)
+	{
+		if (ballonList[i]->getObject() != nullptr && objInScene[currentDartIndex]->getObject() != nullptr) {
+			if (CheckCollisionWith(ballonList[i]->getObject(), objInScene[currentDartIndex]->getObject()))
 			{
-				GameObjectManager::GetInstance()->removeItem(balloon);
-				std::cout << "Collided" << std::endl;
+				GameObjectManager::GetInstance()->removeItem(ballonList[i]);
+				((BalloonBoard*)objInScene[BALLOONBOARD])->balloons.remove(ballonList[i]);
+				//std::cout << "Collided" << std::endl;
+				break;
 			}
 		}
 	}
 
 	if (CheckCollisionWith(objInScene[currentDartIndex]->getObject(), objInScene[BALLOONBOARD]->getObject()))
 	{
-		objInScene[currentDartIndex]->rbGOType = GameObject::STATIC;
+		objInScene[currentDartIndex]->rb->setCollisionFlags(objInScene[currentDartIndex]->rb->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT);
+
 		std::cout << "Board Collided" << std::endl;
 	}
 
@@ -358,17 +362,17 @@ void SceneBalloon::Render()
 	modelStack.Rotate(90, 0, 1, 0);
 	modelStack.Scale(1.5, 1, 1);
 
-	meshList[GEO_BPBOOTHGUARDS]->material.kAmbient = glm::vec3(0.1f, 0.1f, 0.1f);
-	meshList[GEO_BPBOOTHGUARDS]->material.kDiffuse = glm::vec3(0.4f, 0.4f, 0.4f);
-	meshList[GEO_BPBOOTHGUARDS]->material.kSpecular = glm::vec3(0.1f, 0.1f, 0.1f);
-	meshList[GEO_BPBOOTHGUARDS]->material.kShininess = 2.0f;
-	RenderMesh(meshList[GEO_BPBOOTHGUARDS], true);
+	meshList[GEO_BP_BOOTHGUARDS]->material.kAmbient = glm::vec3(0.1f, 0.1f, 0.1f);
+	meshList[GEO_BP_BOOTHGUARDS]->material.kDiffuse = glm::vec3(0.4f, 0.4f, 0.4f);
+	meshList[GEO_BP_BOOTHGUARDS]->material.kSpecular = glm::vec3(0.1f, 0.1f, 0.1f);
+	meshList[GEO_BP_BOOTHGUARDS]->material.kShininess = 2.0f;
+	RenderMesh(meshList[GEO_BP_BOOTHGUARDS], true);
 
-	meshList[GEO_BPBOOTHROOF]->material.kAmbient = glm::vec3(0.1f, 0.1f, 0.1f);
-	meshList[GEO_BPBOOTHROOF]->material.kDiffuse = glm::vec3(0.4f, 0.4f, 0.4f);
-	meshList[GEO_BPBOOTHROOF]->material.kSpecular = glm::vec3(0.1f, 0.1f, 0.1f);
-	meshList[GEO_BPBOOTHROOF]->material.kShininess = 2.0f;
-	RenderMesh(meshList[GEO_BPBOOTHROOF], true);
+	meshList[GEO_BP_BOOTHROOF]->material.kAmbient = glm::vec3(0.1f, 0.1f, 0.1f);
+	meshList[GEO_BP_BOOTHROOF]->material.kDiffuse = glm::vec3(0.4f, 0.4f, 0.4f);
+	meshList[GEO_BP_BOOTHROOF]->material.kSpecular = glm::vec3(0.1f, 0.1f, 0.1f);
+	meshList[GEO_BP_BOOTHROOF]->material.kShininess = 2.0f;
+	RenderMesh(meshList[GEO_BP_BOOTHROOF], true);
 	modelStack.PopMatrix();
 
 	//modelStack.PushMatrix();
@@ -381,8 +385,8 @@ void SceneBalloon::Render()
 	// Render ui:
 	{
 		if (power > 5) {
-			RenderMeshOnScreen(meshList[GEO_POWERUI_FRAME], 0.5, 0.3, 100 * 1.25, 25 * 1.25, glm::vec2(0, 0));
-			RenderMeshOnScreen(meshList[GEO_POWERUI_BAR], 0.425, 0.3, power / maxPower * 120, 25, glm::vec2(-0.5, 0));
+			RenderMeshOnScreen(meshList[GEO_BP_POWERUI_FRAME], 0.5, 0.3, 100 * 1.25, 25 * 1.25, glm::vec2(0, 0));
+			RenderMeshOnScreen(meshList[GEO_BP_POWERUI_BAR], 0.425, 0.3, power / maxPower * 120, 25, glm::vec2(-0.5, 0));
 		}
 	}
 
