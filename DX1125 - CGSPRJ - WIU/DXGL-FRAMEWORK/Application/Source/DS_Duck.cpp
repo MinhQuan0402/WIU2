@@ -7,13 +7,12 @@ int DS_Duck::nextId = 1;
 
 DS_Duck::DS_Duck() : hit{}, speed{ 7 }, animTime{}
 {
+	srand(time(0) + nextId);
+	nextId++;
 	GameObjectManager::GetInstance()->addItem(this);
 }
 
-void DS_Duck::Start()
-{
-	srand(time(0) + nextId);
-	nextId++;
+void DS_Duck::Start() {
 	size = (rand() % 76 + 50) / 100.0f;
 
 	PhysicsMaterial mat;

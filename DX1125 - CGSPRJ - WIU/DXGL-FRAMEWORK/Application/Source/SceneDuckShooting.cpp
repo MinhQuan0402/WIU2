@@ -23,6 +23,8 @@
 #include "DS_BoothRoof.h"
 #include "DS_Conveyor.h"
 #include "DS_Pillar.h"
+#include "DS_Counter.h"
+#include "DS_Counter2.h"
 #include "SceneManager.h"
 
 SceneDuckShooting::SceneDuckShooting() : numLight{ 2 }
@@ -108,6 +110,19 @@ void SceneDuckShooting::Init()
 
 	meshList[GEO_HITBOX] = MeshBuilder::GenerateCube("HitBox", GREEN, 1.0f);
 
+	meshList[GEO_TOP] = MeshBuilder::GenerateQuad("Plane", glm::vec3(1.f, 1.f, 1.f), 10.f);
+	meshList[GEO_TOP]->textureID = LoadPNG("Images//top.png");
+	meshList[GEO_BOTTOM] = MeshBuilder::GenerateQuad("Plane", glm::vec3(1.f, 1.f, 1.f), 10.f);
+	meshList[GEO_BOTTOM]->textureID = LoadPNG("Images//bottom.png");
+	meshList[GEO_RIGHT] = MeshBuilder::GenerateQuad("Plane", glm::vec3(1.f, 1.f, 1.f), 10.f);
+	meshList[GEO_RIGHT]->textureID = LoadPNG("Images//front.png");
+	meshList[GEO_LEFT] = MeshBuilder::GenerateQuad("Plane", glm::vec3(1.f, 1.f, 1.f), 10.f);
+	meshList[GEO_LEFT]->textureID = LoadPNG("Images//back.png");
+	meshList[GEO_FRONT] = MeshBuilder::GenerateQuad("Plane", glm::vec3(1.f, 1.f, 1.f), 10.f);
+	meshList[GEO_FRONT]->textureID = LoadPNG("Images//right.png");
+	meshList[GEO_BACK] = MeshBuilder::GenerateQuad("Plane", glm::vec3(1.f, 1.f, 1.f), 10.f);
+	meshList[GEO_BACK]->textureID = LoadPNG("Images//left.png");
+
 	meshList[GEO_AXIS] = MeshBuilder::GenerateAxes("Axes", 10000.f, 10000.f, 10000.f);
 	meshList[GEO_LIGHT] = MeshBuilder::GenerateSphere("Sphere", WHITE, .05f, 180, 180);
 	meshList[GEO_TEXT] = MeshBuilder::GenerateText("text", 16, 16);
@@ -118,7 +133,7 @@ void SceneDuckShooting::Init()
 	meshList[GEO_SPHERE] = MeshBuilder::GenerateSphere("Sphere", WHITE, 1.0f, 100, 100);
 	meshList[GEO_CYLINDER] = MeshBuilder::GenerateCylinder("Cylinder", WHITE, 100, 1, 1);
 	meshList[GEO_CUBE] = MeshBuilder::GenerateCube("Cube", WHITE, 1.0f);
-
+	meshList[GEO_QUAD] = MeshBuilder::GenerateQuad("Quad", BLACK, 1.0f);
 	meshList[GEO_PLANE] = MeshBuilder::GenerateQuad("Quad", glm::vec3(0.1, 0.1, 0.1), 1000.0f);
 	meshList[GEO_PLANE]->material = Material::Concrete(GREY);
 
@@ -221,6 +236,9 @@ void SceneDuckShooting::Init()
 		objInScene[BOOTH_WALL] = new DS_BoothWall;
 		objInScene[BOOTH_ROOF] = new DS_BoothRoof;
 		objInScene[CONVEYOR] = new DS_Conveyor;
+		objInScene[COUNTER] = new DS_Counter;
+		objInScene[COUNTER2] = new DS_Counter2;
+		objInScene[COUNTER3] = new DS_Counter2;
 		objInScene[PILLAR] = new DS_Pillar;
 		objInScene[PILLAR2] = new DS_Pillar;
 	}
@@ -231,22 +249,22 @@ void SceneDuckShooting::Init()
 		objInScene[PILLAR]->m_transform.Translate(24.3538 * 0.5 + 2.5 * 0.5, 5, -4.78361);
 		objInScene[PILLAR2]->m_transform.Translate(-24.3538 * 0.5 - 2.5 * 0.5, 5, -4.78361);
 
+		// Counters:
+		{
+			objInScene[COUNTER]->m_transform.Translate(0, 2.25 * 0.5, 5);
+			objInScene[COUNTER]->m_transform.ScaleBy(30, 2.25, 1);
+
+			objInScene[COUNTER2]->m_transform.Translate(-14.5, 2.25 * 0.5, 0.559579);
+			objInScene[COUNTER2]->m_transform.ScaleBy(1, 2.25, 7.93374);
 		
-
-		//// Counters:
-		//{
-		//	objInScene[COUNTER]->m_transform.Translate(0, 2.65 * 0.5, 4.84);
-		//	objInScene[COUNTER]->m_transform.ScaleBy(11.4612, 2.65, 1);
-
-		//	objInScene[COUNTER2]->m_transform.Translate(5.25, 2.65 * 0.5, -0.4);
-		//	objInScene[COUNTER2]->m_transform.ScaleBy(1, 2.65, 11);
-
-		//	objInScene[COUNTER3]->m_transform.Translate(-5.25, 2.65 * 0.5, -0.4);
-		//	objInScene[COUNTER3]->m_transform.ScaleBy(1, 2.65, 11);
-		//}
+			objInScene[COUNTER3]->m_transform.Translate(14.5, 2.25 * 0.5, 0.559579);
+			objInScene[COUNTER3]->m_transform.ScaleBy(1, 2.25, 7.93374);
+		}
 	}
 
 	GameObjectManager::GetInstance()->IniAll();
+
+	timer = 30;
 
 	bulletSpeed = 20;
 	recoil = false;
@@ -257,6 +275,8 @@ void SceneDuckShooting::Init()
 	spawnRate = 0.5;
 
 	points = 0;
+
+	srand(time(0));
 }
 
 void SceneDuckShooting::Update()
@@ -264,14 +284,14 @@ void SceneDuckShooting::Update()
 	HandleKeyPress();
 	mainCamera.Update();
 	glm::vec3 inputMovementDir{};
-	if (KeyboardController::GetInstance()->IsKeyDown('W'))
+	/*if (KeyboardController::GetInstance()->IsKeyDown('W'))
 		inputMovementDir = mainCamera.view;
 	if (KeyboardController::GetInstance()->IsKeyDown('S'))
 		inputMovementDir = -mainCamera.view;
 	if (KeyboardController::GetInstance()->IsKeyDown('D'))
 		inputMovementDir = mainCamera.right;
 	if (KeyboardController::GetInstance()->IsKeyDown('A'))
-		inputMovementDir = -mainCamera.right;
+		inputMovementDir = -mainCamera.right;*/
 
 	glm::vec3 finalForce = inputMovementDir * 10.0f * Time::deltaTime;
 	mainCamera.m_transform.Translate(finalForce);
@@ -279,26 +299,26 @@ void SceneDuckShooting::Update()
 	mainCamera.UpdateCameraRotation();
 
 	// stop player rotating too far:
-	//{
-	//	glm::vec3 toObject = glm::normalize(glm::vec3(0, 3, 0) - mainCamera.m_transform.m_position);
+	{
+		glm::vec3 toObject = glm::normalize(glm::vec3(0, 3, 0) - mainCamera.m_transform.m_position);
 
-	//	glm::vec3 lookVector = glm::normalize(mainCamera.target - mainCamera.m_transform.m_position);
+		glm::vec3 lookVector = glm::normalize(mainCamera.target - mainCamera.m_transform.m_position);
 
-	//	float dotProduct = glm::dot(lookVector, toObject);
-	//	float threshold = glm::cos(glm::radians(fov * 0.5));
+		float dotProduct = glm::dot(lookVector, toObject);
+		float threshold = glm::cos(glm::radians(fov));
 
-	//	if (dotProduct <= threshold) // Rotated too much
-	//	{
-	//		mainCamera.target = prevTarget;
-	//	}
-	//	else {
-	//		float closeness = (dotProduct - threshold) / (1.0f - threshold);
-	//		mainCamera.sensitivity = 10 + closeness * (50 - 10);
-	//	}
-	//}
+		if (dotProduct <= threshold) // Rotated too much
+		{
+			mainCamera.target = prevTarget;
+		}
+		else {
+			float closeness = (dotProduct - threshold) / (1.0f - threshold);
+			mainCamera.sensitivity = 10 + closeness * (50 - 10);
+		}
+	}
 
 
-	float speed = 20 * Time::deltaTime;
+	/*float speed = 5 * Time::deltaTime;
 	if (KeyboardController::GetInstance()->IsKeyDown('I'))
 		devVec.z += speed;
 	if (KeyboardController::GetInstance()->IsKeyDown('K'))
@@ -310,12 +330,23 @@ void SceneDuckShooting::Update()
 	if (KeyboardController::GetInstance()->IsKeyDown('O'))
 		devVec.y += speed;
 	if (KeyboardController::GetInstance()->IsKeyDown('P'))
-		devVec.y -= speed;
+		devVec.y -= speed;*/
 
 	//lights[0].m_transform.m_position = devVec;
-	std::cout << devVec.x << ", " << devVec.y << ", " << devVec.z << std::endl;
+	//std::cout << devVec.x << ", " << devVec.y << ", " << devVec.z << std::endl;
 
 	GameObjectManager::GetInstance()->UpdateAll();
+
+	// update timer:
+	{
+		if (timer > 0) {
+			timer -= Time::deltaTime;
+		}
+		else {
+			timer = 0;
+			gameComplete = true;
+		}
+	}
 
 
 	// recoil
@@ -349,7 +380,8 @@ void SceneDuckShooting::Update()
 			spawnTimer -= Time::deltaTime;
 		}
 		else {
-			spawnTimer = spawnRate;
+			if (gameComplete) return;
+			spawnTimer = (rand() / (float)RAND_MAX) * (1.0f - 0.2f) + 0.2f;
 
 			GameObject* duck = GameObject::Instantiate<DS_Duck>();
 			for (int i = 0; i < ducks.size(); i++) {
@@ -368,6 +400,7 @@ void SceneDuckShooting::Update()
 		}
 	}
 
+	if (gameComplete) return;
 	// check bullet collision with duck:
 	{
 		for (int i = 0; i < ducks.size(); i++) {
@@ -378,6 +411,8 @@ void SceneDuckShooting::Update()
 					if (!duck->hit && !bullet->hit) {
 						duck->hit = true;
 						bullet->hit = true;
+
+						points += 5 * (1.0f / duck->size);
 					}
 				}
 			}
@@ -590,20 +625,34 @@ void SceneDuckShooting::Render()
 		modelStack.PopMatrix();
 	}
 
-	// placeholder:
-	{
-	//	modelStack.PushMatrix();
-	//	modelStack.Translate(0, 2.17004 * 0.5, -4.78361);
-	//	modelStack.Rotate(90, 0, 1, 0);
-	//	modelStack.Scale(1.2142, 1, 1.15754);
-	////	RenderMesh(meshList[GEO_CONVEYOR], enableLight);
-	//	modelStack.PopMatrix();
-	}
-
 
 	// Render hitboxes:
 	GameObjectManager::GetInstance()->RenderAll(*this);
 
+
+	// Render Ui:
+	{
+		float cWidth = Application::m_consoleWidth;
+		float cHeight = Application::m_consoleHeight;
+
+		// Render the dividing quad
+		RenderMeshOnScreen(meshList[GEO_QUAD], cWidth * 0.5 - (cWidth * 0.001), cHeight * 0.8, cWidth * 0.001, cHeight * 0.1);
+
+		// Render timer:
+		RenderTextOnScreen(meshList[GEO_TEXT], "Time Left", BLACK, 30, cWidth * 0.345, cHeight * 0.8);
+
+		int minutes = timer / 60;
+		int seconds = (int)timer % 60;
+
+		std::string timeText = std::to_string(minutes) + ":" + (seconds < 10 ? "0" : "") + std::to_string(seconds);
+		RenderTextOnScreen(meshList[GEO_TEXT], timeText, BLACK, 30, cWidth * 0.345 + 30*2, cHeight * 0.8 - 30);
+
+		// Render points:
+		RenderTextOnScreen(meshList[GEO_TEXT], "Points", BLACK, 30, cWidth * 0.535, cHeight * 0.8);
+		RenderTextOnScreen(meshList[GEO_TEXT], std::to_string(points), BLACK, 30, cWidth * 0.535 + 30 * 1.25, cHeight * 0.8 - 30);
+	}
+	
+	RenderSkybox();
 
 #ifdef DRAW_HITBOX
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -717,26 +766,3 @@ void SceneDuckShooting::RenderSkybox(void)
 	RenderMesh(meshList[GEO_BOTTOM], false);
 	modelStack.PopMatrix();
 }
-
-//void SceneDuckShooting::RenderMeshOnScreen(Mesh* mesh, float x, float y, float width, float height, glm::vec2 anchorPoint)
-//{
-//	glDisable(GL_DEPTH_TEST);
-//	glm::mat4 ortho = glm::ortho(0.f, (float)Application::m_consoleWidth, 0.f, (float)Application::m_consoleHeight, -
-//		1000.f, 1000.f); // dimension of screen UI
-//	projectionStack.PushMatrix();
-//	projectionStack.LoadMatrix(ortho);
-//	viewStack.PushMatrix();
-//	viewStack.LoadIdentity(); //No need camera for ortho mode
-//	modelStack.PushMatrix();
-//	modelStack.LoadIdentity();
-//
-//	// To do: Use modelStack to position GUI on screen
-//	modelStack.Translate(x * (float)Application::m_consoleWidth - width * anchorPoint.x, y * (float)Application::m_consoleHeight - height * anchorPoint.y, 0);
-//	// To do: Use modelStack to scale the GUI
-//	modelStack.Scale(width, height, 1);
-//	RenderMesh(mesh, false); //UI should not have light
-//	projectionStack.PopMatrix();
-//	viewStack.PopMatrix();
-//	modelStack.PopMatrix();
-//	glEnable(GL_DEPTH_TEST);
-//}

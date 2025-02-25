@@ -31,6 +31,7 @@ public:
 		GEO_MODEL1,
 		GEO_PLANE,
 		GEO_CUBE,
+		GEO_QUAD,
 		GEO_CYLINDER,
 
 		GEO_POWERUI_FRAME,
@@ -85,6 +86,8 @@ private:
 	
 	GameObject* objInScene[NUM_OBJ];
 
+	float timer;
+
 	Transform gunTransform;
 
 	float bulletSpeed;
@@ -102,11 +105,11 @@ private:
 
 	float cooldownTimer;
 
-	float points;
+	int points;
 
 	bool gameComplete;
 
-	glm::vec3 devVec = glm::vec3{ 1, 1, 1 };
+	glm::vec3 devVec;
 };
 
 #endif
