@@ -188,11 +188,24 @@ void GameObjectManager::DivideQuad(void) { GameObjectManager::GetInstance()->qua
 
 void GameObjectManager::IniAll(void)
 {
-	for (GameObject*& go : GameObjectManager::GetInstance()->m_allGOs) { if(go) go->Start(); }
+	for (size_t i = 0; i < GameObjectManager::GetInstance()->m_allGOs.size(); ++i)
+	{
+		GameObjectManager::GetInstance()->m_allGOs[i]->Start();
+	}
 }
 void GameObjectManager::UpdateAll(void)
 {
-	for (GameObject*& value : GameObjectManager::GetInstance()->m_allGOs) { if (value) value->Update(); }
+	for (size_t i = 0; i < GameObjectManager::GetInstance()->m_allGOs.size(); ++i)
+	{
+		GameObjectManager::GetInstance()->m_allGOs[i]->Update();
+	}
+}
+void GameObjectManager::LateUpdateAll(void)
+{
+	for (size_t i = 0; i < GameObjectManager::GetInstance()->m_allGOs.size(); ++i)
+	{
+		GameObjectManager::GetInstance()->m_allGOs[i]->LateUpdate();
+	}
 }
 void GameObjectManager::LateUpdateAll(void)
 {
@@ -200,7 +213,10 @@ void GameObjectManager::LateUpdateAll(void)
 }
 void GameObjectManager::RenderAll(Scene& scene)
 {
-	for (GameObject*& value : GameObjectManager::GetInstance()->m_allGOs) { if (value) value->Render(scene); }
+	for (size_t i = 0; i < GameObjectManager::GetInstance()->m_allGOs.size(); ++i)
+	{
+		GameObjectManager::GetInstance()->m_allGOs[i]->Render(scene);
+	}
 }
 
 void GameObjectManager::clearQuad(CQuad* p)
