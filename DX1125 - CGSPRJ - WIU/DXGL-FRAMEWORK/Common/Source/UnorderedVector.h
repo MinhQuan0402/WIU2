@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <assert.h>
+#include <algorithm>
 
 template<typename T>
 class UnorderedVector : public std::vector<T>
@@ -9,14 +10,14 @@ class UnorderedVector : public std::vector<T>
 public:
 	inline void remove(T& element) {
 		T* el = &element;
-		assert(el >= &std::vector<T>::front());
+		auto it = std::find(this->begin(), this->end(), element);
 
 		T* bck = &std::vector<T>::back();
 
-		assert(el <= bck);
-
-		if (el == bck) return;
-		else *el = std::move(*bck);
+		if (it == this->end()) 
+			return;
+		else 
+			*el = std::move(*bck);
 
 		std::vector<T>::pop_back();
 	}
