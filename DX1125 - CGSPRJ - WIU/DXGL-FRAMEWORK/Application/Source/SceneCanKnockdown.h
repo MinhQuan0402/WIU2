@@ -47,6 +47,8 @@ private:
 	void RenderSkybox(void);
 	void RenderMeshOnScreen(Mesh* mesh, float x, float y, float width, float height, glm::vec2 anchorPoint);
 
+	void RenderGround(int size);
+
 	int numLight;
 	Transform player;
 
@@ -73,6 +75,9 @@ private:
 	};
 	
 	GameObject* objInScene[NUM_OBJ];
+
+	int points;
+	float lightTimer;
 
 	float power;
 	const float maxPower = 25;

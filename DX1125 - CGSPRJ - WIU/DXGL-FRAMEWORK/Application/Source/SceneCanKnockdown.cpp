@@ -114,6 +114,19 @@ void SceneCanKnockdown::Init()
 
 	meshList[GEO_HITBOX] = MeshBuilder::GenerateCube("HitBox", GREEN, 1.0f);
 
+	meshList[GEO_TOP] = MeshBuilder::GenerateQuad("Plane", glm::vec3(1.f, 1.f, 1.f), 10.f);
+	meshList[GEO_TOP]->textureID = LoadPNG("Images//top.png");
+	meshList[GEO_BOTTOM] = MeshBuilder::GenerateQuad("Plane", glm::vec3(1.f, 1.f, 1.f), 10.f);
+	meshList[GEO_BOTTOM]->textureID = LoadPNG("Images//bottom.png");
+	meshList[GEO_RIGHT] = MeshBuilder::GenerateQuad("Plane", glm::vec3(1.f, 1.f, 1.f), 10.f);
+	meshList[GEO_RIGHT]->textureID = LoadPNG("Images//front.png");
+	meshList[GEO_LEFT] = MeshBuilder::GenerateQuad("Plane", glm::vec3(1.f, 1.f, 1.f), 10.f);
+	meshList[GEO_LEFT]->textureID = LoadPNG("Images//back.png");
+	meshList[GEO_FRONT] = MeshBuilder::GenerateQuad("Plane", glm::vec3(1.f, 1.f, 1.f), 10.f);
+	meshList[GEO_FRONT]->textureID = LoadPNG("Images//right.png");
+	meshList[GEO_BACK] = MeshBuilder::GenerateQuad("Plane", glm::vec3(1.f, 1.f, 1.f), 10.f);
+	meshList[GEO_BACK]->textureID = LoadPNG("Images//left.png");
+
 	meshList[GEO_AXIS] = MeshBuilder::GenerateAxes("Axes", 10000.f, 10000.f, 10000.f);
 	meshList[GEO_LIGHT] = MeshBuilder::GenerateSphere("Sphere", WHITE, .05f, 180, 180);
 	meshList[GEO_TEXT] = MeshBuilder::GenerateText("text", 16, 16);
@@ -125,7 +138,7 @@ void SceneCanKnockdown::Init()
 	meshList[GEO_CYLINDER] = MeshBuilder::GenerateCylinder("Cylinder", WHITE, 100, 1, 1);
 	meshList[GEO_CUBE] = MeshBuilder::GenerateCube("Cube", WHITE, 1.0f);
 
-	meshList[GEO_PLANE] = MeshBuilder::GenerateQuad("Quad", glm::vec3(0.1, 0.1, 0.1), 1000.0f);
+	meshList[GEO_PLANE] = MeshBuilder::GenerateQuad("Quad", glm::vec3(0.1, 0.1, 0.1), 75.0f);
 	meshList[GEO_PLANE]->material = Material::Concrete(GREY);
 
 
@@ -158,8 +171,7 @@ void SceneCanKnockdown::Init()
 	glUniform1f(m_parameters[U_LIGHT0_COSINNER], cosf(glm::radians<float>(lights[0].cosInner)));
 	glUniform1f(m_parameters[U_LIGHT0_EXPONENT], lights[0].exponent);
 
-	lights[1].m_transform.m_position = glm::vec3(0.0866777, 10.987, 0.0397956);
-	lights[1].color = glm::vec3(1, 1, 1);
+	lights[1].m_transform.m_position = glm::vec3(0.0866777, 11, 0.0397956);
 	lights[1].type = Light::LIGHT_POINT;
 	lights[1].power = 1;
 	lights[1].kC = 1.f;
@@ -179,6 +191,18 @@ void SceneCanKnockdown::Init()
 	glUniform1f(m_parameters[U_LIGHT1_COSCUTOFF], cosf(glm::radians<float>(lights[1].cosCutoff)));
 	glUniform1f(m_parameters[U_LIGHT1_COSINNER], cosf(glm::radians<float>(lights[1].cosInner)));
 	glUniform1f(m_parameters[U_LIGHT1_EXPONENT], lights[1].exponent);
+
+	MeshManager::GetInstance()->meshList[MeshManager::GEO_LIGHTBULB]->material.kEmission = glm::vec3(0.5f, 0.5f, 0.5f);
+
+	glm::vec3 randColor = glm::vec3{
+		Math::RandFloatMinMax(0.0f, 1.0f),
+		Math::RandFloatMinMax(0.0f, 1.0f),
+		Math::RandFloatMinMax(0.0f, 1.0f)
+	};
+
+	MeshManager::GetInstance()->meshList[MeshManager::GEO_LIGHTBULB]->material.kAmbient = glm::vec3(randColor);
+	lights[1].color = randColor;
+
 
 	enableLight = true;
 
@@ -250,7 +274,9 @@ void SceneCanKnockdown::Init()
 	isShooting = false;
 	cooldownTimer = 0;
 	attemptsLeft = 2;
+	points = 0;
 	gameComplete = false;
+	lightTimer = 0;
 }
 
 void SceneCanKnockdown::Update()
@@ -308,7 +334,21 @@ void SceneCanKnockdown::Update()
 	//lights[0].m_transform.m_position = devVec;
 	//std::cout << devVec.x << ", " << devVec.y << ", " << devVec.z << std::endl;
 
+	// light:
+	lightTimer += Time::deltaTime;
+	if (isTimeReach(lightTimer, 2.f, 2.05f))
+	{
+		glm::vec3 randColor = glm::vec3{
+			Math::RandFloatMinMax(0.0f, 1.0f),
+			Math::RandFloatMinMax(0.0f, 1.0f),
+			Math::RandFloatMinMax(0.0f, 1.0f)
+		};
 
+		MeshManager::GetInstance()->meshList[MeshManager::GEO_LIGHTBULB]->material.kAmbient = glm::vec3(randColor);
+		lights[1].color = randColor;
+		glUniform3fv(m_parameters[U_LIGHT1_COLOR], 1, &lights[1].color.r);
+	}
+	else if (lightTimer >= 2.1f) lightTimer = 0.0f;
 
 	// Checking if can has fallen off the table:
 	{
@@ -323,6 +363,8 @@ void SceneCanKnockdown::Update()
 			}
 			else continue;
 		}
+
+		points = cansFallen * 50;
 
 		if (cansFallen == 6) {
 			std::cout << "Game complete" << std::endl;
@@ -464,7 +506,7 @@ void SceneCanKnockdown::Render()
 	{
 		modelStack.PushMatrix();
 		modelStack.Translate(lights[0].m_transform.m_position.x, lights[0].m_transform.m_position.y, lights[0].m_transform.m_position.z);
-		RenderMesh(meshList[GEO_LIGHT], !enableLight);
+		//RenderMesh(meshList[GEO_LIGHT], !enableLight);
 		modelStack.PopMatrix();
 
 		modelStack.PushMatrix();
@@ -505,6 +547,9 @@ void SceneCanKnockdown::Render()
 		
 	}
 
+	RenderSkybox();
+	RenderGround(7);
+
 	// Render hitboxes:
 	GameObjectManager::GetInstance()->RenderAll(*this);
 
@@ -514,6 +559,9 @@ void SceneCanKnockdown::Render()
 			RenderMeshOnScreen(MeshManager::GetInstance()->meshList[MeshManager::GEO_POWERUI_FRAME], 0.5, 0.3, 100 * 1.25, 25 * 1.25, glm::vec2(0, 0));
 			RenderMeshOnScreen(MeshManager::GetInstance()->meshList[MeshManager::GEO_POWERUI_BAR], 0.425, 0.3, power / maxPower * 120, 25, glm::vec2(-0.5, 0));
 		}
+
+		RenderTextOnScreen(meshList[GEO_TEXT], "Points", BLACK, 30, Application::m_consoleWidth * 0.5 - 50, Application::m_consoleHeight * 0.75 + 30);
+		RenderTextOnScreen(meshList[GEO_TEXT], std::to_string(points), BLACK, 30, Application::m_consoleWidth * 0.5, Application::m_consoleHeight * 0.75);
 	}
 
 //#ifdef DRAW_HITBOX
@@ -652,4 +700,31 @@ void SceneCanKnockdown::RenderMeshOnScreen(Mesh* mesh, float x, float y, float w
 	viewStack.PopMatrix();
 	modelStack.PopMatrix();
 	glEnable(GL_DEPTH_TEST);
+}
+
+void SceneCanKnockdown::RenderGround(int size)
+{
+	if (size % 2 == 0) size += 1;
+
+	int valueToMul = (size - 1) / 2;
+	glm::vec3 originPos = glm::vec3{ 75.0f * (float)valueToMul, 0.0f, 75.0f * (float)valueToMul };
+	float orignalX = originPos.x;
+	meshList[GEO_PLANE]->material = Material::Wood(WHITE);
+	for (int i = 0; i < size; i++)
+	{
+		originPos.x = orignalX;
+		for (int j = 0; j < size; ++j)
+		{
+
+			modelStack.PushMatrix();
+			modelStack.Translate(originPos.x, originPos.y, originPos.z);
+			modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
+			RenderMesh(meshList[GEO_PLANE], enableLight);
+			modelStack.PopMatrix();
+
+			originPos.x -= 75.0f;
+		}
+
+		originPos.z -= 75.0f;
+	}
 }
