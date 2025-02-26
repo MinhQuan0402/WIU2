@@ -12,6 +12,7 @@
 #include "Time.h"
 #include <GLFW/glfw3.h>
 #include "Utility.h"
+#include "ColliderManager.h"
 
 
 bool Scene::enableLight = true;
@@ -295,6 +296,55 @@ void Scene::RenderLine(glm::vec3 startPoint, glm::vec3 endPoint, float thickness
 	//modelStack.PopMatrix();
 }
 
+void Scene::RenderChildCollider(btCollisionShape* childShape, float matrix[16])
+{
+	modelStack.PushMatrix();
+	if (childShape->getShapeType() == SPHERE_SHAPE_PROXYTYPE)
+	{
+		SphereCollider* sphereCollider = static_cast<SphereCollider*>(childShape);
+		float size = sphereCollider->GetRadius();
+		modelStack.MultMatrix(GetTransformMatrix(matrix));
+		modelStack.Scale(size, size, size);
+		modelStack.Scale(childShape->getLocalScaling().x(), childShape->getLocalScaling().y(), childShape->getLocalScaling().z());
+		RenderMesh(hitboxMeshList[HITBOX_SPHERE]);
+	}
+	else if (childShape->getShapeType() == BOX_SHAPE_PROXYTYPE)
+	{
+		BoxCollider* boxCollider = static_cast<BoxCollider*>(childShape);
+		float width, height, depth;
+		boxCollider->GetDimension(width, height, depth);
+		modelStack.MultMatrix(GetTransformMatrix(matrix));
+		modelStack.Scale(width, height, depth);
+		modelStack.Scale(childShape->getLocalScaling().x(), childShape->getLocalScaling().y(), childShape->getLocalScaling().z());
+		RenderMesh(hitboxMeshList[HITBOX_BOX]);
+	}
+	else if (childShape->getShapeType() == CYLINDER_SHAPE_PROXYTYPE)
+	{
+		CylinderCollider* cylinderCollider = static_cast<CylinderCollider*>(childShape);
+		float rad, height;
+		cylinderCollider->GetDimension(rad, height);
+		modelStack.MultMatrix(GetTransformMatrix(matrix));
+		modelStack.Scale(rad / 2.0f, height, rad / 2.0f);
+		modelStack.Scale(childShape->getLocalScaling().x(), childShape->getLocalScaling().y(), childShape->getLocalScaling().z());
+		RenderMesh(hitboxMeshList[HITBOX_CYLINDER]);
+	}
+	else
+	{
+		modelStack.MultMatrix(GetTransformMatrix(matrix));
+		modelStack.Scale(childShape->getLocalScaling().x(), childShape->getLocalScaling().y(), childShape->getLocalScaling().z());
+		btCompoundShape* compoundShape = static_cast<btCompoundShape*>(childShape);
+		for (unsigned i = 0; i < compoundShape->getNumChildShapes(); ++i)
+		{
+			btCollisionShape* subShape = compoundShape->getChildShape(i);
+			btTransform childTransform = compoundShape->getChildTransform(i);
+			float mat[16];
+			childTransform.getOpenGLMatrix(mat);
+
+			RenderChildCollider(subShape, mat);
+		}
+	}
+	modelStack.PopMatrix();
+}
 void Scene::HandleKeyPress(void)
 {
 	if (KeyboardController::GetInstance()->IsKeyPressed(0x31))

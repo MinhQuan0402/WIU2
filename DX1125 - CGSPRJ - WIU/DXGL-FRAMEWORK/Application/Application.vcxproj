@@ -165,6 +165,7 @@
     <ClCompile Include="Source\Material.cpp" />
     <ClCompile Include="Source\Mesh.cpp" />
     <ClCompile Include="Source\MeshBuilder.cpp" />
+    <ClCompile Include="Source\PoolFloor.cpp" />
     <ClCompile Include="Source\PoolWall.cpp" />
     <ClCompile Include="Source\RigidBody.cpp" />
     <ClCompile Include="Source\Scene.cpp" />
@@ -172,6 +173,7 @@
     <ClCompile Include="Source\SceneGame.cpp" />
     <ClCompile Include="Source\SceneManager.cpp" />
     <ClCompile Include="Source\shader.cpp" />
+    <ClCompile Include="Source\SpinyWater.cpp" />
     <ClCompile Include="Source\Time.cpp" />
     <ClCompile Include="Source\Utility.cpp" />
   </ItemGroup>
@@ -196,6 +198,7 @@
     <ClInclude Include="Source\Material.h" />
     <ClInclude Include="Source\Mesh.h" />
     <ClInclude Include="Source\MeshBuilder.h" />
+    <ClInclude Include="Source\PoolFloor.h" />
     <ClInclude Include="Source\PoolWall.h" />
     <ClInclude Include="Source\RigidBody.h" />
     <ClInclude Include="Source\Scene.h" />
@@ -203,6 +206,7 @@
     <ClInclude Include="Source\SceneGame.h" />
     <ClInclude Include="Source\SceneManager.h" />
     <ClInclude Include="Source\shader.hpp" />
+    <ClInclude Include="Source\SpinyWater.h" />
     <ClInclude Include="Source\Time.h" />
     <ClInclude Include="Source\Utility.h" />
     <ClInclude Include="Source\Vertex.h" />

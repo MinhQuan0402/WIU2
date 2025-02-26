@@ -13,8 +13,9 @@ void PoolWall::Start()
 {
 	PhysicsMaterial mat;
 	mat.m_mass = 0.0f;
-	
-	rb = addTorusCollider(this, 5.5f, 2.0f, 100, mat);
+	mat.m_bounciness = 3.0f;
+	m_transform.Rotate(90, 0, 0);
+	rb = addTorusCollider(this, 12.f, 5.0f, 100, mat);
 }
 
 void PoolWall::Update()

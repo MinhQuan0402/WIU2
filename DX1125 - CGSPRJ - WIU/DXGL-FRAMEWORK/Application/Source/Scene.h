@@ -91,6 +91,7 @@ public:
 	void RenderText(Mesh* mesh, std::string text, glm::vec3 color);
 	void RenderTextOnScreen(Mesh* mesh, std::string text, glm::vec3 color, float size, float x, float y);
 	void RenderLine(glm::vec3 startPoint, glm::vec3 endPoint, float thickness, glm::vec3 color, float depth);
+	void RenderChildCollider(btCollisionShape* childShape, float matrix[16]); 
 protected:
 	bool isFillMode;
 	enum HITBOX_TYPE

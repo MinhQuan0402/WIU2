@@ -111,6 +111,12 @@
     <ClCompile Include="Source\PoolWall.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\PoolFloor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\SpinyWater.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Application.h">
@@ -192,6 +198,12 @@
       <Filter>Header Files\Scene</Filter>
     </ClInclude>
     <ClInclude Include="Source\PoolWall.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\PoolFloor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\SpinyWater.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

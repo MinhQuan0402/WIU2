@@ -106,13 +106,13 @@ void GameObject::SetRigidbodyRotation(const float& x, const float& y, const floa
 {
 	btTransform t;
 	t.setIdentity();
-	rb->getMotionState()->getWorldTransform(t);
+	t = rb->getWorldTransform();
 	btQuaternion rotationX = btQuaternion(btVector3(1, 0, 0), glm::radians(x));
 	btQuaternion rotationY = btQuaternion(btVector3(0, 1, 0), glm::radians(y));
 	btQuaternion rotationZ = btQuaternion(btVector3(0, 0, 1), glm::radians(z));
 	btQuaternion finalRotation = rotationX * rotationY * rotationZ;
 	t.setRotation(finalRotation);
-	rb->getMotionState()->setWorldTransform(t);
+	rb->setWorldTransform(t);
 }
 
 glm::vec3 GameObject::GetRigidbodyRotation(void) const

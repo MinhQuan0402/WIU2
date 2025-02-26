@@ -12,11 +12,12 @@ Ducks::Ducks()
 void Ducks::Start()
 {
 	PhysicsMaterial mat;
-	mat.m_mass = 1.0f;
-	mat.m_bounciness = 0.2f;
-	mat.m_friction = 1.0f;
+	mat.m_mass = 0.5f;
+	mat.m_bounciness = 5.f;
+	mat.m_friction = 0.5f;
 
-	rb = addSphereCollider(this, 1.5f, mat);
+	m_transform.ScaleBy(0.5, 0.5, 0.5);
+	rb = addSphereCollider(this, 0.75f, mat);
 	
 }
 

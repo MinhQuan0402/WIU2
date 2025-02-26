@@ -23,6 +23,8 @@
 
 #include "Ducks.h"
 #include "PoolWall.h"
+#include "PoolFloor.h"
+#include "SpinyWater.h"
 
 SceneDuckFishing::SceneDuckFishing() : numLight{ 2 }
 {
@@ -95,8 +97,7 @@ void SceneDuckFishing::Init()
 	meshList[GEO_CUBE] = MeshBuilder::GenerateCube("Cube", GREY, 1.0f);
 	meshList[GEO_CYLINDER] = MeshBuilder::GenerateCylinder("Cylinder", BLUE, 180, 1.0f, 1.0f);
 	meshList[GEO_PLANE] = MeshBuilder::GenerateQuad("Quad", RED, 1000.0f);
-	meshList[GEO_TORUS] = MeshBuilder::GenerateTorus("Torus", RED, 5.5f, 2.0f, 100);
-
+	
 	meshList[GEO_TOP] = MeshBuilder::GenerateQuad("Plane", glm::vec3(1.f, 1.f, 1.f), 10.f);
 	meshList[GEO_TOP]->textureID = LoadPNG("Images//top.png");
 	meshList[GEO_BOTTOM] = MeshBuilder::GenerateQuad("Plane", glm::vec3(1.f, 1.f, 1.f), 10.f);
@@ -112,10 +113,12 @@ void SceneDuckFishing::Init()
 
 	meshList[GEO_FD_DUCKY] = MeshBuilder::GenerateOBJMTL("Duck", "Models//FD_Duckie.obj", "Models//FD_Duckie.mtl");
 	meshList[GEO_FD_TENTFRAME] = MeshBuilder::GenerateOBJMTL("TENT FRAME", "Models//FD_CK_BoothGuards.obj", "Models//FD_CK_BoothGuards.mtl");
-	meshList[GEO_FD_TENTROOF] = MeshBuilder::GenerateOBJMTL("TENT FRAME", "Models//FD_CK_BoothRoof.obj", "Models//FD_CK_BoothRoof.mtl");
+	meshList[GEO_FD_TENTROOF] = MeshBuilder::GenerateOBJMTL("TENT Roof", "Models//FD_CK_BoothRoof.obj", "Models//FD_CK_BoothRoof.mtl");
 	meshList[GEO_FD_TENTROOF]->textureID = LoadPNG("Images//FD_CK_BoothRoof.png");
-	meshList[GEO_FD_POOL] = MeshBuilder::GenerateOBJ("TENT FRAME", "Models//FD_pool.obj");
+	meshList[GEO_FD_POOL] = MeshBuilder::GenerateOBJ("Pool", "Models//FD_pool.obj");
 	meshList[GEO_FD_POOL]->textureID = LoadPNG("Images//FD_pool.png");
+	meshList[GEO_FD_WATER] = MeshBuilder::GenerateCircle("Water", WHITE, 5);
+	meshList[GEO_FD_WATER]->textureID = LoadPNG("Images//FD_water.png");
 
 
 	mainCamera.Init(glm::vec3(8, 6, 6), glm::vec3(0, 6, 0), VECTOR3_UP);
@@ -146,7 +149,27 @@ void SceneDuckFishing::Init()
 	glUniform1f(m_parameters[U_LIGHT0_EXPONENT], lights[0].exponent);
 
 	enableLight = true;
+	spinnerRotation = 0.0f;
+	std::srand(std::time(0));
+	float maxRadius = 12.0f;
+	
+	for (int i = 0; i < 20; i++)
+	{
+		
 
+		float theta = (std::rand() / (float)RAND_MAX) * 2.0f * M_PI;
+
+		float r = std::sqrt((std::rand() / (float)RAND_MAX)) * maxRadius;
+		float rotationAngle = (std::rand() / (float)RAND_MAX) * 360.0f; 
+		float x = r * std::cos(theta);
+		float z = r * std::sin(theta);
+
+		duckX[i] = x;
+		duckZ[i] = z;
+		duckRotation[i] = rotationAngle;
+		std::cout << "X: " << duckX[i]<< "Z:" << duckZ[i] << "Rotate: "<< rotationAngle << std::endl;
+	}
+	
 	PhysicsMaterial groundMat;
 	groundMat.m_bounciness = 0.5f;
 	groundMat.m_friction = 0.5f;
@@ -155,7 +178,116 @@ void SceneDuckFishing::Init()
 	GameObjectManager::GetInstance()->addItem(objInScene[GROUND]);
 
 	objInScene[DUCK] = new Ducks();
+	objInScene[DUCK]->m_transform.Translate(duckX[0], 7.f, duckZ[0]);
+	objInScene[DUCK]->m_transform.Rotate(0.0f, duckRotation[0], 0.0f);
+
+	objInScene[DUCK2] = new Ducks();
+	objInScene[DUCK2]->m_transform.Translate(duckX[1], 7.f, duckZ[1]);
+	objInScene[DUCK2]->m_transform.Rotate(0.0f, duckRotation[1], 0.0f);
+
+	objInScene[DUCK3] = new Ducks();
+	objInScene[DUCK3]->m_transform.Translate(duckX[2], 7.f, duckZ[2]);
+	objInScene[DUCK3]->m_transform.Rotate(0.0f, duckRotation[2], 0.0f);
+
+	objInScene[DUCK4] = new Ducks();
+	objInScene[DUCK4]->m_transform.Translate(duckX[3], 7.f, duckZ[3]);
+	objInScene[DUCK4]->m_transform.Rotate(0.0f, duckRotation[3], 0.0f);
+
+	objInScene[DUCK5] = new Ducks();
+	objInScene[DUCK5]->m_transform.Translate(duckX[4], 7.f, duckZ[4]);
+	objInScene[DUCK5]->m_transform.Rotate(0.0f, duckRotation[4], 0.0f);
+
+	objInScene[DUCK6] = new Ducks();
+	objInScene[DUCK6]->m_transform.Translate(duckX[5], 7.f, duckZ[5]);
+	objInScene[DUCK6]->m_transform.Rotate(0.0f, duckRotation[5], 0.0f);
+
+	objInScene[DUCK7] = new Ducks();
+	objInScene[DUCK7]->m_transform.Translate(duckX[6], 7.f, duckZ[6]);
+	objInScene[DUCK7]->m_transform.Rotate(0.0f, duckRotation[6], 0.0f);
+
+	objInScene[DUCK8] = new Ducks();
+	objInScene[DUCK8]->m_transform.Translate(duckX[7], 7.f, duckZ[7]);
+	objInScene[DUCK8]->m_transform.Rotate(0.0f, duckRotation[7], 0.0f);
+
+	objInScene[DUCK9] = new Ducks();
+	objInScene[DUCK9]->m_transform.Translate(duckX[8], 7.f, duckZ[8]);
+	objInScene[DUCK9]->m_transform.Rotate(0.0f, duckRotation[8], 0.0f);
+
+	objInScene[DUCK10] = new Ducks();
+	objInScene[DUCK10]->m_transform.Translate(duckX[9], 7.f, duckZ[9]);
+	objInScene[DUCK10]->m_transform.Rotate(0.0f, duckRotation[9], 0.0f);
+
+	objInScene[DUCK11] = new Ducks();
+	objInScene[DUCK11]->m_transform.Translate(duckX[10], 7.f, duckZ[10]);
+	objInScene[DUCK11]->m_transform.Rotate(0.0f, duckRotation[10], 0.0f);
+
+	objInScene[DUCK12] = new Ducks();
+	objInScene[DUCK12]->m_transform.Translate(duckX[11], 7.f, duckZ[11]);
+	objInScene[DUCK12]->m_transform.Rotate(0.0f, duckRotation[11], 0.0f);
+
+	objInScene[DUCK13] = new Ducks();
+	objInScene[DUCK13]->m_transform.Translate(duckX[12], 7.f, duckZ[12]);
+	objInScene[DUCK13]->m_transform.Rotate(0.0f, duckRotation[12], 0.0f);
+
+	objInScene[DUCK14] = new Ducks();
+	objInScene[DUCK14]->m_transform.Translate(duckX[13], 7.f, duckZ[13]);
+	objInScene[DUCK14]->m_transform.Rotate(0.0f, duckRotation[13], 0.0f);
+
+	objInScene[DUCK15] = new Ducks();
+	objInScene[DUCK15]->m_transform.Translate(duckX[14], 7.f, duckZ[14]);
+	objInScene[DUCK15]->m_transform.Rotate(0.0f, duckRotation[14], 0.0f);
+
+	objInScene[DUCK16] = new Ducks();
+	objInScene[DUCK16]->m_transform.Translate(duckX[15], 7.f, duckZ[15]);
+	objInScene[DUCK16]->m_transform.Rotate(0.0f, duckRotation[15], 0.0f);
+
+	objInScene[DUCK17] = new Ducks();
+	objInScene[DUCK17]->m_transform.Translate(duckX[16], 7.f, duckZ[16]);
+	objInScene[DUCK17]->m_transform.Rotate(0.0f, duckRotation[16], 0.0f);
+
+	objInScene[DUCK18] = new Ducks();
+	objInScene[DUCK18]->m_transform.Translate(duckX[17], 7.f, duckZ[17]);
+	objInScene[DUCK18]->m_transform.Rotate(0.0f, duckRotation[17], 0.0f);
+
+	objInScene[DUCK19] = new Ducks();
+	objInScene[DUCK19]->m_transform.Translate(duckX[18], 7.f, duckZ[18]);
+	objInScene[DUCK19]->m_transform.Rotate(0.0f, duckRotation[18], 0.0f);
+
+	objInScene[DUCK20] = new Ducks();
+	objInScene[DUCK20]->m_transform.Translate(duckX[19], 7.f, duckZ[19]);
+	objInScene[DUCK20]->m_transform.Rotate(0.0f, duckRotation[19], 0.0f);
+
 	objInScene[POOLWALL] = new PoolWall();
+	objInScene[POOLWALL]->m_transform.Translate(0.0f, 2.f, 0.0f);
+	objInScene[POOLWALL2] = new PoolWall();
+	objInScene[POOLWALL2]->m_transform.Translate(0.0f, 5.f, 0.0f);
+	objInScene[POOLWALL3] = new PoolWall();
+	objInScene[POOLWALL3]->m_transform.Translate(0.0f, 7.f, 0.0f);
+
+	objInScene[POOL_SPINNER] = new SpinyWater();
+	objInScene[POOL_SPINNER]->m_transform.Translate(0, 3.5, 0);
+	objInScene[POOL_SPINNER]->m_transform.Rotate(90.0f, spinnerRotation, 0.0f);
+
+	objInScene[POOL_SPINNER2] = new SpinyWater();
+	objInScene[POOL_SPINNER2]->m_transform.Translate(9, 3.5, 0);
+	objInScene[POOL_SPINNER2]->m_transform.Rotate(90.0f, spinnerRotation, 0.0f);
+
+	objInScene[POOL_SPINNER3] = new SpinyWater();
+	objInScene[POOL_SPINNER3]->m_transform.Translate(-9, 3.5, 0);
+	objInScene[POOL_SPINNER3]->m_transform.Rotate(90.0f, spinnerRotation, 0.0f);
+
+	objInScene[POOL_SPINNER4] = new SpinyWater();
+	objInScene[POOL_SPINNER4]->m_transform.Translate(0, 3.5, 9);
+	objInScene[POOL_SPINNER4]->m_transform.Rotate(90.0f, spinnerRotation, 0.0f);
+
+	objInScene[POOL_SPINNER5] = new SpinyWater();
+	objInScene[POOL_SPINNER5]->m_transform.Translate(0, 3.5, -9);
+	objInScene[POOL_SPINNER5]->m_transform.Rotate(90.0f, spinnerRotation, 0.0f);
+
+
+
+	objInScene[POOLFLOOR] = new PoolFloor();
+	//objInScene[POOLWALL3]->m_transform.Translate(0.0f, 7.f, 0.0f);
 
 	/*PhysicsMaterial mat;
 	mat.m_bounciness = 0.5f;
@@ -179,7 +311,9 @@ void SceneDuckFishing::Init()
 	GameObjectManager::GetInstance()->addItem(objInScene[CYLINDER]);*/
 
 	GameObjectManager::GetInstance()->IniAll();
-}
+	
+	
+} 
 
 void SceneDuckFishing::Update()
 {
@@ -196,7 +330,17 @@ void SceneDuckFishing::Update()
 		inputMovementDir = -mainCamera.right;
 	glm::vec3 finalForce = inputMovementDir * 10.0f * Time::deltaTime;
 	mainCamera.m_transform.Translate(finalForce);
+
+	spinnerRotation += 100* Time::deltaTime;
+	objInScene[POOL_SPINNER]->SetRigidbodyRotation(0.0f, spinnerRotation, 0.0f);
+	objInScene[POOL_SPINNER2]->SetRigidbodyRotation(0.0f, -spinnerRotation, 0.0f);
+	objInScene[POOL_SPINNER3]->SetRigidbodyRotation(0.0f, -spinnerRotation, 0.0f);
+	objInScene[POOL_SPINNER4]->SetRigidbodyRotation(0.0f, -spinnerRotation, 0.0f);
+	objInScene[POOL_SPINNER5]->SetRigidbodyRotation(0.0f, spinnerRotation, 0.0f);
+
+
 	mainCamera.UpdateCameraRotation();
+	GameObjectManager::GetInstance()->UpdateAll();
 }
 
 void SceneDuckFishing::LateUpdate()
@@ -212,6 +356,7 @@ void SceneDuckFishing::LateUpdate()
 	{
 		std::cout << "Is Collided!" << std::endl;
 	}*/
+	
 }
 
 void SceneDuckFishing::Render()
@@ -268,7 +413,16 @@ void SceneDuckFishing::Render()
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
-	//modelStack.Scale(4.0f, 2.0f, 3.0f);
+	modelStack.Translate(0, 3.5, 0);
+	modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
+	modelStack.Scale(2.5f, 2.5f, 1.0f);
+	RenderMesh(meshList[GEO_FD_WATER]); 
+	modelStack.PopMatrix();
+
+
+	modelStack.PushMatrix();
+	modelStack.Translate(0, 4.5, 0);
+	modelStack.Scale(0.7f, 0.7f, 0.7f);
 	RenderMesh(meshList[GEO_FD_POOL]);
 	modelStack.PopMatrix();
 
@@ -295,6 +449,7 @@ void SceneDuckFishing::Render()
 			SphereCollider* sphereCollider = static_cast<SphereCollider*>(shape);
 			float size = sphereCollider->GetRadius();
 			modelStack.Scale(size, size, size);
+			modelStack.Scale(shape->getLocalScaling().x(), shape->getLocalScaling().y(), shape->getLocalScaling().z());
 			RenderMesh(hitboxMeshList[HITBOX_SPHERE]);
 		}
 		else if (shape->getShapeType() == BOX_SHAPE_PROXYTYPE)
@@ -303,6 +458,7 @@ void SceneDuckFishing::Render()
 			float width, height, depth;
 			boxCollider->GetDimension(width, height, depth);
 			modelStack.Scale(width, height, depth);
+			modelStack.Scale(shape->getLocalScaling().x(), shape->getLocalScaling().y(), shape->getLocalScaling().z());
 			RenderMesh(hitboxMeshList[HITBOX_BOX]);
 		}
 		else if (shape->getShapeType() == CYLINDER_SHAPE_PROXYTYPE)
@@ -311,7 +467,21 @@ void SceneDuckFishing::Render()
 			float rad, height;
 			cylinderCollider->GetDimension(rad, height);
 			modelStack.Scale(rad / 2.0f, height, rad / 2.0f);
+			modelStack.Scale(shape->getLocalScaling().x(), shape->getLocalScaling().y(), shape->getLocalScaling().z());
 			RenderMesh(hitboxMeshList[HITBOX_CYLINDER]);
+		}
+		else if (shape->getShapeType() == COMPOUND_SHAPE_PROXYTYPE)
+		{
+			btCompoundShape* compoundShape = static_cast<btCompoundShape*>(shape);
+			for (unsigned i = 0; i < (unsigned)compoundShape->getNumChildShapes(); ++i)
+			{
+				btCollisionShape* childShape = compoundShape->getChildShape(i);
+				btTransform childTransform = compoundShape->getChildTransform(i);
+				float mat[16];
+				childTransform.getOpenGLMatrix(mat);
+
+				RenderChildCollider(childShape, mat);
+			}
 		}
 		else if (shape->getShapeType() == STATIC_PLANE_PROXYTYPE)
 		{
@@ -321,8 +491,9 @@ void SceneDuckFishing::Render()
 		modelStack.PopMatrix();
 	}
 
-	if(isFillMode) 
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	if (isFillMode) glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+
 #endif
 }
 
