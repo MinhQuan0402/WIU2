@@ -48,6 +48,8 @@ public:
 		GEO_PILLAR,
 		GEO_CONVEYOR,
 
+		GEO_FAIRYLIGHT,
+
 		NUM_GEOMETRY
 	};
 
@@ -95,6 +97,8 @@ private:
 	bool recoilBack;
 	float recoilTime;
 	const float recoilDuration = 0.1f;
+	float lightTimer;
+	bool isLightChanged;
 
 	UnorderedVector<DS_Duck*> ducks;
 	UnorderedVector<DS_Bullet*> bullets;
@@ -109,7 +113,7 @@ private:
 
 	bool gameComplete;
 
-	glm::vec3 devVec;
+	glm::vec3 devVec = glm::vec3{ 19.127 - 37.4806, 7.9206, 0.0354775 };
 };
 
 #endif
