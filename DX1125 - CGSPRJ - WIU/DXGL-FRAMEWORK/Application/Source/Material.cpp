@@ -24,8 +24,8 @@ Material Material::Plastic(glm::vec3 color)
 
 Material Material::Metal(glm::vec3 color)
 {
-	float ambientStrength = 0.3f;
-	float diffuseStrength = 0.5f;
+	float ambientStrength = 0.4f;
+	float diffuseStrength = 0.25f;
 	float specularStrength = 0.15f;
 
 	Material metal;

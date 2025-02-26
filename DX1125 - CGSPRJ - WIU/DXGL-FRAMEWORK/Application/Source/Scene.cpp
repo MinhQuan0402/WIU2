@@ -122,6 +122,7 @@ void Scene::RenderMesh(Mesh* mesh, bool enableLight, Transform& transform)
 	}
 	modelStack.Clear();
 }
+
 void Scene::RenderRigidMesh(Mesh* mesh, bool enableLight, Transform& transform, btRigidBody* body)
 {
 	modelStack.PushMatrix();
@@ -382,7 +383,7 @@ void Scene::HandleKeyPress(void)
 	if (KeyboardController::GetInstance()->IsKeyPressed(GLFW_KEY_0))
 	{
 		// Toggle light on or off
-	/*	enableLight = !enableLight;*/
+		enableLight = !enableLight;
 
 		if (lights[0].power <= 0.1f)
 			lights[0].power = 1.f;
@@ -406,5 +407,19 @@ void Scene::HandleKeyPress(void)
 		glUniform1i(m_parameters[U_LIGHT0_TYPE], lights[0].type);
 	}
 
+	glm::vec3 lightInputDir{};
+	if (KeyboardController::GetInstance()->IsKeyDown(GLFW_KEY_RIGHT))
+		lightInputDir.x = 1.0f;
+	if (KeyboardController::GetInstance()->IsKeyDown(GLFW_KEY_LEFT))
+		lightInputDir.x = -1.0f;
+	if (KeyboardController::GetInstance()->IsKeyDown(GLFW_KEY_UP))
+		lightInputDir.z = 1.0f;
+	if (KeyboardController::GetInstance()->IsKeyDown(GLFW_KEY_DOWN))
+		lightInputDir.z = -1.0f;
+	if (KeyboardController::GetInstance()->IsKeyDown('P'))
+		lightInputDir.y = 1.0f;
+	if (KeyboardController::GetInstance()->IsKeyDown('O'))
+		lightInputDir.y = -1.0f;
+	lights[0].m_transform.Translate(lightInputDir * Time::deltaTime * 20.0f);
 }
 

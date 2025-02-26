@@ -167,12 +167,11 @@
     <ClCompile Include="Source\MeshBuilder.cpp" />
     <ClCompile Include="Source\RigidBody.cpp" />
     <ClCompile Include="Source\Scene.cpp" />
+    <ClCompile Include="Source\SceneEnding.cpp" />
     <ClCompile Include="Source\SceneGame.cpp" />
     <ClCompile Include="Source\SceneManager.cpp" />
-    <ClCompile Include="Source\SceneRingToss.cpp" />
     <ClCompile Include="Source\shader.cpp" />
     <ClCompile Include="Source\Time.cpp" />
-    <ClCompile Include="Source\TossBoard.cpp" />
     <ClCompile Include="Source\Utility.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -198,12 +197,11 @@
     <ClInclude Include="Source\MeshBuilder.h" />
     <ClInclude Include="Source\RigidBody.h" />
     <ClInclude Include="Source\Scene.h" />
+    <ClInclude Include="Source\SceneEnding.h" />
     <ClInclude Include="Source\SceneGame.h" />
     <ClInclude Include="Source\SceneManager.h" />
-    <ClInclude Include="Source\SceneRingToss.h" />
     <ClInclude Include="Source\shader.hpp" />
     <ClInclude Include="Source\Time.h" />
-    <ClInclude Include="Source\TossBoard.h" />
     <ClInclude Include="Source\Utility.h" />
     <ClInclude Include="Source\Vertex.h" />
   </ItemGroup>
