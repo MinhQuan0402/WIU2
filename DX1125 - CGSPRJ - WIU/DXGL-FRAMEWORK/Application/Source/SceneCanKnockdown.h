@@ -74,6 +74,8 @@ private:
 	
 	GameObject* objInScene[NUM_OBJ];
 
+	int points;
+
 	float power;
 	const float maxPower = 25;
 

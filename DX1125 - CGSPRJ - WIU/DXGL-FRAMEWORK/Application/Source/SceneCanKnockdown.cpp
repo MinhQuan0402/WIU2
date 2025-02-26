@@ -250,6 +250,7 @@ void SceneCanKnockdown::Init()
 	isShooting = false;
 	cooldownTimer = 0;
 	attemptsLeft = 2;
+	points = 0;
 	gameComplete = false;
 }
 
@@ -323,6 +324,8 @@ void SceneCanKnockdown::Update()
 			}
 			else continue;
 		}
+
+		points = cansFallen * 50;
 
 		if (cansFallen == 6) {
 			std::cout << "Game complete" << std::endl;
@@ -514,6 +517,9 @@ void SceneCanKnockdown::Render()
 			RenderMeshOnScreen(MeshManager::GetInstance()->meshList[MeshManager::GEO_POWERUI_FRAME], 0.5, 0.3, 100 * 1.25, 25 * 1.25, glm::vec2(0, 0));
 			RenderMeshOnScreen(MeshManager::GetInstance()->meshList[MeshManager::GEO_POWERUI_BAR], 0.425, 0.3, power / maxPower * 120, 25, glm::vec2(-0.5, 0));
 		}
+
+		RenderTextOnScreen(meshList[GEO_TEXT], "Points", BLACK, 30, Application::m_consoleWidth * 0.5 - 50, Application::m_consoleHeight * 0.75 + 30);
+		RenderTextOnScreen(meshList[GEO_TEXT], std::to_string(points), BLACK, 30, Application::m_consoleWidth * 0.5, Application::m_consoleHeight * 0.75);
 	}
 
 //#ifdef DRAW_HITBOX
