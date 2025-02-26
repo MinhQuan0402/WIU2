@@ -117,7 +117,8 @@ void SceneBalloon::Init()
 	meshList[GEO_SPHERE] = MeshBuilder::GenerateSphere("Sphere", YELLOW, 1.0f, 100, 100);
 	meshList[GEO_CUBE] = MeshBuilder::GenerateCube("Cube", GREY, 1.0f);
 	meshList[GEO_CYLINDER] = MeshBuilder::GenerateCylinder("Cylinder", BLUE, 180, 1.0f, 1.0f);
-	meshList[GEO_PLANE] = MeshBuilder::GenerateQuad("Quad", GREY, 1000.0f);
+	meshList[GEO_PLANE] = MeshBuilder::GenerateQuad("Quad", WHITE, 75.0f);
+	meshList[GEO_PLANE]->textureID = LoadPNG("Images//ground.png");
 
 	meshList[GEO_BP_BALLOON] = MeshBuilder::GenerateOBJ("Balloon", "Models//balloon.obj");
 	meshList[GEO_BP_BOOTHGUARDS] = MeshBuilder::GenerateOBJMTL("BoothGuards", "Models//BP_BoothGuards.obj", "Models//BP_BoothGuards.mtl");
@@ -157,7 +158,7 @@ void SceneBalloon::Init()
 	lights[0].m_transform.m_position = glm::vec3(0, 12, 0);
 	lights[0].color = glm::vec3(1, 1, 1);
 	lights[0].type = Light::LIGHT_POINT;
-	lights[0].power = 0.7;
+	lights[0].power = 0.5;
 	lights[0].kC = 0.f;
 	lights[0].kL = 0.01f;
 	lights[0].kQ = 0.001f;
@@ -182,7 +183,7 @@ void SceneBalloon::Init()
 	{
 		lights[i].color = glm::vec3(1, 1, 1);
 		lights[i].type = Light::LIGHT_POINT;
-		lights[i].power = 0.35f;
+		lights[i].power = 0.3f;
 		lights[i].kC = 1.f;
 		lights[i].kL = 0.01f;
 		lights[i].kQ = 0.001f;
@@ -220,9 +221,6 @@ void SceneBalloon::Init()
 		glUniform1f(m_parameters[U_LIGHT0_EXPONENT + U_LIGHT0_EXPONENT * i], lights[i].exponent);
 	}
 
-
-	
-
 	enableLight = true;
 
 	objInScene[BALLOONBOARD] = new BalloonBoard();
@@ -251,6 +249,7 @@ void SceneBalloon::Init()
 	objInScene[BOXF]->m_transform.Rotate(0, 90, 0);
 	objInScene[BOXB]->m_transform.Translate(5.85, 2.66, -1.55);
 	objInScene[BOXB]->m_transform.Rotate(0, 90, 0);
+
 	for (int i = 0; i < 10; i++) {
 		objInScene[currentDartIndex]->m_transform.Translate(5.2, 2.66, -1.3);
 		currentDartIndex++;
@@ -279,20 +278,20 @@ void SceneBalloon::Update()
 	HandleKeyPress();
 	mainCamera.Update();
 	glm::vec3 inputMovementDir{};
-	if (KeyboardController::GetInstance()->IsKeyDown('W'))
+	/*if (KeyboardController::GetInstance()->IsKeyDown('W'))
 		inputMovementDir = mainCamera.view;
 	if (KeyboardController::GetInstance()->IsKeyDown('S'))
 		inputMovementDir = -mainCamera.view;
 	if (KeyboardController::GetInstance()->IsKeyDown('D'))
 		inputMovementDir = mainCamera.right;
 	if (KeyboardController::GetInstance()->IsKeyDown('A'))
-		inputMovementDir = -mainCamera.right;
+		inputMovementDir = -mainCamera.right;*/
 	glm::vec3 finalForce = inputMovementDir * 10.0f * Time::deltaTime;
 	mainCamera.m_transform.Translate(finalForce);
 	glm::vec3 prevTarget = mainCamera.target;
 	mainCamera.UpdateCameraRotation();
 
-	float speed = 5 * Time::deltaTime;
+	/*float speed = 5 * Time::deltaTime;
 	if (KeyboardController::GetInstance()->IsKeyDown('I'))
 		devVec.z += speed;
 	if (KeyboardController::GetInstance()->IsKeyDown('K'))
@@ -304,30 +303,30 @@ void SceneBalloon::Update()
 	if (KeyboardController::GetInstance()->IsKeyDown('O'))
 		devVec.y += speed;
 	if (KeyboardController::GetInstance()->IsKeyDown('P'))
-		devVec.y -= speed;
+		devVec.y -= speed;*/
 
 	//lights[5].m_transform.m_position = devVec;
 	//std::cout << devVec.x << ", " << devVec.y << ", " << devVec.z << std::endl;
 
 
-	//// stop player rotating too far:
-	//{
-	//	glm::vec3 toObject = glm::normalize(glm::vec3(0, 3, 0) - mainCamera.m_transform.m_position);
+	// stop player rotating too far:
+	{
+		glm::vec3 toObject = glm::normalize(glm::vec3(0, 3, 0) - mainCamera.m_transform.m_position);
 
-	//	glm::vec3 lookVector = glm::normalize(mainCamera.target - mainCamera.m_transform.m_position);
+		glm::vec3 lookVector = glm::normalize(mainCamera.target - mainCamera.m_transform.m_position);
 
-	//	float dotProduct = glm::dot(lookVector, toObject);
-	//	float threshold = glm::cos(glm::radians(fov * 0.7));
+		float dotProduct = glm::dot(lookVector, toObject);
+		float threshold = glm::cos(glm::radians(fov * 0.7));
 
-	//	if (dotProduct <= threshold) // Rotated too much
-	//	{
-	//		mainCamera.target = prevTarget;
-	//	}
-	//	else {
-	//		float closeness = (dotProduct - threshold) / (1.0f - threshold);
-	//		mainCamera.sensitivity = 10 + closeness * (50 - 10);
-	//	}
-	//}
+		if (dotProduct <= threshold) // Rotated too much
+		{
+			mainCamera.target = prevTarget;
+		}
+		else {
+			float closeness = (dotProduct - threshold) / (1.0f - threshold);
+			mainCamera.sensitivity = 10 + closeness * (50 - 10);
+		}
+	}
 
 	// update light:
 	{
@@ -512,15 +511,8 @@ void SceneBalloon::Render()
 	RenderMesh(meshList[GEO_AXIS]);
 	modelStack.PopMatrix();
 
-	for (int i = 0; i < numLight; i++) 
-	{
-		modelStack.PushMatrix();
-		modelStack.Translate(lights[i].m_transform.m_position.x, lights[i].m_transform.m_position.y, lights[i].m_transform.m_position.z);
-		RenderMesh(meshList[GEO_LIGHT]);
-		modelStack.PopMatrix();
-	}
-
 	RenderSkybox();
+	RenderGround(7);
 
 	modelStack.PushMatrix();
 	modelStack.Rotate(90, 0, 1, 0);
@@ -700,4 +692,31 @@ void SceneBalloon::RenderMeshOnScreen(Mesh* mesh, float x, float y, float width,
 	viewStack.PopMatrix();
 	modelStack.PopMatrix();
 	glEnable(GL_DEPTH_TEST);
+}
+
+void SceneBalloon::RenderGround(int size)
+{
+	if (size % 2 == 0) size += 1;
+
+	int valueToMul = (size - 1) / 2;
+	glm::vec3 originPos = glm::vec3{ 75.0f * (float)valueToMul, 0.0f, 75.0f * (float)valueToMul };
+	float orignalX = originPos.x;
+	meshList[GEO_PLANE]->material = Material::Wood(WHITE);
+	for (int i = 0; i < size; i++)
+	{
+		originPos.x = orignalX;
+		for (int j = 0; j < size; ++j)
+		{
+
+			modelStack.PushMatrix();
+			modelStack.Translate(originPos.x, originPos.y, originPos.z);
+			modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
+			RenderMesh(meshList[GEO_PLANE], enableLight);
+			modelStack.PopMatrix();
+
+			originPos.x -= 75.0f;
+		}
+
+		originPos.z -= 75.0f;
+	}
 }
