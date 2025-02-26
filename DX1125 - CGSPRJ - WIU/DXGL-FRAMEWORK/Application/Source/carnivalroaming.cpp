@@ -113,9 +113,8 @@ void carnivalroaming::Init()
 	meshList[GEO_TICKET] = MeshBuilder::GenerateQuad("Quad", YELLOW, 1.0f);
 	meshList[GEO_TICKET]->textureID = LoadPNG("Images//ticket.png");
 
-	meshList[GEO_PLANE] = MeshBuilder::GenerateQuad("Quad", WHITE, 1.0f);
-	meshList[GEO_PLANE]->textureID = LoadPNG("Images//CR_grass.png");
-	meshList[GEO_PLANE]->material = Material::Wood(WHITE); 
+	meshList[GEO_PLANE] = MeshBuilder::GenerateQuad("Quad", GREEN, 75.0f);
+	meshList[GEO_PLANE]->textureID = LoadPNG("Images//ground.png");
 
 	meshList[GEO_TOP] = MeshBuilder::GenerateQuad("Plane", glm::vec3(1.f, 1.f, 1.f), 10.f);
 	meshList[GEO_TOP]->textureID = LoadPNG("Images//top.png");
@@ -438,13 +437,14 @@ void carnivalroaming::Render()
 	}
 
 	RenderSkybox();
+	RenderGround(20);
 
 	//meshList[GEO_PLANE]->material = Material::Wood(RED);
-	modelStack.PushMatrix();
+	/*modelStack.PushMatrix();
 	modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
 	modelStack.Scale(1500.0f, 1000.0f, 0.0f);
 	RenderMesh(meshList[GEO_PLANE], true);
-	modelStack.PopMatrix();
+	modelStack.PopMatrix();*/
 
 
 	modelStack.PushMatrix();
@@ -1611,4 +1611,31 @@ void carnivalroaming::RenderSkybox(void)
 	// Skybox should be rendered without light
 	RenderMesh(meshList[GEO_BOTTOM], false);
 	modelStack.PopMatrix();
+}
+
+void carnivalroaming::RenderGround(int size)
+{
+	if (size % 2 == 0) size += 1;
+
+	int valueToMul = (size - 1) / 2;
+	glm::vec3 originPos = glm::vec3{ 75.0f * (float)valueToMul, 0.0f, 75.0f * (float)valueToMul };
+	float orignalX = originPos.x;
+	meshList[GEO_PLANE]->material = Material::Wood(WHITE);
+	for (int i = 0; i < size; i++)
+	{
+		originPos.x = orignalX;
+		for (int j = 0; j < size; ++j)
+		{
+
+			modelStack.PushMatrix();
+			modelStack.Translate(originPos.x, originPos.y, originPos.z);
+			modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
+			RenderMesh(meshList[GEO_PLANE], enableLight);
+			modelStack.PopMatrix();
+
+			originPos.x -= 75.0f;
+		}
+
+		originPos.z -= 75.0f;
+	}
 }

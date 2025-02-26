@@ -41,6 +41,7 @@ public:
 
 private:
 	void RenderSkybox(void);
+	void RenderGround(int size);
 	int numLight;
 	Transform player;
 

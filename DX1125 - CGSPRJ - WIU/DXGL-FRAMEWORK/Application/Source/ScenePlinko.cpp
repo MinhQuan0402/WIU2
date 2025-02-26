@@ -108,10 +108,7 @@ void ScenePlinko::Init()
 
 	meshList[GEO_CUBE] = MeshBuilder::GenerateCube("Cube", WHITE, 1.0f);
 	meshList[GEO_PLANE] = MeshBuilder::GenerateQuad("Quad", GREY, 1000.0f);
-	meshList[GEO_PLANE]->material.kDiffuse = WHITE;
-	meshList[GEO_PLANE]->material.kAmbient = GREY;
-	meshList[GEO_PLANE]->material.kSpecular = glm::vec3(0.1, 0.1, 0.1);
-	meshList[GEO_PLANE]->material.kShininess = 1;
+	meshList[GEO_PLANE]->textureID = LoadPNG("Images//ground.png");
 
 	meshList[GEO_CYLINDER] = MeshBuilder::GenerateCylinder("Cylinder", WHITE, 100, 1.f, 2.f);
 	
@@ -372,7 +369,6 @@ void ScenePlinko::Render()
 		return;
 	}
 	
-
 //#ifdef DRAW_HITBOX
 //	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 //	for (btCollisionShape* shape : ColliderManager::GetInstance()->colliders)
