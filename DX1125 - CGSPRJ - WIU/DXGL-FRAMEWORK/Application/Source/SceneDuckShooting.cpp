@@ -321,41 +321,41 @@ void SceneDuckShooting::Update()
 	HandleKeyPress();
 	mainCamera.Update();
 	glm::vec3 inputMovementDir{};
-	if (KeyboardController::GetInstance()->IsKeyDown('W'))
+	/*if (KeyboardController::GetInstance()->IsKeyDown('W'))
 		inputMovementDir = mainCamera.view;
 	if (KeyboardController::GetInstance()->IsKeyDown('S'))
 		inputMovementDir = -mainCamera.view;
 	if (KeyboardController::GetInstance()->IsKeyDown('D'))
 		inputMovementDir = mainCamera.right;
 	if (KeyboardController::GetInstance()->IsKeyDown('A'))
-		inputMovementDir = -mainCamera.right;
+		inputMovementDir = -mainCamera.right;*/
 
 	glm::vec3 finalForce = inputMovementDir * 10.0f * Time::deltaTime;
 	mainCamera.m_transform.Translate(finalForce);
 	glm::vec3 prevTarget = mainCamera.target;
 	mainCamera.UpdateCameraRotation();
 
-	//// stop player rotating too far:
-	//{
-	//	glm::vec3 toObject = glm::normalize(glm::vec3(0, 3, 0) - mainCamera.m_transform.m_position);
+	// stop player rotating too far:
+	{
+		glm::vec3 toObject = glm::normalize(glm::vec3(0, 3, 0) - mainCamera.m_transform.m_position);
 
-	//	glm::vec3 lookVector = glm::normalize(mainCamera.target - mainCamera.m_transform.m_position);
+		glm::vec3 lookVector = glm::normalize(mainCamera.target - mainCamera.m_transform.m_position);
 
-	//	float dotProduct = glm::dot(lookVector, toObject);
-	//	float threshold = glm::cos(glm::radians(fov));
+		float dotProduct = glm::dot(lookVector, toObject);
+		float threshold = glm::cos(glm::radians(fov));
 
-	//	if (dotProduct <= threshold) // Rotated too much
-	//	{
-	//		mainCamera.target = prevTarget;
-	//	}
-	//	else {
-	//		float closeness = (dotProduct - threshold) / (1.0f - threshold);
-	//		mainCamera.sensitivity = 10 + closeness * (50 - 10);
-	//	}
-	//}
+		if (dotProduct <= threshold) // Rotated too much
+		{
+			mainCamera.target = prevTarget;
+		}
+		else {
+			float closeness = (dotProduct - threshold) / (1.0f - threshold);
+			mainCamera.sensitivity = 10 + closeness * (50 - 10);
+		}
+	}
 
 
-	float speed = 5 * Time::deltaTime;
+	/*float speed = 5 * Time::deltaTime;
 	if (KeyboardController::GetInstance()->IsKeyDown('I'))
 		devVec.z += speed;
 	if (KeyboardController::GetInstance()->IsKeyDown('K'))
@@ -370,7 +370,7 @@ void SceneDuckShooting::Update()
 		devVec.y -= speed;
 
 	lights[9].m_transform.m_position = devVec;
-	std::cout << devVec.x << ", " << devVec.y << ", " << devVec.z << std::endl;
+	std::cout << devVec.x << ", " << devVec.y << ", " << devVec.z << std::endl;*/
 
 	GameObjectManager::GetInstance()->UpdateAll();
 
@@ -537,54 +537,53 @@ void SceneDuckShooting::LateUpdate()
 		cooldownTimer = 0;
 	}
 
-	if (gameComplete == false) 
-	{
-		if (cooldownTimer <= 0) {
-			if (MouseController::GetInstance()->IsButtonReleased(0))
-			{
-				cooldownTimer = 0.25;
-				recoil = true;
-
-				// Shoot:
-				GameObject* bullet = GameObject::Instantiate<DS_Bullet>();
-				for (int i = 0; i < bullets.size(); i++) {
-					DS_Bullet* otherBullet = bullets[i];
-					bullet->rb->setIgnoreCollisionCheck(otherBullet->rb, true);
-				}
-
-				glm::vec3 bulletOffset = mainCamera.right * 0.165f + mainCamera.up * -0.075f + mainCamera.view * 1.f;
-				glm::vec3 origin = mainCamera.m_transform.m_position + bulletOffset;
-				glm::vec3 direction = glm::normalize(mainCamera.target - origin);
-
-				bullet->rb->setSleepingThresholds(0.8, 1);
-				bullet->SetRigidbodyPosition(origin);
-				bullet->rb->setLinearVelocity(btVector3(direction.x, direction.y, direction.z) * bulletSpeed);
-				bullet->rb->activate();
-
-				bullets.push_back((DS_Bullet*)bullet);
-			}
-		}
-
-		// Move ducks:
+	
+	if (cooldownTimer <= 0 && !gameComplete) {
+		if (MouseController::GetInstance()->IsButtonReleased(0))
 		{
-			for (int i = 0; i < ducks.size(); i++) {
-				DS_Duck* duck = ducks[i];
+			cooldownTimer = 0.25;
+			recoil = true;
 
-				if (duck->GetRigidbodyPosition().x < 24.3538 * 0.5 + 2.5 * 0.5) {
-					duck->SetRigidbodyPosition(duck->GetRigidbodyPosition() + glm::vec3(duck->speed * Time::fixedDeltaTime, 0, 0));
-				}
-				else {
-					btCollisionShape* collider = duck->rb->getCollisionShape();
-					GameObjectManager::GetInstance()->removeItem(duck);
-					ColliderManager::GetInstance()->RemoveCollider(collider);
-					ducks.remove(duck);
-					return;
-				}
-
-				duck->SetRigidbodyRotation(duck->animTime / duck->duration * -90, 0, 0);
+			// Shoot:
+			GameObject* bullet = GameObject::Instantiate<DS_Bullet>();
+			for (int i = 0; i < bullets.size(); i++) {
+				DS_Bullet* otherBullet = bullets[i];
+				bullet->rb->setIgnoreCollisionCheck(otherBullet->rb, true);
 			}
+
+			glm::vec3 bulletOffset = mainCamera.right * 0.165f + mainCamera.up * -0.075f + mainCamera.view * 1.f;
+			glm::vec3 origin = mainCamera.m_transform.m_position + bulletOffset;
+			glm::vec3 direction = glm::normalize(mainCamera.target - origin);
+
+			bullet->rb->setSleepingThresholds(0.8, 1);
+			bullet->SetRigidbodyPosition(origin);
+			bullet->rb->setLinearVelocity(btVector3(direction.x, direction.y, direction.z) * bulletSpeed);
+			bullet->rb->activate();
+
+			bullets.push_back((DS_Bullet*)bullet);
 		}
 	}
+
+	// Move ducks:
+	{
+		for (int i = 0; i < ducks.size(); i++) {
+			DS_Duck* duck = ducks[i];
+
+			if (duck->GetRigidbodyPosition().x < 24.3538 * 0.5 + 2.5 * 0.5) {
+				duck->SetRigidbodyPosition(duck->GetRigidbodyPosition() + glm::vec3(duck->speed * Time::fixedDeltaTime, 0, 0));
+			}
+			else {
+				btCollisionShape* collider = duck->rb->getCollisionShape();
+				GameObjectManager::GetInstance()->removeItem(duck);
+				ColliderManager::GetInstance()->RemoveCollider(collider);
+				ducks.remove(duck);
+				return;
+			}
+
+			duck->SetRigidbodyRotation(duck->animTime / duck->duration * -90, 0, 0);
+		}
+	}
+	
 
 	GameObjectManager::GetInstance()->LateUpdateAll();
 }
@@ -632,9 +631,9 @@ void SceneDuckShooting::Render()
 		}
 
 
-		modelStack.PushMatrix();
+		/*modelStack.PushMatrix();
 		RenderMesh(meshList[GEO_AXIS]);
-		modelStack.PopMatrix();
+		modelStack.PopMatrix();*/
 	}
 	
 	

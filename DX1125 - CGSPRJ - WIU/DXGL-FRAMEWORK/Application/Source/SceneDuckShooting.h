@@ -109,8 +109,6 @@ private:
 	int points;
 
 	bool gameComplete;
-
-	glm::vec3 devVec = glm::vec3{ 19.127 - 37.4806, 7.9206, 0.0354775 };
 };
 
 #endif
