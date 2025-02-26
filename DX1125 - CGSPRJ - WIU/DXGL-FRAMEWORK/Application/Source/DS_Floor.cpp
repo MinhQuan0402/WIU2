@@ -25,5 +25,5 @@ void DS_Floor::Update()
 
 void DS_Floor::Render(Scene& scene)
 {
-	scene.RenderMesh(scene.meshList[SceneDuckShooting::GEO_PLANE], scene.enableLight, m_transform);
+	scene.RenderMesh(scene.meshList[SceneDuckShooting::GEO_DS_PLANE], scene.enableLight, m_transform);
 }

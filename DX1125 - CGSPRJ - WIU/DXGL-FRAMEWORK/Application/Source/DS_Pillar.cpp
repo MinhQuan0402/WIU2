@@ -21,5 +21,5 @@ void DS_Pillar::Update()
 
 void DS_Pillar::Render(Scene& scene)
 {
-	scene.RenderMesh(scene.meshList[SceneDuckShooting::GEO_PILLAR], scene.enableLight, m_transform);
+	scene.RenderMesh(scene.meshList[SceneDuckShooting::GEO_DS_PILLAR], scene.enableLight, m_transform);
 }

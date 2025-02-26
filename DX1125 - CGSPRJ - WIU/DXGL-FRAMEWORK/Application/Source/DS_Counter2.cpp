@@ -21,5 +21,5 @@ void DS_Counter2::Update()
 
 void DS_Counter2::Render(Scene& scene)
 {
-	scene.RenderMesh(scene.meshList[SceneDuckShooting::GEO_COUNTER], scene.enableLight, m_transform);
+	scene.RenderMesh(scene.meshList[SceneDuckShooting::GEO_DS_COUNTER], scene.enableLight, m_transform);
 }

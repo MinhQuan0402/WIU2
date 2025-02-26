@@ -26,5 +26,5 @@ void DS_Conveyor::Update()
 void DS_Conveyor::Render(Scene& scene)
 {
 	
-	scene.RenderMesh(scene.meshList[SceneDuckShooting::GEO_CONVEYOR], scene.enableLight, m_transform);
+	scene.RenderMesh(scene.meshList[SceneDuckShooting::GEO_DS_CONVEYOR], scene.enableLight, m_transform);
 }

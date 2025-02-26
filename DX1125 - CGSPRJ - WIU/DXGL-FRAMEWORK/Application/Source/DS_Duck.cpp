@@ -43,6 +43,6 @@ void DS_Duck::LateUpdate()
 
 void DS_Duck::Render(Scene& scene)
 {
-	scene.RenderRigidMesh(scene.meshList[SceneDuckShooting::GEO_DUCK], scene.enableLight, m_transform, rb);
+	scene.RenderRigidMesh(scene.meshList[SceneDuckShooting::GEO_DS_DUCK], scene.enableLight, m_transform, rb);
 	//scene.RenderMesh(scene.meshList[SceneDuckShooting::GEO_DUCK], scene.enableLight, m_transform);
 }

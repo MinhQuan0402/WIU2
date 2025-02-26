@@ -22,5 +22,5 @@ void DS_Bullet::Update()
 
 void DS_Bullet::Render(Scene& scene)
 {
-	scene.RenderRigidMesh(scene.meshList[SceneDuckShooting::GEO_BULLET], scene.enableLight, m_transform, rb);
+	scene.RenderRigidMesh(scene.meshList[SceneDuckShooting::GEO_DS_BULLET], scene.enableLight, m_transform, rb);
 }
