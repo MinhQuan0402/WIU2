@@ -24,6 +24,9 @@ public:
 		GEO_PLANE,
 		GEO_CUBE,
 		GEO_CYLINDER,
+
+		GEO_FD_DUCKY,
+
 		NUM_GEOMETRY
 	};
 
