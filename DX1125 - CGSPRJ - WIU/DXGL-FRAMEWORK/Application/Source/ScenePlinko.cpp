@@ -115,6 +115,19 @@ void ScenePlinko::Init()
 
 	meshList[GEO_CYLINDER] = MeshBuilder::GenerateCylinder("Cylinder", WHITE, 100, 1.f, 2.f);
 	
+	meshList[GEO_TOP] = MeshBuilder::GenerateQuad("Plane", glm::vec3(1.f, 1.f, 1.f), 10.f);
+	meshList[GEO_TOP]->textureID = LoadPNG("Images//top.png");
+	meshList[GEO_BOTTOM] = MeshBuilder::GenerateQuad("Plane", glm::vec3(1.f, 1.f, 1.f), 10.f);
+	meshList[GEO_BOTTOM]->textureID = LoadPNG("Images//bottom.png");
+	meshList[GEO_RIGHT] = MeshBuilder::GenerateQuad("Plane", glm::vec3(1.f, 1.f, 1.f), 10.f);
+	meshList[GEO_RIGHT]->textureID = LoadPNG("Images//front.png");
+	meshList[GEO_LEFT] = MeshBuilder::GenerateQuad("Plane", glm::vec3(1.f, 1.f, 1.f), 10.f);
+	meshList[GEO_LEFT]->textureID = LoadPNG("Images//back.png");
+	meshList[GEO_FRONT] = MeshBuilder::GenerateQuad("Plane", glm::vec3(1.f, 1.f, 1.f), 10.f);
+	meshList[GEO_FRONT]->textureID = LoadPNG("Images//right.png");
+	meshList[GEO_BACK] = MeshBuilder::GenerateQuad("Plane", glm::vec3(1.f, 1.f, 1.f), 10.f);
+	meshList[GEO_BACK]->textureID = LoadPNG("Images//left.png");
+
 	mainCamera.Init(glm::vec3(7, 4, 0), glm::vec3(0, 4, 0), VECTOR3_UP);
 	
 	mainCamera.sensitivity = 15.f;
@@ -158,14 +171,14 @@ void ScenePlinko::Update()
 	HandleKeyPress();
 	mainCamera.Update();
 	glm::vec3 inputMovementDir{};
-	if (KeyboardController::GetInstance()->IsKeyDown('W'))
+	/*if (KeyboardController::GetInstance()->IsKeyDown('W'))
 		inputMovementDir = mainCamera.view;
 	if (KeyboardController::GetInstance()->IsKeyDown('S'))
 		inputMovementDir = -mainCamera.view;
 	if (KeyboardController::GetInstance()->IsKeyDown('D'))
 		inputMovementDir = mainCamera.right;
 	if (KeyboardController::GetInstance()->IsKeyDown('A'))
-		inputMovementDir = -mainCamera.right;
+		inputMovementDir = -mainCamera.right;*/
 	glm::vec3 finalForce = inputMovementDir * 10.0f * Time::deltaTime;
 	mainCamera.m_transform.Translate(finalForce);
 	mainCamera.UpdateCameraRotation();
@@ -324,6 +337,8 @@ void ScenePlinko::Render()
 		glm::vec3 lightPosition_cameraspace = viewStack.Top() * glm::vec4(lights[0].m_transform.m_position, 1);
 		glUniform3fv(m_parameters[U_LIGHT0_POSITION], 1, glm::value_ptr(lightPosition_cameraspace));
 	}
+
+	RenderSkybox();
 
 	modelStack.PushMatrix();
 	RenderMesh(meshList[GEO_AXIS]);
