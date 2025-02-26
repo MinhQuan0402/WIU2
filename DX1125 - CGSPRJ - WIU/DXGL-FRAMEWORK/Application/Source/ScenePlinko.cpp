@@ -435,7 +435,7 @@ void ScenePlinko::RenderSkybox(void)
 	float size = 50.0f;
 	modelStack.PushMatrix();
 	// Offset in Z direction by -50 units
-	modelStack.Translate(0.f, 0.f, -5.f * size);
+	modelStack.Translate(0.f, 0.f, -4.99f * size);
 	modelStack.Scale(size, size, 1.0f);
 	// Skybox should be rendered without light
 	RenderMesh(meshList[GEO_FRONT], false);
@@ -443,7 +443,7 @@ void ScenePlinko::RenderSkybox(void)
 
 	modelStack.PushMatrix();
 	// Offset in Z direction by -50 units
-	modelStack.Translate(0.f, 0.f, 5.f * size);
+	modelStack.Translate(0.f, 0.f, 4.99f * size);
 	modelStack.Rotate(180.0f, 0, 1, 0);
 	modelStack.Scale(size, size, 1.0f);
 	// Skybox should be rendered without light
@@ -452,7 +452,7 @@ void ScenePlinko::RenderSkybox(void)
 
 	modelStack.PushMatrix();
 	// Offset in Z direction by -50 units
-	modelStack.Translate(5.0f * size, 0.f, 0.0f);
+	modelStack.Translate(4.99f * size, 0.f, 0.0f);
 	modelStack.Rotate(-90.0f, 0, 1, 0);
 	modelStack.Scale(size, size, 1.0f);
 	// Skybox should be rendered without light
@@ -461,7 +461,7 @@ void ScenePlinko::RenderSkybox(void)
 
 	modelStack.PushMatrix();
 	// Offset in Z direction by -50 units
-	modelStack.Translate(-5.0f * size, 0.f, 0.0f);
+	modelStack.Translate(-4.99f * size, 0.f, 0.0f);
 	modelStack.Rotate(90.0f, 0, 1, 0);
 	modelStack.Scale(size, size, 1.0f);
 	// Skybox should be rendered without light
@@ -470,7 +470,7 @@ void ScenePlinko::RenderSkybox(void)
 
 	modelStack.PushMatrix();
 	// Offset in Z direction by -50 units
-	modelStack.Translate(0.0f, 5.0f * size, 0.0f);
+	modelStack.Translate(0.0f, 4.99f * size, 0.0f);
 	modelStack.Rotate(90.0f, 1, 0, 0);
 	modelStack.Scale(size, size, 1.0f);
 	// Skybox should be rendered without light
@@ -479,7 +479,7 @@ void ScenePlinko::RenderSkybox(void)
 
 	modelStack.PushMatrix();
 	// Offset in Z direction by -50 units
-	modelStack.Translate(0.0f, -5.0f * size, 0.0f);
+	modelStack.Translate(0.0f, -4.99f * size, 0.0f);
 	modelStack.Rotate(-90.0f, 1, 0, 0);
 	modelStack.Scale(size, size, 1.0f);
 	// Skybox should be rendered without light
