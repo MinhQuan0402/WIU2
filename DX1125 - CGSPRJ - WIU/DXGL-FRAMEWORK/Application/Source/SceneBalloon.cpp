@@ -82,6 +82,18 @@ void SceneBalloon::Init()
 	m_parameters[U_LIGHT0_COSINNER] = glGetUniformLocation(m_programID, "lights[0].cosInner");
 	m_parameters[U_LIGHT0_EXPONENT] = glGetUniformLocation(m_programID, "lights[0].exponent");
 
+	m_parameters[U_LIGHT1_TYPE] = glGetUniformLocation(m_programID, "lights[1].type");
+	m_parameters[U_LIGHT1_POSITION] = glGetUniformLocation(m_programID, "lights[1].position_cameraspace");
+	m_parameters[U_LIGHT1_COLOR] = glGetUniformLocation(m_programID, "lights[1].color");
+	m_parameters[U_LIGHT1_POWER] = glGetUniformLocation(m_programID, "lights[1].power");
+	m_parameters[U_LIGHT1_KC] = glGetUniformLocation(m_programID, "lights[1].kC");
+	m_parameters[U_LIGHT1_KL] = glGetUniformLocation(m_programID, "lights[1].kL");
+	m_parameters[U_LIGHT1_KQ] = glGetUniformLocation(m_programID, "lights[1].kQ");
+	m_parameters[U_LIGHT1_SPOTDIRECTION] = glGetUniformLocation(m_programID, "lights[1].spotDirection");
+	m_parameters[U_LIGHT1_COSCUTOFF] = glGetUniformLocation(m_programID, "lights[1].cosCutoff");
+	m_parameters[U_LIGHT1_COSINNER] = glGetUniformLocation(m_programID, "lights[1].cosInner");
+	m_parameters[U_LIGHT1_EXPONENT] = glGetUniformLocation(m_programID, "lights[1].exponent");
+
 	m_parameters[U_LIGHTENABLED] = glGetUniformLocation(m_programID, "lightEnabled");
 	m_parameters[U_NUMLIGHTS] = glGetUniformLocation(m_programID, "numLights");
 	m_parameters[U_COLOR_TEXTURE_ENABLED] = glGetUniformLocation(m_programID, "colorTextureEnabled");
@@ -132,8 +144,8 @@ void SceneBalloon::Init()
 	glUniform1i(m_parameters[U_NUMLIGHTS], 2);
 
 	lights[0].m_transform.m_position = glm::vec3{};
-	lights[0].m_transform.m_position = glm::vec3(0, 5, 0);
-	lights[0].color = glm::vec3(1, 1, 1);
+	lights[0].m_transform.m_position = glm::vec3(0, 5, 5);
+	lights[0].color = glm::vec3(1, 0, 0);
 	lights[0].type = Light::LIGHT_POINT;
 	lights[0].power = 1;
 	lights[0].kC = 1.f;
@@ -153,6 +165,29 @@ void SceneBalloon::Init()
 	glUniform1f(m_parameters[U_LIGHT0_COSCUTOFF], cosf(glm::radians<float>(lights[0].cosCutoff)));
 	glUniform1f(m_parameters[U_LIGHT0_COSINNER], cosf(glm::radians<float>(lights[0].cosInner)));
 	glUniform1f(m_parameters[U_LIGHT0_EXPONENT], lights[0].exponent);
+
+	lights[1].m_transform.m_position = glm::vec3{};
+	lights[1].m_transform.m_position = glm::vec3(0, 5, -5);
+	lights[1].color = glm::vec3(1, 1, 1);
+	lights[1].type = Light::LIGHT_POINT;
+	lights[1].power = 1;
+	lights[1].kC = 1.f;
+	lights[1].kL = 0.01f;
+	lights[1].kQ = 0.001f;
+	lights[1].cosCutoff = 45.f;
+	lights[1].cosInner = 30.f;
+	lights[1].exponent = 3.f;
+	lights[1].spotDirection = glm::vec3(0.f, 1.f, 0.f);
+
+	glUniform3fv(m_parameters[U_LIGHT1_COLOR], 1, &lights[1].color.r);
+	glUniform1i(m_parameters[U_LIGHT1_TYPE], lights[1].type);
+	glUniform1f(m_parameters[U_LIGHT1_POWER], lights[1].power);
+	glUniform1f(m_parameters[U_LIGHT1_KC], lights[1].kC);
+	glUniform1f(m_parameters[U_LIGHT1_KL], lights[1].kL);
+	glUniform1f(m_parameters[U_LIGHT1_KQ], lights[1].kQ);
+	glUniform1f(m_parameters[U_LIGHT1_COSCUTOFF], cosf(glm::radians<float>(lights[1].cosCutoff)));
+	glUniform1f(m_parameters[U_LIGHT1_COSINNER], cosf(glm::radians<float>(lights[1].cosInner)));
+	glUniform1f(m_parameters[U_LIGHT1_EXPONENT], lights[1].exponent);
 
 	enableLight = true;
 
@@ -209,37 +244,37 @@ void SceneBalloon::Update()
 	HandleKeyPress();
 	mainCamera.Update();
 	glm::vec3 inputMovementDir{};
-	/*if (KeyboardController::GetInstance()->IsKeyDown('W'))
+	if (KeyboardController::GetInstance()->IsKeyDown('W'))
 		inputMovementDir = mainCamera.view;
 	if (KeyboardController::GetInstance()->IsKeyDown('S'))
 		inputMovementDir = -mainCamera.view;
 	if (KeyboardController::GetInstance()->IsKeyDown('D'))
 		inputMovementDir = mainCamera.right;
 	if (KeyboardController::GetInstance()->IsKeyDown('A'))
-		inputMovementDir = -mainCamera.right;*/
+		inputMovementDir = -mainCamera.right;
 	glm::vec3 finalForce = inputMovementDir * 10.0f * Time::deltaTime;
 	mainCamera.m_transform.Translate(finalForce);
 	glm::vec3 prevTarget = mainCamera.target;
 	mainCamera.UpdateCameraRotation();
 
-	// stop player rotating too far:
-	{
-		glm::vec3 toObject = glm::normalize(glm::vec3(0, 3, 0) - mainCamera.m_transform.m_position);
+	//// stop player rotating too far:
+	//{
+	//	glm::vec3 toObject = glm::normalize(glm::vec3(0, 3, 0) - mainCamera.m_transform.m_position);
 
-		glm::vec3 lookVector = glm::normalize(mainCamera.target - mainCamera.m_transform.m_position);
+	//	glm::vec3 lookVector = glm::normalize(mainCamera.target - mainCamera.m_transform.m_position);
 
-		float dotProduct = glm::dot(lookVector, toObject);
-		float threshold = glm::cos(glm::radians(fov * 0.7));
+	//	float dotProduct = glm::dot(lookVector, toObject);
+	//	float threshold = glm::cos(glm::radians(fov * 0.7));
 
-		if (dotProduct <= threshold) // Rotated too much
-		{
-			mainCamera.target = prevTarget;
-		}
-		else {
-			float closeness = (dotProduct - threshold) / (1.0f - threshold);
-			mainCamera.sensitivity = 10 + closeness * (50 - 10);
-		}
-	}
+	//	if (dotProduct <= threshold) // Rotated too much
+	//	{
+	//		mainCamera.target = prevTarget;
+	//	}
+	//	else {
+	//		float closeness = (dotProduct - threshold) / (1.0f - threshold);
+	//		mainCamera.sensitivity = 10 + closeness * (50 - 10);
+	//	}
+	//}
 
 	UnorderedVector<Balloon*> ballonList = ((BalloonBoard*)objInScene[BALLOONBOARD])->balloons;
 	for (size_t i = 0; i < ballonList.size(); ++i)
@@ -385,8 +420,37 @@ void SceneBalloon::Render()
 		glUniform3fv(m_parameters[U_LIGHT0_POSITION], 1, glm::value_ptr(lightPosition_cameraspace));
 	}
 
+	if (lights[1].type == Light::LIGHT_DIRECTIONAL)
+	{
+		glm::vec3 lightDir(lights[1].m_transform.m_position.x, lights[1].m_transform.m_position.y, lights[1].m_transform.m_position.z);
+		glm::vec3 lightDirection_cameraspace = viewStack.Top() * glm::vec4(lightDir, 0);
+		glUniform3fv(m_parameters[U_LIGHT1_POSITION], 1, glm::value_ptr(lightDirection_cameraspace));
+	}
+	else if (lights[1].type == Light::LIGHT_SPOT)
+	{
+		glm::vec3 lightPosition_cameraspace = viewStack.Top() * glm::vec4(lights[1].m_transform.m_position, 1);
+		glUniform3fv(m_parameters[U_LIGHT1_POSITION], 1, glm::value_ptr(lightPosition_cameraspace));
+		glm::vec3 spotDirection_cameraspace = viewStack.Top() * glm::vec4(lights[1].spotDirection, 0);
+		glUniform3fv(m_parameters[U_LIGHT1_SPOTDIRECTION], 1, glm::value_ptr(spotDirection_cameraspace));
+	}
+	else {
+		// Calculate the light position in camera space
+		glm::vec3 lightPosition_cameraspace = viewStack.Top() * glm::vec4(lights[1].m_transform.m_position, 1);
+		glUniform3fv(m_parameters[U_LIGHT1_POSITION], 1, glm::value_ptr(lightPosition_cameraspace));
+	}
+
 	modelStack.PushMatrix();
 	RenderMesh(meshList[GEO_AXIS]);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(lights[0].m_transform.m_position.x, lights[0].m_transform.m_position.y, lights[0].m_transform.m_position.z);
+	RenderMesh(meshList[GEO_LIGHT]);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(lights[1].m_transform.m_position.x, lights[1].m_transform.m_position.y, lights[1].m_transform.m_position.z);
+	RenderMesh(meshList[GEO_LIGHT]);
 	modelStack.PopMatrix();
 
 	RenderSkybox();
@@ -395,16 +459,10 @@ void SceneBalloon::Render()
 	modelStack.Rotate(90, 0, 1, 0);
 	modelStack.Scale(1.5, 1, 1);
 
-	meshList[GEO_BP_BOOTHGUARDS]->material.kAmbient = glm::vec3(0.1f, 0.1f, 0.1f);
-	meshList[GEO_BP_BOOTHGUARDS]->material.kDiffuse = glm::vec3(0.4f, 0.4f, 0.4f);
-	meshList[GEO_BP_BOOTHGUARDS]->material.kSpecular = glm::vec3(0.1f, 0.1f, 0.1f);
-	meshList[GEO_BP_BOOTHGUARDS]->material.kShininess = 2.0f;
+	meshList[GEO_BP_BOOTHGUARDS]->material = Material::Metal(WHITE);
 	RenderMesh(meshList[GEO_BP_BOOTHGUARDS], true);
 
-	meshList[GEO_BP_BOOTHROOF]->material.kAmbient = glm::vec3(0.1f, 0.1f, 0.1f);
-	meshList[GEO_BP_BOOTHROOF]->material.kDiffuse = glm::vec3(0.4f, 0.4f, 0.4f);
-	meshList[GEO_BP_BOOTHROOF]->material.kSpecular = glm::vec3(0.1f, 0.1f, 0.1f);
-	meshList[GEO_BP_BOOTHROOF]->material.kShininess = 2.0f;
+	meshList[GEO_BP_BOOTHROOF]->material = Material::Wood(WHITE);
 	RenderMesh(meshList[GEO_BP_BOOTHROOF], true);
 	modelStack.PopMatrix();
 
@@ -425,48 +483,48 @@ void SceneBalloon::Render()
 
 	RenderTextOnScreen(meshList[GEO_TEXT], "Score:" + std::to_string(score), RED, 30, 1000, 600);
 
-#ifdef DRAW_HITBOX
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	for (btCollisionShape* shape : ColliderManager::GetInstance()->colliders)
-	{
-		modelStack.PushMatrix();
-		modelStack.LoadIdentity();
-		GameObject* userGO = static_cast<GameObject*>(shape->getUserPointer());
-		modelStack.LoadMatrix(GetTransformMatrix(userGO->rb));
-		if (shape->getShapeType() == SPHERE_SHAPE_PROXYTYPE)
-		{
-			SphereCollider* sphereCollider = static_cast<SphereCollider*>(shape);
-			float size = sphereCollider->GetRadius();
-			modelStack.Scale(size, size, size);
-			RenderMesh(hitboxMeshList[HITBOX_SPHERE]);
-		}
-		else if (shape->getShapeType() == BOX_SHAPE_PROXYTYPE)
-		{
-			BoxCollider* boxCollider = static_cast<BoxCollider*>(shape);
-			float width, height, depth;
-			boxCollider->GetDimension(width, height, depth);
-			modelStack.Scale(width, height, depth);
-			RenderMesh(hitboxMeshList[HITBOX_BOX]);
-		}
-		else if (shape->getShapeType() == CYLINDER_SHAPE_PROXYTYPE)
-		{
-			CylinderCollider* cylinderCollider = static_cast<CylinderCollider*>(shape);
-			float rad, height;
-			cylinderCollider->GetDimension(rad, height);
-			modelStack.Scale(rad / 2.0f, height, rad / 2.0f);
-			RenderMesh(hitboxMeshList[HITBOX_CYLINDER]);
-		}
-		else if (shape->getShapeType() == STATIC_PLANE_PROXYTYPE)
-		{
-			modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
-			RenderMesh(hitboxMeshList[HITBOX_GROUND]);
-		}
-		modelStack.PopMatrix();
-	}
-
-	if(isFillMode) 
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-#endif
+//#ifdef DRAW_HITBOX
+//	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+//	for (btCollisionShape* shape : ColliderManager::GetInstance()->colliders)
+//	{
+//		modelStack.PushMatrix();
+//		modelStack.LoadIdentity();
+//		GameObject* userGO = static_cast<GameObject*>(shape->getUserPointer());
+//		modelStack.LoadMatrix(GetTransformMatrix(userGO->rb));
+//		if (shape->getShapeType() == SPHERE_SHAPE_PROXYTYPE)
+//		{
+//			SphereCollider* sphereCollider = static_cast<SphereCollider*>(shape);
+//			float size = sphereCollider->GetRadius();
+//			modelStack.Scale(size, size, size);
+//			RenderMesh(hitboxMeshList[HITBOX_SPHERE]);
+//		}
+//		else if (shape->getShapeType() == BOX_SHAPE_PROXYTYPE)
+//		{
+//			BoxCollider* boxCollider = static_cast<BoxCollider*>(shape);
+//			float width, height, depth;
+//			boxCollider->GetDimension(width, height, depth);
+//			modelStack.Scale(width, height, depth);
+//			RenderMesh(hitboxMeshList[HITBOX_BOX]);
+//		}
+//		else if (shape->getShapeType() == CYLINDER_SHAPE_PROXYTYPE)
+//		{
+//			CylinderCollider* cylinderCollider = static_cast<CylinderCollider*>(shape);
+//			float rad, height;
+//			cylinderCollider->GetDimension(rad, height);
+//			modelStack.Scale(rad / 2.0f, height, rad / 2.0f);
+//			RenderMesh(hitboxMeshList[HITBOX_CYLINDER]);
+//		}
+//		else if (shape->getShapeType() == STATIC_PLANE_PROXYTYPE)
+//		{
+//			modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
+//			RenderMesh(hitboxMeshList[HITBOX_GROUND]);
+//		}
+//		modelStack.PopMatrix();
+//	}
+//
+//	if(isFillMode) 
+//		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+//#endif
 }
 
 void SceneBalloon::Exit()

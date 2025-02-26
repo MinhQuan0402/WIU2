@@ -45,10 +45,12 @@ void Balloon::Update()
 
 void Balloon::Render(Scene& scene)
 {
-	scene.meshList[SceneBalloon::GEO_BP_BALLOON]->material.kAmbient = glm::vec3(colourR - 0.2, colourG - 0.2, colourB - 0.2);
+	/*scene.meshList[SceneBalloon::GEO_BP_BALLOON]->material.kAmbient = glm::vec3(colourR - 0.2, colourG - 0.2, colourB - 0.2);
 	scene.meshList[SceneBalloon::GEO_BP_BALLOON]->material.kDiffuse = glm::vec3(colourR, colourG, colourB);
-	scene.meshList[SceneBalloon::GEO_BP_BALLOON]->material.kSpecular = glm::vec3(0.200000, 0.200000, 0.200000);
-	scene.meshList[SceneBalloon::GEO_BP_BALLOON]->material.kShininess = 1.f;
+	scene.meshList[SceneBalloon::GEO_BP_BALLOON]->material.kSpecular = glm::vec3(0.100000, 0.100000, 0.100000);
+	scene.meshList[SceneBalloon::GEO_BP_BALLOON]->material.kShininess = 0.5f;*/
+
+	scene.meshList[SceneBalloon::GEO_BP_BALLOON]->material = Material::Metal(glm::vec3(colourR, colourG, colourB));
 
 	scene.RenderMesh(scene.meshList[SceneBalloon::GEO_BP_BALLOON], true, m_transform);
 }
