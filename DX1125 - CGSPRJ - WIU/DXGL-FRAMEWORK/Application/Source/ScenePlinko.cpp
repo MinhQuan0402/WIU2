@@ -371,6 +371,7 @@ void ScenePlinko::Render()
 		SceneManager::GetInstance()->ChangeState(new carnivalroaming);
 		return;
 	}
+	
 
 //#ifdef DRAW_HITBOX
 //	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);

@@ -117,6 +117,18 @@ void carnivalroaming::Init()
 	meshList[GEO_PLANE]->textureID = LoadPNG("Images//CR_grass.png");
 	meshList[GEO_PLANE]->material = Material::Wood(WHITE); 
 
+	meshList[GEO_TOP] = MeshBuilder::GenerateQuad("Plane", glm::vec3(1.f, 1.f, 1.f), 10.f);
+	meshList[GEO_TOP]->textureID = LoadPNG("Images//top.png");
+	meshList[GEO_BOTTOM] = MeshBuilder::GenerateQuad("Plane", glm::vec3(1.f, 1.f, 1.f), 10.f);
+	meshList[GEO_BOTTOM]->textureID = LoadPNG("Images//bottom.png");
+	meshList[GEO_RIGHT] = MeshBuilder::GenerateQuad("Plane", glm::vec3(1.f, 1.f, 1.f), 10.f);
+	meshList[GEO_RIGHT]->textureID = LoadPNG("Images//front.png");
+	meshList[GEO_LEFT] = MeshBuilder::GenerateQuad("Plane", glm::vec3(1.f, 1.f, 1.f), 10.f);
+	meshList[GEO_LEFT]->textureID = LoadPNG("Images//back.png");
+	meshList[GEO_FRONT] = MeshBuilder::GenerateQuad("Plane", glm::vec3(1.f, 1.f, 1.f), 10.f);
+	meshList[GEO_FRONT]->textureID = LoadPNG("Images//right.png");
+	meshList[GEO_BACK] = MeshBuilder::GenerateQuad("Plane", glm::vec3(1.f, 1.f, 1.f), 10.f);
+	meshList[GEO_BACK]->textureID = LoadPNG("Images//left.png");
 
 	glm::vec3 savedPositionn = GameManager::GetInstance()->GetPlayerPosition();
 	if (savedPositionn.x &&
@@ -390,7 +402,7 @@ void carnivalroaming::Render()
 		// Setup Model View Projection matrix
 		projectionStack.LoadMatrix(glm::perspective(45.0f,
 			Application::m_consoleWidth / (float)Application::m_consoleHeight,
-			0.1f, 1000.0f));
+			0.1f, 100000.0f));
 
 		viewStack.LoadIdentity();
 		viewStack.LookAt(
@@ -424,6 +436,8 @@ void carnivalroaming::Render()
 		RenderMesh(meshList[GEO_AXIS]);
 		modelStack.PopMatrix();
 	}
+
+	RenderSkybox();
 
 	//meshList[GEO_PLANE]->material = Material::Wood(RED);
 	modelStack.PushMatrix();
@@ -1544,10 +1558,10 @@ void carnivalroaming::Exit()
 
 void carnivalroaming::RenderSkybox(void)
 {
-	float size = 50.0f;
+	float size = 200.0f;
 	modelStack.PushMatrix();
 	// Offset in Z direction by -50 units
-	modelStack.Translate(0.f, 0.f, -5.f * size);
+	modelStack.Translate(0.f, 0.f, -4.99f * size);
 	modelStack.Scale(size, size, 1.0f);
 	// Skybox should be rendered without light
 	RenderMesh(meshList[GEO_FRONT], false);
@@ -1555,7 +1569,7 @@ void carnivalroaming::RenderSkybox(void)
 
 	modelStack.PushMatrix();
 	// Offset in Z direction by -50 units
-	modelStack.Translate(0.f, 0.f, 5.f * size);
+	modelStack.Translate(0.f, 0.f, 4.99f * size);
 	modelStack.Rotate(180.0f, 0, 1, 0);
 	modelStack.Scale(size, size, 1.0f);
 	// Skybox should be rendered without light
@@ -1564,7 +1578,7 @@ void carnivalroaming::RenderSkybox(void)
 
 	modelStack.PushMatrix();
 	// Offset in Z direction by -50 units
-	modelStack.Translate(5.0f * size, 0.f, 0.0f);
+	modelStack.Translate(4.99f * size, 0.f, 0.0f);
 	modelStack.Rotate(-90.0f, 0, 1, 0);
 	modelStack.Scale(size, size, 1.0f);
 	// Skybox should be rendered without light
@@ -1573,7 +1587,7 @@ void carnivalroaming::RenderSkybox(void)
 
 	modelStack.PushMatrix();
 	// Offset in Z direction by -50 units
-	modelStack.Translate(-5.0f * size, 0.f, 0.0f);
+	modelStack.Translate(-4.99f * size, 0.f, 0.0f);
 	modelStack.Rotate(90.0f, 0, 1, 0);
 	modelStack.Scale(size, size, 1.0f);
 	// Skybox should be rendered without light
@@ -1582,7 +1596,7 @@ void carnivalroaming::RenderSkybox(void)
 
 	modelStack.PushMatrix();
 	// Offset in Z direction by -50 units
-	modelStack.Translate(0.0f, 5.0f * size, 0.0f);
+	modelStack.Translate(0.0f, 4.99f * size, 0.0f);
 	modelStack.Rotate(90.0f, 1, 0, 0);
 	modelStack.Scale(size, size, 1.0f);
 	// Skybox should be rendered without light
@@ -1591,7 +1605,7 @@ void carnivalroaming::RenderSkybox(void)
 
 	modelStack.PushMatrix();
 	// Offset in Z direction by -50 units
-	modelStack.Translate(0.0f, -5.0f * size, 0.0f);
+	modelStack.Translate(0.0f, -4.99f * size, 0.0f);
 	modelStack.Rotate(-90.0f, 1, 0, 0);
 	modelStack.Scale(size, size, 1.0f);
 	// Skybox should be rendered without light
