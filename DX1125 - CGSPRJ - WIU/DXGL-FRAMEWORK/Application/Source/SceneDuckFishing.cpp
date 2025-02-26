@@ -1,5 +1,5 @@
 #define _USE_MATH_DEFINES
-#include "SceneGame.h"
+#include "SceneDuckFishing.h"
 #include "GL\glew.h"
 
 #include "shader.hpp"
@@ -21,17 +21,19 @@
 #include "RigidBody.h"
 #include "ColliderManager.h"
 
-SceneGame::SceneGame() : numLight{ 2 }
+#include "Ducks.h"
+
+SceneDuckFishing::SceneDuckFishing() : numLight{ 2 }
 {
 	meshList.resize(NUM_GEOMETRY);
 	lights.resize(numLight);
 }
 
-SceneGame::~SceneGame()
+SceneDuckFishing::~SceneDuckFishing()
 {
 }
 
-void SceneGame::Init()
+void SceneDuckFishing::Init()
 {
 	Scene::Init();
 
@@ -106,11 +108,14 @@ void SceneGame::Init()
 	meshList[GEO_BACK] = MeshBuilder::GenerateQuad("Plane", glm::vec3(1.f, 1.f, 1.f), 10.f);
 	meshList[GEO_BACK]->textureID = LoadPNG("Images//left.png");
 
-	meshList[GEO_FD_DUCKY] = MeshBuilder::GenerateQuad("Plane", glm::vec3(1.f, 1.f, 1.f), 10.f);
-	meshList[GEO_FD_DUCKY]->textureID = LoadPNG("Images//left.png");
+	meshList[GEO_FD_DUCKY] = MeshBuilder::GenerateOBJMTL("Duck", "Models//FD_Duckie.obj", "Models//FD_Duckie.mtl");
+	meshList[GEO_FD_TENTFRAME] = MeshBuilder::GenerateOBJMTL("TENT FRAME", "Models//FD_CK_BoothGuards.obj", "Models//FD_CK_BoothGuards.mtl");
+	meshList[GEO_FD_TENTROOF] = MeshBuilder::GenerateOBJMTL("TENT FRAME", "Models//FD_CK_BoothRoof.obj", "Models//FD_CK_BoothRoof.mtl");
+	meshList[GEO_FD_TENTROOF]->textureID = LoadPNG("Images//FD_CK_BoothRoof.png");
+
 
 	mainCamera.Init(glm::vec3(8, 6, 6), glm::vec3(0, 6, 0), VECTOR3_UP);
-	
+	mainCamera.sensitivity = 100;
 	glUniform1i(m_parameters[U_NUMLIGHTS], 2);
 
 	lights[0].m_transform.m_position = glm::vec3{};
@@ -145,7 +150,9 @@ void SceneGame::Init()
 	objInScene[GROUND]->rb = addStaticPlane(objInScene[GROUND], VECTOR3_UP, groundMat);
 	GameObjectManager::GetInstance()->addItem(objInScene[GROUND]);
 
-	PhysicsMaterial mat;
+	objInScene[DUCK] = new Ducks();
+	
+	/*PhysicsMaterial mat;
 	mat.m_bounciness = 0.5f;
 	mat.m_friction = 0.5f;
 	objInScene[BOX] = new GameObject();
@@ -164,12 +171,12 @@ void SceneGame::Init()
 	objInScene[CYLINDER]->m_transform.Translate(0.0f, 80.0f, 0.0f);
 	objInScene[CYLINDER]->m_transform.ScaleBy(0.5f, 2.0f, 0.5f);
 	objInScene[CYLINDER]->rb = addCylinderCollider(objInScene[CYLINDER], 2.0f, 1.0f, mat);
-	GameObjectManager::GetInstance()->addItem(objInScene[CYLINDER]);
+	GameObjectManager::GetInstance()->addItem(objInScene[CYLINDER]);*/
 
-	
+	GameObjectManager::GetInstance()->IniAll();
 }
 
-void SceneGame::Update()
+void SceneDuckFishing::Update()
 {
 	HandleKeyPress();
 	mainCamera.Update();
@@ -187,9 +194,9 @@ void SceneGame::Update()
 	mainCamera.UpdateCameraRotation();
 }
 
-void SceneGame::LateUpdate()
+void SceneDuckFishing::LateUpdate()
 {
-	glm::vec3 boxPosition = objInScene[BOX]->GetRigidbodyPosition();
+	/*glm::vec3 boxPosition = objInScene[BOX]->GetRigidbodyPosition();
 	if (boxPosition.y <= 10.0f && KeyboardController::GetInstance()->IsKeyDown(VK_SPACE))
 	{
 		objInScene[BOX]->SetRigidbodyPosition(boxPosition.x, 10.0f, boxPosition.z);
@@ -199,10 +206,10 @@ void SceneGame::LateUpdate()
 	if (CheckCollisionWith(objInScene[BOX]->getObject(), objInScene[SPHERE]->getObject()))
 	{
 		std::cout << "Is Collided!" << std::endl;
-	}
+	}*/
 }
 
-void SceneGame::Render()
+void SceneDuckFishing::Render()
 {
 	// Clear color buffer every frame
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -246,14 +253,24 @@ void SceneGame::Render()
 
 	RenderSkybox();
 
-	//modelStack.PushMatrix();
+	modelStack.PushMatrix();
+	modelStack.Scale(0.0f, 1.0f, 0.0f);
+	RenderMesh(meshList[GEO_FD_TENTFRAME]);
+	modelStack.PushMatrix();
 	//modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
-	//RenderMesh(meshList[GEO_PLANE]);
-	//modelStack.PopMatrix();
+	RenderMesh(meshList[GEO_FD_TENTROOF]);
+	modelStack.PopMatrix();
+	modelStack.PopMatrix();
 
-	RenderRigidMesh(meshList[GEO_SPHERE], false, objInScene[SPHERE]->m_transform, objInScene[SPHERE]->rb);
+	/*modelStack.PushMatrix();
+	modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
+	RenderMesh(meshList[GEO_PLANE]);
+	modelStack.PopMatrix();*/
+
+	/*RenderRigidMesh(meshList[GEO_SPHERE], false, objInScene[SPHERE]->m_transform, objInScene[SPHERE]->rb);
 	RenderRigidMesh(meshList[GEO_CUBE], false, objInScene[BOX]->m_transform, objInScene[BOX]->rb);
-	RenderRigidMesh(meshList[GEO_CYLINDER], false, objInScene[CYLINDER]->m_transform, objInScene[CYLINDER]->rb);
+	RenderRigidMesh(meshList[GEO_CYLINDER], false, objInScene[CYLINDER]->m_transform, objInScene[CYLINDER]->rb);*/
+	GameObjectManager::GetInstance()->RenderAll(*this);
 
 #ifdef DRAW_HITBOX
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -299,9 +316,9 @@ void SceneGame::Render()
 #endif
 }
 
-void SceneGame::Exit()
+void SceneDuckFishing::Exit()
 {
-	GameObjectManager::removeItem(objInScene[SPHERE]);
+	/*GameObjectManager::removeItem(objInScene[SPHERE]);*/
 	Scene::Exit();
 	// Cleanup VBO here
 	for (int i = 0; i < NUM_GEOMETRY; ++i) { if (meshList[i]) delete meshList[i]; }
@@ -312,7 +329,7 @@ void SceneGame::Exit()
 	glDeleteProgram(m_programID);
 }
 
-void SceneGame::RenderSkybox(void)
+void SceneDuckFishing::RenderSkybox(void)
 {
 	float size = 30.0f;
 	modelStack.PushMatrix();

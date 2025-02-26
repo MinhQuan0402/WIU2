@@ -1,12 +1,12 @@
-#ifndef SCENE_GAME_H
-#define SCENE_GAME_H
+#ifndef SCENE_DUCKFISHING_H
+#define SCENE_DUCKFISHING_H
 
 #include "Scene.h"
 #include "Mesh.h"
 #include "Transform.h"
 #include "GameObject.h"
 
-class SceneGame : public Scene
+class SceneDuckFishing : public Scene
 {
 public:
 	enum GEOMENTRY_TYPE
@@ -26,12 +26,14 @@ public:
 		GEO_CYLINDER,
 
 		GEO_FD_DUCKY,
+		GEO_FD_TENTFRAME,
+		GEO_FD_TENTROOF,
 
 		NUM_GEOMETRY
 	};
 
-	SceneGame();
-	~SceneGame();
+	SceneDuckFishing();
+	~SceneDuckFishing();
 
 	virtual void Init() override;
 	virtual void Update() override;
@@ -46,9 +48,10 @@ private:
 	enum OBJINSCENE
 	{
 		GROUND,
-		BOX, 
+		/*BOX, 
 		SPHERE,
-		CYLINDER,
+		CYLINDER,*/
+		DUCK,
 		NUMOBJ
 	};
 
