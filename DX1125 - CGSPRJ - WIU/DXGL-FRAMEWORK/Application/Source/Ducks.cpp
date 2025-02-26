@@ -2,6 +2,7 @@
 #include "RigidBody.h"
 #include "GameObjectManager.h"
 #include "SceneDuckFishing.h"
+#include "MeshBuilder.h"
 
 Ducks::Ducks()
 {
@@ -26,6 +27,6 @@ void Ducks::Update()
 
 void Ducks::Render(Scene& scene)
 {
-	
-	scene.RenderRigidMesh(scene.meshList[SceneDuckFishing::GEO_FD_DUCKY], false, m_transform, rb);
+	scene.meshList[SceneDuckFishing::GEO_FD_DUCKY]->material = Material::Plastic(YELLOW);
+	scene.RenderRigidMesh(scene.meshList[SceneDuckFishing::GEO_FD_DUCKY], true, m_transform, rb);
 }

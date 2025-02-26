@@ -24,10 +24,12 @@ public:
 		GEO_PLANE,
 		GEO_CUBE,
 		GEO_CYLINDER,
+		GEO_TORUS,
 
 		GEO_FD_DUCKY,
 		GEO_FD_TENTFRAME,
 		GEO_FD_TENTROOF,
+		GEO_FD_POOL,
 
 		NUM_GEOMETRY
 	};
@@ -52,6 +54,7 @@ private:
 		SPHERE,
 		CYLINDER,*/
 		DUCK,
+		POOLWALL,
 		NUMOBJ
 	};
 

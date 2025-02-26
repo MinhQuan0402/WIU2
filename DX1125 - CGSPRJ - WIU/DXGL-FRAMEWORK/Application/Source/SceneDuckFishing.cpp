@@ -22,6 +22,7 @@
 #include "ColliderManager.h"
 
 #include "Ducks.h"
+#include "PoolWall.h"
 
 SceneDuckFishing::SceneDuckFishing() : numLight{ 2 }
 {
@@ -94,6 +95,7 @@ void SceneDuckFishing::Init()
 	meshList[GEO_CUBE] = MeshBuilder::GenerateCube("Cube", GREY, 1.0f);
 	meshList[GEO_CYLINDER] = MeshBuilder::GenerateCylinder("Cylinder", BLUE, 180, 1.0f, 1.0f);
 	meshList[GEO_PLANE] = MeshBuilder::GenerateQuad("Quad", RED, 1000.0f);
+	meshList[GEO_TORUS] = MeshBuilder::GenerateTorus("Torus", RED, 5.5f, 2.0f, 100);
 
 	meshList[GEO_TOP] = MeshBuilder::GenerateQuad("Plane", glm::vec3(1.f, 1.f, 1.f), 10.f);
 	meshList[GEO_TOP]->textureID = LoadPNG("Images//top.png");
@@ -112,6 +114,8 @@ void SceneDuckFishing::Init()
 	meshList[GEO_FD_TENTFRAME] = MeshBuilder::GenerateOBJMTL("TENT FRAME", "Models//FD_CK_BoothGuards.obj", "Models//FD_CK_BoothGuards.mtl");
 	meshList[GEO_FD_TENTROOF] = MeshBuilder::GenerateOBJMTL("TENT FRAME", "Models//FD_CK_BoothRoof.obj", "Models//FD_CK_BoothRoof.mtl");
 	meshList[GEO_FD_TENTROOF]->textureID = LoadPNG("Images//FD_CK_BoothRoof.png");
+	meshList[GEO_FD_POOL] = MeshBuilder::GenerateOBJ("TENT FRAME", "Models//FD_pool.obj");
+	meshList[GEO_FD_POOL]->textureID = LoadPNG("Images//FD_pool.png");
 
 
 	mainCamera.Init(glm::vec3(8, 6, 6), glm::vec3(0, 6, 0), VECTOR3_UP);
@@ -151,7 +155,8 @@ void SceneDuckFishing::Init()
 	GameObjectManager::GetInstance()->addItem(objInScene[GROUND]);
 
 	objInScene[DUCK] = new Ducks();
-	
+	objInScene[POOLWALL] = new PoolWall();
+
 	/*PhysicsMaterial mat;
 	mat.m_bounciness = 0.5f;
 	mat.m_friction = 0.5f;
@@ -254,12 +259,17 @@ void SceneDuckFishing::Render()
 	RenderSkybox();
 
 	modelStack.PushMatrix();
-	modelStack.Scale(0.0f, 1.0f, 0.0f);
+	modelStack.Scale(4.0f, 2.0f,4.0f);
 	RenderMesh(meshList[GEO_FD_TENTFRAME]);
 	modelStack.PushMatrix();
 	//modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
 	RenderMesh(meshList[GEO_FD_TENTROOF]);
 	modelStack.PopMatrix();
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	//modelStack.Scale(4.0f, 2.0f, 3.0f);
+	RenderMesh(meshList[GEO_FD_POOL]);
 	modelStack.PopMatrix();
 
 	/*modelStack.PushMatrix();
