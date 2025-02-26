@@ -184,7 +184,6 @@ void carnivalroaming::Init()
 	objInscene[BOX12] = new CarnivalHitBoxes();
 	objInscene[BOX13] = new CarnivalHitBoxes();
 
-
 	objInscene[PLAYERBOX] = new PlayerHitBox();
 	
 
@@ -1494,6 +1493,23 @@ void carnivalroaming::Render()
 		float posX = 175 - (maxWidth / 2) + (barWidth / 2);
 
 		RenderMeshOnScreen(MeshManager::GetInstance()->meshList[MeshManager::GEO_ENERGYBAR], posX, 53, barWidth, 39); 
+	}
+
+	// Render press [E] UI
+	{
+		if (CheckCollisionWith(objInscene[PLAYERBOX]->getObject(), objInscene[BOX]->getObject()) || 
+			CheckCollisionWith(objInscene[PLAYERBOX]->getObject(), objInscene[BOX2]->getObject()) || 
+			CheckCollisionWith(objInscene[PLAYERBOX]->getObject(), objInscene[BOX3]->getObject()) || 
+			CheckCollisionWith(objInscene[PLAYERBOX]->getObject(), objInscene[BOX4]->getObject()) || 
+			CheckCollisionWith(objInscene[PLAYERBOX]->getObject(), objInscene[BOX5]->getObject()) || 
+			CheckCollisionWith(objInscene[PLAYERBOX]->getObject(), objInscene[BOX6]->getObject()) || 
+			CheckCollisionWith(objInscene[PLAYERBOX]->getObject(), objInscene[BOX9]->getObject()) || 
+			CheckCollisionWith(objInscene[PLAYERBOX]->getObject(), objInscene[BOX10]->getObject()) || 
+			CheckCollisionWith(objInscene[PLAYERBOX]->getObject(), objInscene[BOX11]->getObject()) || 
+			CheckCollisionWith(objInscene[PLAYERBOX]->getObject(), objInscene[BOX12]->getObject()))
+		{
+			RenderTextOnScreen(meshList[GEO_TEXT], "Press [E] to enter", YELLOW, 40, 400, 300);
+		}
 	}
 
 #ifdef DRAW_HITBOX

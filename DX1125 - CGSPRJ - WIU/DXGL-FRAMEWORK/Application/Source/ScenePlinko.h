@@ -41,6 +41,7 @@ public:
 
 private:
 	void RenderSkybox(void);
+	void RenderGround(int size);
 	int numLight;
 	Transform player;
 	float ballZ;
@@ -49,6 +50,7 @@ private:
 	bool cameraFollow = false;
 	bool addScore = true;
 	bool gameEnd = false;
+	bool jackpot = false;
 
 	enum OBJINSCENE
 	{
