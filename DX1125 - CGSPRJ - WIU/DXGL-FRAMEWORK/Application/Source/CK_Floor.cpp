@@ -24,5 +24,5 @@ void CK_Floor::Update()
 
 void CK_Floor::Render(Scene& scene)
 {
-	scene.RenderMesh(scene.meshList[SceneCanKnockdown::GEO_PLANE], scene.enableLight, m_transform);
+	//scene.RenderMesh(scene.meshList[SceneCanKnockdown::GEO_PLANE], scene.enableLight, m_transform);
 }
