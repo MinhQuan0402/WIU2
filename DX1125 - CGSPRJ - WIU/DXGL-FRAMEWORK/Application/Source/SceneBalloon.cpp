@@ -26,7 +26,7 @@
 #include "BP_Counter.h"
 #include "BP_Box.h"
 
-SceneBalloon::SceneBalloon() : numLight{ 2 }, currentDartIndex{ DART1 }
+SceneBalloon::SceneBalloon() : numLight{ 11 }, currentDartIndex{ DART1 }
 {
 	meshList.resize(NUM_GEOMETRY);
 	lights.resize(numLight);
@@ -61,45 +61,54 @@ void SceneBalloon::Init()
 		"Shader//MainShader.fragmentshader");
 	glUseProgram(m_programID);
 
-	// Get a handle for our "MVP" uniform
-	m_parameters[U_MVP] = glGetUniformLocation(m_programID, "MVP");
-	m_parameters[U_MODELVIEW] = glGetUniformLocation(m_programID, "MV");
-	m_parameters[U_MODELVIEW_INVERSE_TRANSPOSE] = glGetUniformLocation(m_programID, "MV_inverse_transpose");
-	m_parameters[U_MATERIAL_AMBIENT] = glGetUniformLocation(m_programID, "material.kAmbient");
-	m_parameters[U_MATERIAL_DIFFUSE] = glGetUniformLocation(m_programID, "material.kDiffuse");
-	m_parameters[U_MATERIAL_SPECULAR] = glGetUniformLocation(m_programID, "material.kSpecular");
-	m_parameters[U_MATERIAL_SHININESS] = glGetUniformLocation(m_programID, "material.kShininess");
+	// Parameters:
+	{
+		// Get a handle for our "MVP" uniform
+		m_parameters[U_MVP] = glGetUniformLocation(m_programID, "MVP");
+		m_parameters[U_MODELVIEW] = glGetUniformLocation(m_programID, "MV");
+		m_parameters[U_MODELVIEW_INVERSE_TRANSPOSE] = glGetUniformLocation(m_programID, "MV_inverse_transpose");
+		m_parameters[U_MATERIAL_AMBIENT] = glGetUniformLocation(m_programID, "material.kAmbient");
+		m_parameters[U_MATERIAL_DIFFUSE] = glGetUniformLocation(m_programID, "material.kDiffuse");
+		m_parameters[U_MATERIAL_SPECULAR] = glGetUniformLocation(m_programID, "material.kSpecular");
+		m_parameters[U_MATERIAL_SHININESS] = glGetUniformLocation(m_programID, "material.kShininess");
 
-	m_parameters[U_LIGHT0_TYPE] = glGetUniformLocation(m_programID, "lights[0].type");
-	m_parameters[U_LIGHT0_POSITION] = glGetUniformLocation(m_programID, "lights[0].position_cameraspace");
-	m_parameters[U_LIGHT0_COLOR] = glGetUniformLocation(m_programID, "lights[0].color");
-	m_parameters[U_LIGHT0_POWER] = glGetUniformLocation(m_programID, "lights[0].power");
-	m_parameters[U_LIGHT0_KC] = glGetUniformLocation(m_programID, "lights[0].kC");
-	m_parameters[U_LIGHT0_KL] = glGetUniformLocation(m_programID, "lights[0].kL");
-	m_parameters[U_LIGHT0_KQ] = glGetUniformLocation(m_programID, "lights[0].kQ");
-	m_parameters[U_LIGHT0_SPOTDIRECTION] = glGetUniformLocation(m_programID, "lights[0].spotDirection");
-	m_parameters[U_LIGHT0_COSCUTOFF] = glGetUniformLocation(m_programID, "lights[0].cosCutoff");
-	m_parameters[U_LIGHT0_COSINNER] = glGetUniformLocation(m_programID, "lights[0].cosInner");
-	m_parameters[U_LIGHT0_EXPONENT] = glGetUniformLocation(m_programID, "lights[0].exponent");
+		for (int i = 0; i < numLight; ++i)
+		{
+			std::string index = std::to_string(i);
+			std::string typeString = "lights[" + index + "].type";
+			std::string positionString = "lights[" + index + "].position_cameraspace";
+			std::string colorString = "lights[" + index + "].color";
+			std::string powerString = "lights[" + index + "].power";
+			std::string kCString = "lights[" + index + "].kC";
+			std::string kLString = "lights[" + index + "].kL";
+			std::string kQString = "lights[" + index + "].kQ";
+			std::string spotString = "lights[" + index + "].spotDirection";
+			std::string cosCutOffString = "lights[" + index + "].cosCutoff";
+			std::string cosInnerString = "lights[" + index + "].cosInner";
+			std::string exponentString = "lights[" + index + "].exponent";
 
-	m_parameters[U_LIGHT1_TYPE] = glGetUniformLocation(m_programID, "lights[1].type");
-	m_parameters[U_LIGHT1_POSITION] = glGetUniformLocation(m_programID, "lights[1].position_cameraspace");
-	m_parameters[U_LIGHT1_COLOR] = glGetUniformLocation(m_programID, "lights[1].color");
-	m_parameters[U_LIGHT1_POWER] = glGetUniformLocation(m_programID, "lights[1].power");
-	m_parameters[U_LIGHT1_KC] = glGetUniformLocation(m_programID, "lights[1].kC");
-	m_parameters[U_LIGHT1_KL] = glGetUniformLocation(m_programID, "lights[1].kL");
-	m_parameters[U_LIGHT1_KQ] = glGetUniformLocation(m_programID, "lights[1].kQ");
-	m_parameters[U_LIGHT1_SPOTDIRECTION] = glGetUniformLocation(m_programID, "lights[1].spotDirection");
-	m_parameters[U_LIGHT1_COSCUTOFF] = glGetUniformLocation(m_programID, "lights[1].cosCutoff");
-	m_parameters[U_LIGHT1_COSINNER] = glGetUniformLocation(m_programID, "lights[1].cosInner");
-	m_parameters[U_LIGHT1_EXPONENT] = glGetUniformLocation(m_programID, "lights[1].exponent");
+			m_parameters[U_LIGHT0_TYPE + U_LIGHT0_EXPONENT * i] = glGetUniformLocation(m_programID, typeString.data());
+			m_parameters[U_LIGHT0_POSITION + U_LIGHT0_EXPONENT * i] = glGetUniformLocation(m_programID, positionString.data());
+			m_parameters[U_LIGHT0_COLOR + U_LIGHT0_EXPONENT * i] = glGetUniformLocation(m_programID, colorString.data());
+			m_parameters[U_LIGHT0_POWER + U_LIGHT0_EXPONENT * i] = glGetUniformLocation(m_programID, powerString.data());
+			m_parameters[U_LIGHT0_KC + U_LIGHT0_EXPONENT * i] = glGetUniformLocation(m_programID, kCString.data());
+			m_parameters[U_LIGHT0_KL + U_LIGHT0_EXPONENT * i] = glGetUniformLocation(m_programID, kLString.data());
+			m_parameters[U_LIGHT0_KQ + U_LIGHT0_EXPONENT * i] = glGetUniformLocation(m_programID, kQString.data());
+			m_parameters[U_LIGHT0_SPOTDIRECTION + U_LIGHT0_EXPONENT * i] = glGetUniformLocation(m_programID, spotString.data());
+			m_parameters[U_LIGHT0_COSCUTOFF + U_LIGHT0_EXPONENT * i] = glGetUniformLocation(m_programID, cosCutOffString.data());
+			m_parameters[U_LIGHT0_COSINNER + U_LIGHT0_EXPONENT * i] = glGetUniformLocation(m_programID, cosInnerString.data());
+			m_parameters[U_LIGHT0_EXPONENT + U_LIGHT0_EXPONENT * i] = glGetUniformLocation(m_programID, exponentString.data());
+		}
 
-	m_parameters[U_LIGHTENABLED] = glGetUniformLocation(m_programID, "lightEnabled");
-	m_parameters[U_NUMLIGHTS] = glGetUniformLocation(m_programID, "numLights");
-	m_parameters[U_COLOR_TEXTURE_ENABLED] = glGetUniformLocation(m_programID, "colorTextureEnabled");
-	m_parameters[U_COLOR_TEXTURE] = glGetUniformLocation(m_programID, "colorTexture");
-	m_parameters[U_TEXT_ENABLED] = glGetUniformLocation(m_programID, "textEnabled");
-	m_parameters[U_TEXT_COLOR] = glGetUniformLocation(m_programID, "textColor");
+		m_parameters[U_LIGHTENABLED] = glGetUniformLocation(m_programID, "lightEnabled");
+		m_parameters[U_NUMLIGHTS] = glGetUniformLocation(m_programID, "numLights");
+		m_parameters[U_COLOR_TEXTURE_ENABLED] = glGetUniformLocation(m_programID, "colorTextureEnabled");
+		m_parameters[U_COLOR_TEXTURE] = glGetUniformLocation(m_programID, "colorTexture");
+		m_parameters[U_TEXT_ENABLED] = glGetUniformLocation(m_programID, "textEnabled");
+		m_parameters[U_TEXT_COLOR] = glGetUniformLocation(m_programID, "textColor");
+
+		Mesh::SetMaterialLoc(m_parameters[U_MATERIAL_AMBIENT], m_parameters[U_MATERIAL_DIFFUSE], m_parameters[U_MATERIAL_SPECULAR], m_parameters[U_MATERIAL_SHININESS]);
+	}
 
 	meshList[GEO_AXIS] = MeshBuilder::GenerateAxes("Axes", 10000.f, 10000.f, 10000.f);
 	meshList[GEO_LIGHT] = MeshBuilder::GenerateSphere("Sphere", WHITE, .05f, 180, 180);
@@ -110,19 +119,20 @@ void SceneBalloon::Init()
 	meshList[GEO_CYLINDER] = MeshBuilder::GenerateCylinder("Cylinder", BLUE, 180, 1.0f, 1.0f);
 	meshList[GEO_PLANE] = MeshBuilder::GenerateQuad("Quad", GREY, 1000.0f);
 
-	meshList[GEO_BP_BALLOON] = MeshBuilder::GenerateOBJMTL("Balloon", "Models//balloon.obj", "Models//balloon.mtl");
+	meshList[GEO_BP_BALLOON] = MeshBuilder::GenerateOBJ("Balloon", "Models//balloon.obj");
 	meshList[GEO_BP_BOOTHGUARDS] = MeshBuilder::GenerateOBJMTL("BoothGuards", "Models//BP_BoothGuards.obj", "Models//BP_BoothGuards.mtl");
 	meshList[GEO_BP_BOOTHROOF] = MeshBuilder::GenerateOBJMTL("BoothRoof", "Models//BP_BoothRoof.obj", "Models//BP_BoothRoof.mtl");
 	meshList[GEO_BP_BOOTHROOF]->textureID = LoadPNG("Images//BP_BoothRoof.png");
 	meshList[GEO_BP_BALLOONBOARD] = MeshBuilder::GenerateOBJ("BalloonBoard", "Models//noticeboard.obj");
 	meshList[GEO_BP_BALLOONBOARD]->textureID = LoadPNG("Images//boardimage.png");
-	meshList[GEO_BP_DART] = MeshBuilder::GenerateOBJMTL("Dart", "Models//dart.obj", "Models//dart.mtl");
+	meshList[GEO_BP_DART] = MeshBuilder::GenerateOBJ("Dart", "Models//dart.obj");
 	meshList[GEO_BP_POWERUI_FRAME] = MeshBuilder::GenerateQuad("PowerUi_Frame", glm::vec3(1, 1, 1), 1);
 	meshList[GEO_BP_POWERUI_FRAME]->textureID = LoadPNG("Images//CK_PowerUi_Frame.png");
 	meshList[GEO_BP_POWERUI_BAR] = MeshBuilder::GenerateQuad("PowerUi_Bar", glm::vec3(1, 1, 0), 1);
 	meshList[GEO_BP_COUNTER] = MeshBuilder::GenerateCube("Counter", glm::vec3(0.459, 0.302, 0), 1);
 	meshList[GEO_BP_COUNTER]->textureID = LoadPNG("Images//BP_Wood.png");
 	meshList[GEO_BP_COUNTER]->material = Material::Wood(glm::vec3(0.459, 0.302, 0));
+	meshList[GEO_BP_FAIRYLIGHT] = MeshBuilder::GenerateOBJMTL("FairyLight", "Models//BP_FairyLight.obj", "Models//BP_FairyLight.mtl");
 
 	meshList[GEO_TOP] = MeshBuilder::GenerateQuad("Plane", glm::vec3(1.f, 1.f, 1.f), 10.f);
 	meshList[GEO_TOP]->textureID = LoadPNG("Images//top.png");
@@ -141,14 +151,14 @@ void SceneBalloon::Init()
 	mainCamera.sensitivity = 15.f;
 	fov = 45.f;
 	
-	glUniform1i(m_parameters[U_NUMLIGHTS], 2);
+	glUniform1i(m_parameters[U_NUMLIGHTS], numLight);
 
 	lights[0].m_transform.m_position = glm::vec3{};
-	lights[0].m_transform.m_position = glm::vec3(0, 5, 5);
-	lights[0].color = glm::vec3(1, 0, 0);
+	lights[0].m_transform.m_position = glm::vec3(0, 12, 0);
+	lights[0].color = glm::vec3(1, 1, 1);
 	lights[0].type = Light::LIGHT_POINT;
-	lights[0].power = 1;
-	lights[0].kC = 1.f;
+	lights[0].power = 0.7;
+	lights[0].kC = 0.f;
 	lights[0].kL = 0.01f;
 	lights[0].kQ = 0.001f;
 	lights[0].cosCutoff = 45.f;
@@ -156,38 +166,62 @@ void SceneBalloon::Init()
 	lights[0].exponent = 3.f;
 	lights[0].spotDirection = glm::vec3(0.f, 1.f, 0.f);
 
-	glUniform3fv(m_parameters[U_LIGHT0_COLOR], 1, &lights[0].color.r);
-	glUniform1i(m_parameters[U_LIGHT0_TYPE], lights[0].type);
-	glUniform1f(m_parameters[U_LIGHT0_POWER], lights[0].power);
-	glUniform1f(m_parameters[U_LIGHT0_KC], lights[0].kC);
-	glUniform1f(m_parameters[U_LIGHT0_KL], lights[0].kL);
-	glUniform1f(m_parameters[U_LIGHT0_KQ], lights[0].kQ);
-	glUniform1f(m_parameters[U_LIGHT0_COSCUTOFF], cosf(glm::radians<float>(lights[0].cosCutoff)));
-	glUniform1f(m_parameters[U_LIGHT0_COSINNER], cosf(glm::radians<float>(lights[0].cosInner)));
-	glUniform1f(m_parameters[U_LIGHT0_EXPONENT], lights[0].exponent);
+	lights[1].m_transform.m_position = glm::vec3(4.50083, 7.36148, -9.67616);
+	lights[2].m_transform.m_position = glm::vec3(1.9155, 7.23154, -9.66117);
+	lights[3].m_transform.m_position = glm::vec3(0, 7.94687, -9.46624);
+	lights[4].m_transform.m_position = glm::vec3(-2.18515, 7.04141, -9.75959);
+	lights[5].m_transform.m_position = glm::vec3(-4.67714, 7.49898, -9.42656);
 
-	lights[1].m_transform.m_position = glm::vec3{};
-	lights[1].m_transform.m_position = glm::vec3(0, 5, -5);
-	lights[1].color = glm::vec3(1, 1, 1);
-	lights[1].type = Light::LIGHT_POINT;
-	lights[1].power = 1;
-	lights[1].kC = 1.f;
-	lights[1].kL = 0.01f;
-	lights[1].kQ = 0.001f;
-	lights[1].cosCutoff = 45.f;
-	lights[1].cosInner = 30.f;
-	lights[1].exponent = 3.f;
-	lights[1].spotDirection = glm::vec3(0.f, 1.f, 0.f);
+	lights[6].m_transform.m_position = glm::vec3(4.50083, 7.36148, 9.07616);
+	lights[7].m_transform.m_position = glm::vec3(1.9155, 7.23154, 9.06117);
+	lights[8].m_transform.m_position = glm::vec3(0, 7.94687, 9.26624);
+	lights[9].m_transform.m_position = glm::vec3(-2.18515, 7.04141, 9.05959);
+	lights[10].m_transform.m_position = glm::vec3(-4.67714, 7.49898, 9.42656);
 
-	glUniform3fv(m_parameters[U_LIGHT1_COLOR], 1, &lights[1].color.r);
-	glUniform1i(m_parameters[U_LIGHT1_TYPE], lights[1].type);
-	glUniform1f(m_parameters[U_LIGHT1_POWER], lights[1].power);
-	glUniform1f(m_parameters[U_LIGHT1_KC], lights[1].kC);
-	glUniform1f(m_parameters[U_LIGHT1_KL], lights[1].kL);
-	glUniform1f(m_parameters[U_LIGHT1_KQ], lights[1].kQ);
-	glUniform1f(m_parameters[U_LIGHT1_COSCUTOFF], cosf(glm::radians<float>(lights[1].cosCutoff)));
-	glUniform1f(m_parameters[U_LIGHT1_COSINNER], cosf(glm::radians<float>(lights[1].cosInner)));
-	glUniform1f(m_parameters[U_LIGHT1_EXPONENT], lights[1].exponent);
+	for (int i = 1; i < numLight; ++i)
+	{
+		lights[i].color = glm::vec3(1, 1, 1);
+		lights[i].type = Light::LIGHT_POINT;
+		lights[i].power = 0.35f;
+		lights[i].kC = 1.f;
+		lights[i].kL = 0.01f;
+		lights[i].kQ = 0.001f;
+		lights[i].cosCutoff = 45.f;
+		lights[i].cosInner = 30.f;
+		lights[i].exponent = 3.f;
+		lights[i].spotDirection = glm::vec3(0.f, 1.f, 0.f);
+	}
+
+	for (int i = 1; i <= 5; ++i)
+	{
+		meshList[GEO_BP_FAIRYLIGHT]->materials[i - 1].kEmission = glm::vec3(0.5f, 0.5f, 0.5f);
+
+		glm::vec3 randColor = glm::vec3{
+			Math::RandFloatMinMax(0.0f, 1.0f),
+			Math::RandFloatMinMax(0.0f, 1.0f),
+			Math::RandFloatMinMax(0.0f, 1.0f)
+		};
+
+		meshList[GEO_BP_FAIRYLIGHT]->materials[i - 1].kAmbient = glm::vec3(randColor);
+		lights[i].color = randColor;
+		lights[5 + i].color = randColor;
+	}
+
+	for (int i = 0; i < numLight; ++i)
+	{
+		glUniform1i(m_parameters[U_LIGHT0_TYPE + U_LIGHT0_EXPONENT * i], lights[i].type);
+		glUniform3fv(m_parameters[U_LIGHT0_COLOR + U_LIGHT0_EXPONENT * i], 1, &lights[i].color.r);
+		glUniform1f(m_parameters[U_LIGHT0_POWER + U_LIGHT0_EXPONENT * i], lights[i].power);
+		glUniform1f(m_parameters[U_LIGHT0_KC + U_LIGHT0_EXPONENT * i], lights[i].kC);
+		glUniform1f(m_parameters[U_LIGHT0_KL + U_LIGHT0_EXPONENT * i], lights[i].kL);
+		glUniform1f(m_parameters[U_LIGHT0_KQ + U_LIGHT0_EXPONENT * i], lights[i].kQ);
+		glUniform1f(m_parameters[U_LIGHT0_COSCUTOFF + U_LIGHT0_EXPONENT * i], cosf(glm::radians<float>(lights[i].cosCutoff)));
+		glUniform1f(m_parameters[U_LIGHT0_COSINNER + U_LIGHT0_EXPONENT * i], cosf(glm::radians<float>(lights[i].cosInner)));
+		glUniform1f(m_parameters[U_LIGHT0_EXPONENT + U_LIGHT0_EXPONENT * i], lights[i].exponent);
+	}
+
+
+	
 
 	enableLight = true;
 
@@ -237,6 +271,7 @@ void SceneBalloon::Init()
 	isShooting = false;
 	gameComplete = false;
 	attemptsLeft = 9;
+	lightTimer = 0.f;
 }
 
 void SceneBalloon::Update()
@@ -257,6 +292,24 @@ void SceneBalloon::Update()
 	glm::vec3 prevTarget = mainCamera.target;
 	mainCamera.UpdateCameraRotation();
 
+	float speed = 5 * Time::deltaTime;
+	if (KeyboardController::GetInstance()->IsKeyDown('I'))
+		devVec.z += speed;
+	if (KeyboardController::GetInstance()->IsKeyDown('K'))
+		devVec.z -= speed;
+	if (KeyboardController::GetInstance()->IsKeyDown('J'))
+		devVec.x += speed;
+	if (KeyboardController::GetInstance()->IsKeyDown('L'))
+		devVec.x -= speed;
+	if (KeyboardController::GetInstance()->IsKeyDown('O'))
+		devVec.y += speed;
+	if (KeyboardController::GetInstance()->IsKeyDown('P'))
+		devVec.y -= speed;
+
+	//lights[5].m_transform.m_position = devVec;
+	//std::cout << devVec.x << ", " << devVec.y << ", " << devVec.z << std::endl;
+
+
 	//// stop player rotating too far:
 	//{
 	//	glm::vec3 toObject = glm::normalize(glm::vec3(0, 3, 0) - mainCamera.m_transform.m_position);
@@ -275,6 +328,39 @@ void SceneBalloon::Update()
 	//		mainCamera.sensitivity = 10 + closeness * (50 - 10);
 	//	}
 	//}
+
+	// update light:
+	{
+		lightTimer += Time::deltaTime;
+
+		if (isTimeReach(lightTimer, 2.f, 2.05f) && !isLightChanged)
+		{
+			for (int i = 1; i <= 5; ++i)
+			{
+				meshList[GEO_BP_FAIRYLIGHT]->materials[i - 1].kEmission = glm::vec3(0.5f, 0.5f, 0.5f);
+
+				glm::vec3 randColor = glm::vec3{
+					Math::RandFloatMinMax(0.0f, 1.0f),
+					Math::RandFloatMinMax(0.0f, 1.0f),
+					Math::RandFloatMinMax(0.0f, 1.0f)
+				};
+
+				meshList[GEO_BP_FAIRYLIGHT]->materials[i - 1].kAmbient = glm::vec3(randColor);
+				lights[i].color = randColor;
+				glUniform3fv(m_parameters[U_LIGHT0_COLOR + U_LIGHT0_EXPONENT * i], 1, &lights[i].color.r);
+
+				lights[5 + i].color = randColor;
+				glUniform3fv(m_parameters[U_LIGHT0_COLOR + U_LIGHT0_EXPONENT * (5 + i)], 1, &lights[5 + i].color.r);
+			}
+
+			isLightChanged = true;
+		}
+		else if (lightTimer >= 2.1f)
+		{
+			lightTimer = 0.0f;
+			isLightChanged = false;
+		}
+	}
 
 	UnorderedVector<Balloon*> ballonList = ((BalloonBoard*)objInScene[BALLOONBOARD])->balloons;
 	for (size_t i = 0; i < ballonList.size(); ++i)
@@ -302,7 +388,6 @@ void SceneBalloon::Update()
 	if (gameEnd) {
 		// GAME END
 	}
-		
 
 	GameObjectManager::GetInstance()->UpdateAll();
 }
@@ -401,57 +486,39 @@ void SceneBalloon::Render()
 	// Load identity matrix into the model stack
 	modelStack.LoadIdentity();
 
-	if (lights[0].type == Light::LIGHT_DIRECTIONAL)
+	for (int i = 0; i < numLight; ++i)
 	{
-		glm::vec3 lightDir(lights[0].m_transform.m_position.x, lights[0].m_transform.m_position.y, lights[0].m_transform.m_position.z);
-		glm::vec3 lightDirection_cameraspace = viewStack.Top() * glm::vec4(lightDir, 0);
-		glUniform3fv(m_parameters[U_LIGHT0_POSITION], 1, glm::value_ptr(lightDirection_cameraspace));
-	}
-	else if (lights[0].type == Light::LIGHT_SPOT)
-	{
-		glm::vec3 lightPosition_cameraspace = viewStack.Top() * glm::vec4(lights[0].m_transform.m_position, 1);
-		glUniform3fv(m_parameters[U_LIGHT0_POSITION], 1, glm::value_ptr(lightPosition_cameraspace));
-		glm::vec3 spotDirection_cameraspace = viewStack.Top() * glm::vec4(lights[0].spotDirection, 0);
-		glUniform3fv(m_parameters[U_LIGHT0_SPOTDIRECTION], 1, glm::value_ptr(spotDirection_cameraspace));
-	}
-	else {
-		// Calculate the light position in camera space
-		glm::vec3 lightPosition_cameraspace = viewStack.Top() * glm::vec4(lights[0].m_transform.m_position, 1);
-		glUniform3fv(m_parameters[U_LIGHT0_POSITION], 1, glm::value_ptr(lightPosition_cameraspace));
-	}
-
-	if (lights[1].type == Light::LIGHT_DIRECTIONAL)
-	{
-		glm::vec3 lightDir(lights[1].m_transform.m_position.x, lights[1].m_transform.m_position.y, lights[1].m_transform.m_position.z);
-		glm::vec3 lightDirection_cameraspace = viewStack.Top() * glm::vec4(lightDir, 0);
-		glUniform3fv(m_parameters[U_LIGHT1_POSITION], 1, glm::value_ptr(lightDirection_cameraspace));
-	}
-	else if (lights[1].type == Light::LIGHT_SPOT)
-	{
-		glm::vec3 lightPosition_cameraspace = viewStack.Top() * glm::vec4(lights[1].m_transform.m_position, 1);
-		glUniform3fv(m_parameters[U_LIGHT1_POSITION], 1, glm::value_ptr(lightPosition_cameraspace));
-		glm::vec3 spotDirection_cameraspace = viewStack.Top() * glm::vec4(lights[1].spotDirection, 0);
-		glUniform3fv(m_parameters[U_LIGHT1_SPOTDIRECTION], 1, glm::value_ptr(spotDirection_cameraspace));
-	}
-	else {
-		// Calculate the light position in camera space
-		glm::vec3 lightPosition_cameraspace = viewStack.Top() * glm::vec4(lights[1].m_transform.m_position, 1);
-		glUniform3fv(m_parameters[U_LIGHT1_POSITION], 1, glm::value_ptr(lightPosition_cameraspace));
+		if (lights[i].type == Light::LIGHT_DIRECTIONAL)
+		{
+			glm::vec3 lightDir(lights[i].m_transform.m_position.x, lights[i].m_transform.m_position.y, lights[i].m_transform.m_position.z);
+			glm::vec3 lightDirection_cameraspace = viewStack.Top() * glm::vec4(lightDir, 0);
+			glUniform3fv(m_parameters[U_LIGHT0_POSITION + U_LIGHT0_EXPONENT * i], 1, glm::value_ptr(lightDirection_cameraspace));
+		}
+		else if (lights[i].type == Light::LIGHT_SPOT)
+		{
+			glm::vec3 lightPosition_cameraspace = viewStack.Top() * glm::vec4(lights[i].m_transform.m_position, 1);
+			glUniform3fv(m_parameters[U_LIGHT0_POSITION + U_LIGHT0_EXPONENT * i], 1, glm::value_ptr(lightPosition_cameraspace));
+			glm::vec3 spotDirection_cameraspace = viewStack.Top() * glm::vec4(lights[i].spotDirection, 0);
+			glUniform3fv(m_parameters[U_LIGHT0_SPOTDIRECTION + U_LIGHT0_EXPONENT * i], 1, glm::value_ptr(spotDirection_cameraspace));
+		}
+		else {
+			// Calculate the light position in camera space
+			glm::vec3 lightPosition_cameraspace = viewStack.Top() * glm::vec4(lights[i].m_transform.m_position, 1);
+			glUniform3fv(m_parameters[U_LIGHT0_POSITION + U_LIGHT0_EXPONENT * i], 1, glm::value_ptr(lightPosition_cameraspace));
+		}
 	}
 
 	modelStack.PushMatrix();
 	RenderMesh(meshList[GEO_AXIS]);
 	modelStack.PopMatrix();
 
-	modelStack.PushMatrix();
-	modelStack.Translate(lights[0].m_transform.m_position.x, lights[0].m_transform.m_position.y, lights[0].m_transform.m_position.z);
-	RenderMesh(meshList[GEO_LIGHT]);
-	modelStack.PopMatrix();
-
-	modelStack.PushMatrix();
-	modelStack.Translate(lights[1].m_transform.m_position.x, lights[1].m_transform.m_position.y, lights[1].m_transform.m_position.z);
-	RenderMesh(meshList[GEO_LIGHT]);
-	modelStack.PopMatrix();
+	for (int i = 0; i < numLight; i++) 
+	{
+		modelStack.PushMatrix();
+		modelStack.Translate(lights[i].m_transform.m_position.x, lights[i].m_transform.m_position.y, lights[i].m_transform.m_position.z);
+		RenderMesh(meshList[GEO_LIGHT]);
+		modelStack.PopMatrix();
+	}
 
 	RenderSkybox();
 
@@ -459,7 +526,7 @@ void SceneBalloon::Render()
 	modelStack.Rotate(90, 0, 1, 0);
 	modelStack.Scale(1.5, 1, 1);
 
-	meshList[GEO_BP_BOOTHGUARDS]->material = Material::Metal(WHITE);
+	meshList[GEO_BP_BOOTHGUARDS]->material = Material::Metal(GREY);
 	RenderMesh(meshList[GEO_BP_BOOTHGUARDS], true);
 
 	meshList[GEO_BP_BOOTHROOF]->material = Material::Wood(WHITE);
@@ -470,6 +537,22 @@ void SceneBalloon::Render()
 	//modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
 	//RenderMesh(meshList[GEO_PLANE]);
 	//modelStack.PopMatrix();
+
+	// fairy lights:
+	{
+		modelStack.PushMatrix();
+		modelStack.Translate(-0.00242271, 7.51264, -9.57801);
+		modelStack.Scale(6, 6, 6);
+		RenderMesh(meshList[GEO_BP_FAIRYLIGHT], true);
+		modelStack.PopMatrix();
+
+		modelStack.PushMatrix();
+		modelStack.Translate(-0.00242271, 7.51264, 9.15998);
+		modelStack.Scale(6, 6, 6);
+		RenderMesh(meshList[GEO_BP_FAIRYLIGHT], true);
+		modelStack.PopMatrix();
+	}
+
 
 	GameObjectManager::GetInstance()->RenderAll(*this);
 

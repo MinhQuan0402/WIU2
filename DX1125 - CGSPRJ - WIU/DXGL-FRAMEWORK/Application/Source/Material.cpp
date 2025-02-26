@@ -1,7 +1,7 @@
 #include "Material.h"
 
 float Material::additionalAmbient = 0.0f;
-Material::Material(void) : kAmbient(0.0f, 0.0f, 0.0f), kDiffuse(0.0f, 0.0f, 0.0f), kSpecular(0.0f, 0.0f, 0.0f), kShininess(1.f), size(0)
+Material::Material(void) : kAmbient(0.0f, 0.0f, 0.0f), kDiffuse(0.0f, 0.0f, 0.0f), kSpecular(0.0f, 0.0f, 0.0f), kShininess(1.f), size(0), kEmission(0.0f, 0.0f, 0.0f)
 {
 }
 

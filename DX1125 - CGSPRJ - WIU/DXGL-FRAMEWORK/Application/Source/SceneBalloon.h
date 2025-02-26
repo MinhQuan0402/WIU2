@@ -32,6 +32,7 @@ public:
 		GEO_BP_POWERUI_FRAME,
 		GEO_BP_POWERUI_BAR,
 		GEO_BP_COUNTER,
+		GEO_BP_FAIRYLIGHT,
 		NUM_GEOMETRY
 	};
 
@@ -50,6 +51,9 @@ private:
 	int numLight;
 
 	float fov;
+	float lightTimer;
+	bool isLightChanged = false;
+
 	float cooldownTimer;
 	bool isShooting;
 	bool gameComplete;
@@ -58,6 +62,9 @@ private:
 	int score;
 	const float maxPower = 25.f;
 	bool gameEnd = false;
+
+
+	glm::vec3 devVec;
 
 
 	

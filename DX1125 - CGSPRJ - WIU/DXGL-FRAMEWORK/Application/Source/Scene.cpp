@@ -73,7 +73,7 @@ void Scene::RenderMesh(Mesh* mesh, bool enableLight)
 	mesh->Render();
 	if (mesh->textureID > 0)
 	{
-		glBindTexture(GL_TEXTURE_2D, 0 );
+		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 }
 void Scene::RenderMesh(Mesh* mesh, bool enableLight, Transform& transform)
