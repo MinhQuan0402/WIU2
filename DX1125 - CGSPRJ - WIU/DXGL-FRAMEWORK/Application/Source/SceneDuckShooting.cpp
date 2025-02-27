@@ -12,6 +12,7 @@
 #include <glm/gtc/matrix_inverse.hpp>
 #include "LoadTGA.h"
 #include <GLFW/glfw3.h>
+#include "Time.h"
 #include "LoadPNG.h"
 #include <btBulletDynamicsCommon.h>
 #include "ColliderManager.h"
@@ -27,8 +28,11 @@
 #include "DS_Counter2.h"
 #include "SceneManager.h"
 
-#include "MeshManager.h"
+#include "GameManager.h"
 #include "carnivalroaming.h"
+#include "MeshManager.h"
+#include "RigidBody.h"
+
 
 SceneDuckShooting::SceneDuckShooting() : numLight{ 12 }
 {
@@ -183,7 +187,7 @@ void SceneDuckShooting::Init()
 	{
 		lights[i].color = glm::vec3(1, 1, 1);
 		lights[i].type = Light::LIGHT_POINT;
-		lights[i].power = 0.35f;
+		lights[i].power = 0.5f;
 		lights[i].kC = 0.5f;
 		lights[i].kL = 0.01f;
 		lights[i].kQ = 0.001f;
@@ -281,6 +285,7 @@ void SceneDuckShooting::Init()
 	cooldownTimer = 0;
 	gameComplete = false;
 	gameCompletePause = 3;
+	switchedScene = false;
 	spawnRate = 0.5;
 
 	points = 0;
@@ -346,19 +351,6 @@ void SceneDuckShooting::Update()
 
 	GameObjectManager::GetInstance()->UpdateAll();
 
-	// update game completion timer:
-	{
-		if (gameComplete) {
-			if (gameCompletePause > 0) {
-				gameCompletePause -= Time::deltaTime;
-			}
-			else {
-				SceneManager::GetInstance()->PushState(new carnivalroaming);
-				return;
-			}
-		}
-	}
-
 
 	// update timer:
 	{
@@ -370,6 +362,8 @@ void SceneDuckShooting::Update()
 			gameComplete = true;
 		}
 	}
+
+	if (gameComplete) return;
 
 
 	// update light:
@@ -406,6 +400,7 @@ void SceneDuckShooting::Update()
 	}
 
 
+	
 
 	// recoil
 	{
@@ -458,7 +453,7 @@ void SceneDuckShooting::Update()
 		}
 	}
 
-	if (gameComplete) return;
+
 	// check bullet collision with duck:
 	{
 		for (int i = 0; i < ducks.size(); i++) {
@@ -480,6 +475,21 @@ void SceneDuckShooting::Update()
 
 void SceneDuckShooting::LateUpdate()
 {
+	// update game completion timer:
+	{
+		if (gameComplete) {
+			if (gameCompletePause > 0) {
+				gameCompletePause -= Time::deltaTime;
+			}
+			else if (!switchedScene) {
+				switchedScene = true;
+				SceneManager::GetInstance()->ChangeState(new carnivalroaming);
+				return;
+			}
+		}
+	}
+
+	if (switchedScene) return;
 	// View Model:
 	{
 		glm::vec3 cameraPos = mainCamera.m_transform.m_position;
@@ -563,7 +573,7 @@ void SceneDuckShooting::LateUpdate()
 				GameObjectManager::GetInstance()->removeItem(duck);
 				ColliderManager::GetInstance()->RemoveCollider(collider);
 				ducks.remove(duck);
-				return;
+				continue;
 			}
 
 			duck->SetRigidbodyRotation(duck->animTime / duck->duration * -90, 0, 0);
@@ -576,6 +586,7 @@ void SceneDuckShooting::LateUpdate()
 
 void SceneDuckShooting::Render()
 {
+	if (switchedScene) return;
 	{
 		// Clear color buffer every frame
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -759,6 +770,8 @@ void SceneDuckShooting::Render()
 
 void SceneDuckShooting::Exit()
 {
+	GameManager::GetInstance()->SetPoints(GameManager::GetInstance()->GetPoints() + points);
+	Scene::Exit();
 	// Cleanup VBO here
 	for (int i = 0; i < NUM_GEOMETRY; ++i) { if (meshList[i]) delete meshList[i]; }
 	meshList.clear();
@@ -768,6 +781,7 @@ void SceneDuckShooting::Exit()
 	glDeleteVertexArrays(1, &m_vertexArrayID);
 	glDeleteProgram(m_programID);
 }
+
 
 void SceneDuckShooting::RenderSkybox(void)
 {
@@ -842,7 +856,7 @@ void SceneDuckShooting::RenderGround(int size)
 
 			modelStack.PushMatrix();
 			modelStack.Translate(originPos.x, originPos.y, originPos.z);
-			modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
+			modelStack.Rotate(-90.0f, 1.0f, 0.0f, 0.0f);
 			RenderMesh(meshList[GEO_PLANE], enableLight);
 			modelStack.PopMatrix();
 

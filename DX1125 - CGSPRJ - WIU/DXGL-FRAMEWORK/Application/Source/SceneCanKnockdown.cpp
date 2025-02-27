@@ -369,7 +369,7 @@ void SceneCanKnockdown::Update()
 		if (cansFallen == 6) {
 			std::cout << "Game complete" << std::endl;
 			gameComplete = true;
-			SceneManager::GetInstance()->PushState(new carnivalroaming);
+			SceneManager::GetInstance()->ChangeState(new carnivalroaming);
 			return;
 		}
 	}
@@ -718,7 +718,7 @@ void SceneCanKnockdown::RenderGround(int size)
 
 			modelStack.PushMatrix();
 			modelStack.Translate(originPos.x, originPos.y, originPos.z);
-			modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
+			modelStack.Rotate(-90.0f, 1.0f, 0.0f, 0.0f);
 			RenderMesh(meshList[GEO_PLANE], enableLight);
 			modelStack.PopMatrix();
 

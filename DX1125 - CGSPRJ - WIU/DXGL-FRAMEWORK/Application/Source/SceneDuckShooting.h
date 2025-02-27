@@ -5,8 +5,6 @@
 #include "Mesh.h"
 #include "Transform.h"
 #include "GameObject.h"
-#include "RigidBody.h"
-#include "Time.h"
 #include "UnorderedVector.h"
 #include "DS_Duck.h"
 #include "DS_Bullet.h"
@@ -98,6 +96,7 @@ private:
 
 	bool gameComplete;
 	float gameCompletePause;
+	bool switchedScene;
 };
 
 #endif

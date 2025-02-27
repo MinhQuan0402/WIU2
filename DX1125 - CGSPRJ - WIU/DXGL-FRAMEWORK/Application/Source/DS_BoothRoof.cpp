@@ -2,6 +2,8 @@
 #include "GameObjectManager.h"
 #include "SceneDuckShooting.h"
 
+#include "RigidBody.h"
+
 DS_BoothRoof::DS_BoothRoof() {
 	
 	GameObjectManager::GetInstance()->addItem(this);

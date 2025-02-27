@@ -2,7 +2,7 @@
 #include "GameObjectManager.h"
 #include "SceneDuckShooting.h"
 #include "MeshManager.h"
-
+#include "RigidBody.h"
 DS_Counter2::DS_Counter2() {
 	
 	GameObjectManager::GetInstance()->addItem(this);

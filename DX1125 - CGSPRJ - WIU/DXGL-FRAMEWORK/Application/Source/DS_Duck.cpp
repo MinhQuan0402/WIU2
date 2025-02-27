@@ -4,6 +4,9 @@
 #include "ColliderManager.h"
 #include "MeshManager.h"
 
+#include "RigidBody.h"
+#include "Time.h"
+
 int DS_Duck::nextId = 1;
 
 DS_Duck::DS_Duck() : hit{}, speed{ 7 }, animTime{}

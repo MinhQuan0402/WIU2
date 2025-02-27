@@ -28,6 +28,7 @@
 #include "CircusTent.h"
 #include "MeshManager.h"
 #include "SceneRingToss.h"
+#include "SceneDuckShooting.h"
 
 
 carnivalroaming::carnivalroaming() : numLight{ 1 }
@@ -353,8 +354,8 @@ void carnivalroaming::LateUpdate()
 		{
 			std::cout << "Colliding with duck shooting" << std::endl;
 			GameManager::GetInstance()->SetEnergy(GameManager::GetInstance()->GetEnergy() - 10);
-			//SceneManager::GetInstance()->ChangeState(new SceneDuckShooting);
-			//return;
+			SceneManager::GetInstance()->ChangeState(new SceneDuckShooting);
+			return;
 		}
 		if (CheckCollisionWith(objInscene[PLAYERBOX]->getObject(), objInscene[BOX2]->getObject()) and KeyboardController::GetInstance()->IsKeyPressed('E'))
 		{

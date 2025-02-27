@@ -2,7 +2,7 @@
 #include "GameObjectManager.h"
 #include "SceneDuckShooting.h"
 #include "MeshManager.h"
-
+#include "RigidBody.h"
 DS_Floor::DS_Floor() {
 	
 	GameObjectManager::GetInstance()->addItem(this);
