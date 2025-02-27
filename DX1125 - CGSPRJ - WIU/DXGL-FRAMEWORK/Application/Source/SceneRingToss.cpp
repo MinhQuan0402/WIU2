@@ -280,8 +280,11 @@ void SceneRingToss::Init()
 	objInScene[PLAYER]->rb->setIgnoreCollisionCheck(objInScene[RING3]->rb, true);
 
 	objInScene[RING]->rb->setIgnoreCollisionCheck(objInScene[RING2]->rb, true);
+	objInScene[RING]->rb->setIgnoreCollisionCheck(objInScene[WALLRIGHT]->rb, true);
 	objInScene[RING]->rb->setIgnoreCollisionCheck(objInScene[RING3]->rb, true);
+	objInScene[RING2]->rb->setIgnoreCollisionCheck(objInScene[WALLRIGHT]->rb, true);
 	objInScene[RING2]->rb->setIgnoreCollisionCheck(objInScene[RING3]->rb, true);
+	objInScene[RING3]->rb->setIgnoreCollisionCheck(objInScene[WALLRIGHT]->rb, true);
 }
 
 void SceneRingToss::Update()
@@ -639,7 +642,7 @@ void SceneRingToss::RenderGround(int size)
 
 			modelStack.PushMatrix();
 			modelStack.Translate(originPos.x, originPos.y, originPos.z);
-			modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
+			modelStack.Rotate(-90.0f, 1.0f, 0.0f, 0.0f);
 			RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_RT_PLANE], enableLight);
 			modelStack.PopMatrix();
 

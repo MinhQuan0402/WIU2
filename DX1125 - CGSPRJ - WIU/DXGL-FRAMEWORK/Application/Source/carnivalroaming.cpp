@@ -112,7 +112,7 @@ void carnivalroaming::Init()
 		meshList[GEO_MODEL1] = MeshBuilder::GenerateOBJ("Doorman", "Models//doorman.obj");
 		meshList[GEO_MODEL1]->textureID = LoadPNG("Images//doorman.png");
 		meshList[GEO_SPHERE] = MeshBuilder::GenerateSphere("Sphere", WHITE, 1.0f, 100, 100);
-		meshList[GEO_CUBE] = MeshBuilder::GenerateCube("Cube", YELLOW, 1.0f);
+		meshList[GEO_CUBE] = MeshBuilder::GenerateCube("Cube", BLACK, 1.0f);
 
 		meshList[GEO_TICKET] = MeshBuilder::GenerateQuad("Quad", YELLOW, 1.0f);
 		meshList[GEO_TICKET]->textureID = LoadPNG("Images//ticket.png");
@@ -152,7 +152,7 @@ void carnivalroaming::Init()
 	{
 		glUniform1i(m_parameters[U_NUMLIGHTS], numLight);
 
-		lights[0].m_transform.m_position = devVec;
+		lights[0].m_transform.m_position = glm::vec3(0, 4000, 0);
 		lights[0].color = glm::vec3(1, 1, 1);
 		lights[0].type = Light::LIGHT_DIRECTIONAL;
 		lights[0].power = 2.0f;
@@ -292,6 +292,8 @@ void carnivalroaming::Init()
 
 	std::cout << GameManager::GetInstance()->GetPoints() << std::endl;
 
+	devVec = mainCamera.m_transform.m_position + glm::vec3(0, 0, 10);
+
 }
 
 void carnivalroaming::Update()
@@ -348,7 +350,8 @@ void carnivalroaming::LateUpdate()
 			devVec.x -= speed * Time::deltaTime;
 		}
 
-		lights[0].m_transform.m_position = devVec;
+		//lights[0].m_transform.m_position = devVec;
+		std::cout << devVec.x << ", " << devVec.y << ", " << devVec.z << std::endl;
 
 		GameObjectManager::GetInstance()->UpdateAll(); 
 	}
@@ -475,6 +478,15 @@ void carnivalroaming::Render()
 	modelStack.Scale(1500.0f, 1000.0f, 0.0f);
 	RenderMesh(meshList[GEO_PLANE], true);
 	modelStack.PopMatrix();*/
+
+	// Render white cube inside circus:
+	{
+		modelStack.PushMatrix();
+		modelStack.Translate(3.1979, 52.3335, -177.72);
+		modelStack.Scale(95.2634, 121.109, 15);
+		RenderMesh(meshList[GEO_CUBE], false);
+		modelStack.PopMatrix();
+	}
 
 
 	modelStack.PushMatrix();
@@ -1523,6 +1535,18 @@ void carnivalroaming::Render()
 		modelStack.Rotate(90, 0, 1, 0);
 		modelStack.Scale(2.5, 2.5, 2.5);
 		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_FENCE], true);
+
+
+		// Fairy lights:
+		{
+			modelStack.PushMatrix();
+			modelStack.Translate(devVec.x, devVec.y, devVec.z);
+			modelStack.Scale(6, 6, 6);
+			RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_DS_FAIRYLIGHT], enableLight);
+			modelStack.PopMatrix();
+		}
+
+
 		modelStack.PopMatrix();
 	}
 
