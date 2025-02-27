@@ -6,7 +6,6 @@
 #include "Mesh.h"
 #include "Light.h"
 #include "FPCamera.h"
-#include "BulletCollision/CollisionShapes/btCollisionShape.h"
 
 class Scene
 {
@@ -26,18 +25,6 @@ public:
 		U_LIGHT0_COSCUTOFF,
 		U_LIGHT0_COSINNER,
 		U_LIGHT0_EXPONENT,
-
-		U_LIGHT1_TYPE,
-		U_LIGHT1_POSITION,
-		U_LIGHT1_COLOR,
-		U_LIGHT1_POWER,
-		U_LIGHT1_KC,
-		U_LIGHT1_KL,
-		U_LIGHT1_KQ,
-		U_LIGHT1_SPOTDIRECTION,
-		U_LIGHT1_COSCUTOFF,
-		U_LIGHT1_COSINNER,
-		U_LIGHT1_EXPONENT,
 
 		NUMLIGHT = U_LIGHT0_EXPONENT * 25,
 
@@ -86,7 +73,6 @@ public:
 	void RenderText(Mesh* mesh, std::string text, glm::vec3 color);
 	void RenderTextOnScreen(Mesh* mesh, std::string text, glm::vec3 color, float size, float x, float y);
 	void RenderLine(glm::vec3 startPoint, glm::vec3 endPoint, float thickness, glm::vec3 color, float depth);
-	void RenderChildCollider(btCollisionShape* shape, float matrix[16]);
 protected:
 	bool isFillMode;
 	enum HITBOX_TYPE

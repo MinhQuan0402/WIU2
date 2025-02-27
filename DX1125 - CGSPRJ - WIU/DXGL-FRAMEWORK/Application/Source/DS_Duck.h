@@ -1,0 +1,22 @@
+#pragma once
+#include "GameObject.h"
+class DS_Duck:
+    public GameObject
+{
+public:
+    static int nextId;
+
+    float size;
+    float speed;
+    float animTime;
+    const float duration = 0.25f;
+    bool hit;
+
+    DS_Duck();
+
+    void Start() override;
+    void Update() override;
+    void LateUpdate() override;
+    void Render(Scene& scene) override;
+};
+

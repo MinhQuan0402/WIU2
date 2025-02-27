@@ -1,7 +1,6 @@
 #pragma once
 #include <UnorderedVector.h>
 #include "BulletCollision/CollisionShapes/btCollisionShape.h"
-#include "BulletCollision/CollisionShapes/btCompoundShape.h"
 #include "BulletCollision/CollisionShapes/btBoxShape.h"
 #include "BulletCollision/CollisionShapes/btSphereShape.h"
 #include "BulletCollision/CollisionShapes/btCylinderShape.h"
@@ -42,20 +41,6 @@ public:
 	~CylinderCollider(void) = default;
 
 	void GetDimension(float& rad, float& height) const;
-};
-
-class TorusCollider : public btCompoundShape
-{
-private:
-	float m_rad, m_tubeRad;
-	int m_numSegment;
-
-public:
-	TorusCollider(GameObject* go, const float& rad, const float& tubeRad, const int& numSegment);
-	~TorusCollider(void) = default;
-
-
-	void GetDimension(float& rad, float& tubeRad, int& numSegments) const;
 };
 
 class ColliderManager
