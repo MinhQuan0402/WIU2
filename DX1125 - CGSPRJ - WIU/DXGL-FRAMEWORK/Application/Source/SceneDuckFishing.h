@@ -31,6 +31,7 @@ public:
 		GEO_FD_TENTROOF,
 		GEO_FD_POOL,
 		GEO_FD_WATER,
+		GEO_FD_STEP_STOOL,
 
 		NUM_GEOMETRY
 	};
@@ -53,6 +54,8 @@ private:
 	float duckRotation[20];
 
 	float spinnerRotation;
+	float threshold = 1.1f;
+	glm::vec3 CamDir;
 	enum OBJINSCENE
 	{
 		GROUND,
@@ -89,6 +92,10 @@ private:
 		POOL_SPINNER3,
 		POOL_SPINNER4,
 		POOL_SPINNER5,
+		POOL_SPINNER6,
+		POOL_SPINNER7,
+		POOL_SPINNER8,
+		POOL_SPINNER9,
 
 		POOLFLOOR,
 

@@ -119,7 +119,8 @@ void SceneDuckFishing::Init()
 	meshList[GEO_FD_POOL]->textureID = LoadPNG("Images//FD_pool.png");
 	meshList[GEO_FD_WATER] = MeshBuilder::GenerateCircle("Water", WHITE, 5);
 	meshList[GEO_FD_WATER]->textureID = LoadPNG("Images//FD_water.png");
-
+	/*meshList[GEO_FD_STEP_STOOL] = MeshBuilder::GenerateOBJ("StepStool", "Models//FD_step_stool.obj");
+	meshList[GEO_FD_STEP_STOOL]->textureID = LoadPNG("Images//FD_step_stool.png");*/
 
 	mainCamera.Init(glm::vec3(8, 6, 6), glm::vec3(0, 6, 0), VECTOR3_UP);
 	mainCamera.sensitivity = 100;
@@ -149,6 +150,8 @@ void SceneDuckFishing::Init()
 	glUniform1f(m_parameters[U_LIGHT0_EXPONENT], lights[0].exponent);
 
 	enableLight = true;
+	//Application::showCursor = true;
+	//Application::enableCursor = true;
 	spinnerRotation = 0.0f;
 	std::srand(std::time(0));
 	float maxRadius = 12.0f;
@@ -177,85 +180,87 @@ void SceneDuckFishing::Init()
 	objInScene[GROUND]->rb = addStaticPlane(objInScene[GROUND], VECTOR3_UP, groundMat);
 	GameObjectManager::GetInstance()->addItem(objInScene[GROUND]);
 
-	objInScene[DUCK] = new Ducks();
-	objInScene[DUCK]->m_transform.Translate(duckX[0], 7.f, duckZ[0]);
-	objInScene[DUCK]->m_transform.Rotate(0.0f, duckRotation[0], 0.0f);
+	{
+		objInScene[DUCK] = new Ducks();
+		objInScene[DUCK]->m_transform.Translate(duckX[0], 7.f, duckZ[0]);
+		objInScene[DUCK]->m_transform.Rotate(0.0f, duckRotation[0], 0.0f);
 
-	objInScene[DUCK2] = new Ducks();
-	objInScene[DUCK2]->m_transform.Translate(duckX[1], 7.f, duckZ[1]);
-	objInScene[DUCK2]->m_transform.Rotate(0.0f, duckRotation[1], 0.0f);
+		/*objInScene[DUCK2] = new Ducks();
+		objInScene[DUCK2]->m_transform.Translate(duckX[1], 7.f, duckZ[1]);
+		objInScene[DUCK2]->m_transform.Rotate(0.0f, duckRotation[1], 0.0f);
 
-	objInScene[DUCK3] = new Ducks();
-	objInScene[DUCK3]->m_transform.Translate(duckX[2], 7.f, duckZ[2]);
-	objInScene[DUCK3]->m_transform.Rotate(0.0f, duckRotation[2], 0.0f);
+		objInScene[DUCK3] = new Ducks();
+		objInScene[DUCK3]->m_transform.Translate(duckX[2], 7.f, duckZ[2]);
+		objInScene[DUCK3]->m_transform.Rotate(0.0f, duckRotation[2], 0.0f);
 
-	objInScene[DUCK4] = new Ducks();
-	objInScene[DUCK4]->m_transform.Translate(duckX[3], 7.f, duckZ[3]);
-	objInScene[DUCK4]->m_transform.Rotate(0.0f, duckRotation[3], 0.0f);
+		objInScene[DUCK4] = new Ducks();
+		objInScene[DUCK4]->m_transform.Translate(duckX[3], 7.f, duckZ[3]);
+		objInScene[DUCK4]->m_transform.Rotate(0.0f, duckRotation[3], 0.0f);
 
-	objInScene[DUCK5] = new Ducks();
-	objInScene[DUCK5]->m_transform.Translate(duckX[4], 7.f, duckZ[4]);
-	objInScene[DUCK5]->m_transform.Rotate(0.0f, duckRotation[4], 0.0f);
+		objInScene[DUCK5] = new Ducks();
+		objInScene[DUCK5]->m_transform.Translate(duckX[4], 7.f, duckZ[4]);
+		objInScene[DUCK5]->m_transform.Rotate(0.0f, duckRotation[4], 0.0f);
 
-	objInScene[DUCK6] = new Ducks();
-	objInScene[DUCK6]->m_transform.Translate(duckX[5], 7.f, duckZ[5]);
-	objInScene[DUCK6]->m_transform.Rotate(0.0f, duckRotation[5], 0.0f);
+		objInScene[DUCK6] = new Ducks();
+		objInScene[DUCK6]->m_transform.Translate(duckX[5], 7.f, duckZ[5]);
+		objInScene[DUCK6]->m_transform.Rotate(0.0f, duckRotation[5], 0.0f);
 
-	objInScene[DUCK7] = new Ducks();
-	objInScene[DUCK7]->m_transform.Translate(duckX[6], 7.f, duckZ[6]);
-	objInScene[DUCK7]->m_transform.Rotate(0.0f, duckRotation[6], 0.0f);
+		objInScene[DUCK7] = new Ducks();
+		objInScene[DUCK7]->m_transform.Translate(duckX[6], 7.f, duckZ[6]);
+		objInScene[DUCK7]->m_transform.Rotate(0.0f, duckRotation[6], 0.0f);
 
-	objInScene[DUCK8] = new Ducks();
-	objInScene[DUCK8]->m_transform.Translate(duckX[7], 7.f, duckZ[7]);
-	objInScene[DUCK8]->m_transform.Rotate(0.0f, duckRotation[7], 0.0f);
+		objInScene[DUCK8] = new Ducks();
+		objInScene[DUCK8]->m_transform.Translate(duckX[7], 7.f, duckZ[7]);
+		objInScene[DUCK8]->m_transform.Rotate(0.0f, duckRotation[7], 0.0f);
 
-	objInScene[DUCK9] = new Ducks();
-	objInScene[DUCK9]->m_transform.Translate(duckX[8], 7.f, duckZ[8]);
-	objInScene[DUCK9]->m_transform.Rotate(0.0f, duckRotation[8], 0.0f);
+		objInScene[DUCK9] = new Ducks();
+		objInScene[DUCK9]->m_transform.Translate(duckX[8], 7.f, duckZ[8]);
+		objInScene[DUCK9]->m_transform.Rotate(0.0f, duckRotation[8], 0.0f);
 
-	objInScene[DUCK10] = new Ducks();
-	objInScene[DUCK10]->m_transform.Translate(duckX[9], 7.f, duckZ[9]);
-	objInScene[DUCK10]->m_transform.Rotate(0.0f, duckRotation[9], 0.0f);
+		objInScene[DUCK10] = new Ducks();
+		objInScene[DUCK10]->m_transform.Translate(duckX[9], 7.f, duckZ[9]);
+		objInScene[DUCK10]->m_transform.Rotate(0.0f, duckRotation[9], 0.0f);
 
-	objInScene[DUCK11] = new Ducks();
-	objInScene[DUCK11]->m_transform.Translate(duckX[10], 7.f, duckZ[10]);
-	objInScene[DUCK11]->m_transform.Rotate(0.0f, duckRotation[10], 0.0f);
+		objInScene[DUCK11] = new Ducks();
+		objInScene[DUCK11]->m_transform.Translate(duckX[10], 7.f, duckZ[10]);
+		objInScene[DUCK11]->m_transform.Rotate(0.0f, duckRotation[10], 0.0f);
 
-	objInScene[DUCK12] = new Ducks();
-	objInScene[DUCK12]->m_transform.Translate(duckX[11], 7.f, duckZ[11]);
-	objInScene[DUCK12]->m_transform.Rotate(0.0f, duckRotation[11], 0.0f);
+		objInScene[DUCK12] = new Ducks();
+		objInScene[DUCK12]->m_transform.Translate(duckX[11], 7.f, duckZ[11]);
+		objInScene[DUCK12]->m_transform.Rotate(0.0f, duckRotation[11], 0.0f);
 
-	objInScene[DUCK13] = new Ducks();
-	objInScene[DUCK13]->m_transform.Translate(duckX[12], 7.f, duckZ[12]);
-	objInScene[DUCK13]->m_transform.Rotate(0.0f, duckRotation[12], 0.0f);
+		objInScene[DUCK13] = new Ducks();
+		objInScene[DUCK13]->m_transform.Translate(duckX[12], 7.f, duckZ[12]);
+		objInScene[DUCK13]->m_transform.Rotate(0.0f, duckRotation[12], 0.0f);
 
-	objInScene[DUCK14] = new Ducks();
-	objInScene[DUCK14]->m_transform.Translate(duckX[13], 7.f, duckZ[13]);
-	objInScene[DUCK14]->m_transform.Rotate(0.0f, duckRotation[13], 0.0f);
+		objInScene[DUCK14] = new Ducks();
+		objInScene[DUCK14]->m_transform.Translate(duckX[13], 7.f, duckZ[13]);
+		objInScene[DUCK14]->m_transform.Rotate(0.0f, duckRotation[13], 0.0f);
 
-	objInScene[DUCK15] = new Ducks();
-	objInScene[DUCK15]->m_transform.Translate(duckX[14], 7.f, duckZ[14]);
-	objInScene[DUCK15]->m_transform.Rotate(0.0f, duckRotation[14], 0.0f);
+		objInScene[DUCK15] = new Ducks();
+		objInScene[DUCK15]->m_transform.Translate(duckX[14], 7.f, duckZ[14]);
+		objInScene[DUCK15]->m_transform.Rotate(0.0f, duckRotation[14], 0.0f);
 
-	objInScene[DUCK16] = new Ducks();
-	objInScene[DUCK16]->m_transform.Translate(duckX[15], 7.f, duckZ[15]);
-	objInScene[DUCK16]->m_transform.Rotate(0.0f, duckRotation[15], 0.0f);
+		objInScene[DUCK16] = new Ducks();
+		objInScene[DUCK16]->m_transform.Translate(duckX[15], 7.f, duckZ[15]);
+		objInScene[DUCK16]->m_transform.Rotate(0.0f, duckRotation[15], 0.0f);
 
-	objInScene[DUCK17] = new Ducks();
-	objInScene[DUCK17]->m_transform.Translate(duckX[16], 7.f, duckZ[16]);
-	objInScene[DUCK17]->m_transform.Rotate(0.0f, duckRotation[16], 0.0f);
+		objInScene[DUCK17] = new Ducks();
+		objInScene[DUCK17]->m_transform.Translate(duckX[16], 7.f, duckZ[16]);
+		objInScene[DUCK17]->m_transform.Rotate(0.0f, duckRotation[16], 0.0f);
 
-	objInScene[DUCK18] = new Ducks();
-	objInScene[DUCK18]->m_transform.Translate(duckX[17], 7.f, duckZ[17]);
-	objInScene[DUCK18]->m_transform.Rotate(0.0f, duckRotation[17], 0.0f);
+		objInScene[DUCK18] = new Ducks();
+		objInScene[DUCK18]->m_transform.Translate(duckX[17], 7.f, duckZ[17]);
+		objInScene[DUCK18]->m_transform.Rotate(0.0f, duckRotation[17], 0.0f);
 
-	objInScene[DUCK19] = new Ducks();
-	objInScene[DUCK19]->m_transform.Translate(duckX[18], 7.f, duckZ[18]);
-	objInScene[DUCK19]->m_transform.Rotate(0.0f, duckRotation[18], 0.0f);
+		objInScene[DUCK19] = new Ducks();
+		objInScene[DUCK19]->m_transform.Translate(duckX[18], 7.f, duckZ[18]);
+		objInScene[DUCK19]->m_transform.Rotate(0.0f, duckRotation[18], 0.0f);
 
-	objInScene[DUCK20] = new Ducks();
-	objInScene[DUCK20]->m_transform.Translate(duckX[19], 7.f, duckZ[19]);
-	objInScene[DUCK20]->m_transform.Rotate(0.0f, duckRotation[19], 0.0f);
+		objInScene[DUCK20] = new Ducks();
+		objInScene[DUCK20]->m_transform.Translate(duckX[19], 7.f, duckZ[19]);
+		objInScene[DUCK20]->m_transform.Rotate(0.0f, duckRotation[19], 0.0f);*/
+	}
 
 	objInScene[POOLWALL] = new PoolWall();
 	objInScene[POOLWALL]->m_transform.Translate(0.0f, 2.f, 0.0f);
@@ -284,7 +289,21 @@ void SceneDuckFishing::Init()
 	objInScene[POOL_SPINNER5]->m_transform.Translate(0, 3.5, -9);
 	objInScene[POOL_SPINNER5]->m_transform.Rotate(90.0f, spinnerRotation, 0.0f);
 
+	objInScene[POOL_SPINNER6] = new SpinyWater();
+	objInScene[POOL_SPINNER6]->m_transform.Translate(-9, 3.5, -9);
+	objInScene[POOL_SPINNER6]->m_transform.Rotate(90.0f, spinnerRotation, 0.0f);
 
+	objInScene[POOL_SPINNER7] = new SpinyWater();
+	objInScene[POOL_SPINNER7]->m_transform.Translate(9, 3.5, 9);
+	objInScene[POOL_SPINNER7]->m_transform.Rotate(90.0f, spinnerRotation, 0.0f);
+	
+	objInScene[POOL_SPINNER8] = new SpinyWater();
+	objInScene[POOL_SPINNER8]->m_transform.Translate(-9, 3.5, 9);
+	objInScene[POOL_SPINNER8]->m_transform.Rotate(90.0f, spinnerRotation, 0.0f);
+
+	objInScene[POOL_SPINNER9] = new SpinyWater();
+	objInScene[POOL_SPINNER9]->m_transform.Translate(9, 3.5, -9);
+	objInScene[POOL_SPINNER9]->m_transform.Rotate(90.0f, spinnerRotation, 0.0f);
 
 	objInScene[POOLFLOOR] = new PoolFloor();
 	//objInScene[POOLWALL3]->m_transform.Translate(0.0f, 7.f, 0.0f);
@@ -312,7 +331,6 @@ void SceneDuckFishing::Init()
 
 	GameObjectManager::GetInstance()->IniAll();
 	
-	
 } 
 
 void SceneDuckFishing::Update()
@@ -337,8 +355,18 @@ void SceneDuckFishing::Update()
 	objInScene[POOL_SPINNER3]->SetRigidbodyRotation(0.0f, -spinnerRotation, 0.0f);
 	objInScene[POOL_SPINNER4]->SetRigidbodyRotation(0.0f, -spinnerRotation, 0.0f);
 	objInScene[POOL_SPINNER5]->SetRigidbodyRotation(0.0f, spinnerRotation, 0.0f);
-
-
+	objInScene[POOL_SPINNER6]->SetRigidbodyRotation(0.0f, -spinnerRotation, 0.0f);
+	objInScene[POOL_SPINNER7]->SetRigidbodyRotation(0.0f, -spinnerRotation, 0.0f);
+	objInScene[POOL_SPINNER8]->SetRigidbodyRotation(0.0f, spinnerRotation, 0.0f);
+	objInScene[POOL_SPINNER9]->SetRigidbodyRotation(0.0f, -spinnerRotation, 0.0f);
+	
+	std::cout << mainCamera.target.z << std::endl;
+	if (std::abs(mainCamera.target.x - objInScene[DUCK]->GetRigidbodyPosition().x) <= threshold &&
+		std::abs(mainCamera.target.z - objInScene[DUCK]->GetRigidbodyPosition().z) <= threshold)
+	{
+		std::cout << "Detecting duck 1" << std::endl;
+	}
+	
 	mainCamera.UpdateCameraRotation();
 	GameObjectManager::GetInstance()->UpdateAll();
 }
@@ -425,6 +453,13 @@ void SceneDuckFishing::Render()
 	modelStack.Scale(0.7f, 0.7f, 0.7f);
 	RenderMesh(meshList[GEO_FD_POOL]);
 	modelStack.PopMatrix();
+
+	//modelStack.PushMatrix();
+	//modelStack.Translate(0, 0.0, 15);
+	//modelStack.Rotate(180.0f, 0.0f, 1.0f, 0.0f);
+	//modelStack.Scale(1.5f, 1.5f, 1.5f);
+	//RenderMesh(meshList[GEO_FD_STEP_STOOL]);
+	//modelStack.PopMatrix();
 
 	/*modelStack.PushMatrix();
 	modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
