@@ -104,13 +104,10 @@ void carnivalroaming::Init()
 
 	// Meshes:
 	{
-		meshList[GEO_HITBOX] = MeshBuilder::GenerateCube("HitBox", glm::vec3(0.0f, 1.0f, 0.0f), 1.0f);
 		meshList[GEO_AXIS] = MeshBuilder::GenerateAxes("Axes", 10000.f, 10000.f, 10000.f);
 		meshList[GEO_LIGHT] = MeshBuilder::GenerateSphere("Sphere", WHITE, .05f, 180, 180);
 		meshList[GEO_TEXT] = MeshBuilder::GenerateText("text", 16, 16);
 		meshList[GEO_TEXT]->textureID = LoadTGA("Images//calibri.tga");
-		meshList[GEO_MODEL1] = MeshBuilder::GenerateOBJ("Doorman", "Models//doorman.obj");
-		meshList[GEO_MODEL1]->textureID = LoadPNG("Images//doorman.png");
 		meshList[GEO_SPHERE] = MeshBuilder::GenerateSphere("Sphere", WHITE, 1.0f, 100, 100);
 		meshList[GEO_CUBE] = MeshBuilder::GenerateCube("Cube", BLACK, 1.0f);
 

@@ -320,8 +320,11 @@ void Ring::Start(void)
 
 void Ring::Update(void)
 {
-	if (trigger) trigger->SetRigidbodyPosition(GetRigidbodyPosition());
-	if (trigger) trigger->SetRigidbodyRotation(GetRigidbodyRotation());
+	if (trigger)
+	{
+		glm::vec3 position = GetRigidbodyPosition();
+		trigger->SetRigidbodyPosition(position.x, position.y, position.z);
+	}
 }
 
 void Ring::LateUpdate(void)
@@ -329,7 +332,7 @@ void Ring::LateUpdate(void)
 	if (trigger)
 	{
 		glm::vec3 position = GetRigidbodyPosition();
-		trigger->SetRigidbodyPosition(position.x - 0.2f, position.y, position.z);
+		trigger->SetRigidbodyPosition(position.x, position.y, position.z);
 	}
 }
 
