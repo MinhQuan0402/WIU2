@@ -143,7 +143,7 @@ void carnivalroaming::Init()
 		{
 			mainCamera.Init(savedPosition, glm::vec3(0.0f, GameManager::GetInstance()->GetCameraTarget().y, 0.0f), VECTOR3_UP);
 		}
-		else mainCamera.Init(glm::vec3(0, 35, -400), glm::vec3(0, 35, 0), VECTOR3_UP);
+		else mainCamera.Init(glm::vec3(0, 25, -400), glm::vec3(0, 25, 0), VECTOR3_UP);
 
 		mainCamera.sensitivity = 20;
 	}
@@ -196,6 +196,8 @@ void carnivalroaming::Init()
 	objInscene[BOX13] = new CarnivalHitBoxes();
 
 	objInscene[PLAYERBOX] = new PlayerHitBox();
+
+	treesSpawned = false;
 	
 
 	//objInscene[CIRCLE]->m_transform.ScaleBy(201.0f, 201.f, 201.0f);
@@ -310,7 +312,7 @@ void carnivalroaming::Update()
 	if (glm::length(inputMovementDir) > 0.0f)
 		inputMovementDir = glm::normalize(inputMovementDir);
 
-	glm::vec3 finalForce = inputMovementDir * 100.0f;
+	glm::vec3 finalForce = inputMovementDir * 200.0f;
 	
 	objInscene[PLAYERBOX]->rb->setLinearVelocity(btVector3(finalForce.x, 0.0f, finalForce.z));
 	GameObjectManager::GetInstance()->UpdateAll();
@@ -319,8 +321,10 @@ void carnivalroaming::Update()
 void carnivalroaming::LateUpdate()
 {
 	glm::vec3 playerRBPosition = objInscene[PLAYERBOX]->GetRigidbodyPosition();
-	mainCamera.m_transform.m_position = glm::vec3(playerRBPosition.x, playerRBPosition.y + 35, playerRBPosition.z);
+	mainCamera.m_transform.m_position = glm::vec3(playerRBPosition.x, playerRBPosition.y + 25, playerRBPosition.z);
 	mainCamera.UpdateCameraRotation();
+
+	//std::cout << "X: " << playerRBPosition.x << ", Y: " << playerRBPosition.y << ", Z: " << playerRBPosition.z << std::endl;
 
 	// Developer Controls:
 	{
@@ -463,7 +467,7 @@ void carnivalroaming::Render()
 	}
 
 	RenderSkybox();
-	RenderGround(20);
+	RenderGround(30);
 
 	//meshList[GEO_PLANE]->material = Material::Wood(RED);
 	/*modelStack.PushMatrix();
@@ -791,6 +795,13 @@ void carnivalroaming::Render()
 		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_BOTTOMCOTTONCANDY], true);
 		modelStack.PopMatrix();
 
+		modelStack.PushMatrix();
+		modelStack.Translate(-660.f, 0.f, -340.0f);
+		modelStack.Rotate(90, 0, 1, 0);
+		modelStack.Scale(20, 20, 20);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CLOWNWORKER], true);
+		modelStack.PopMatrix();
+
 		//food2
 		modelStack.PushMatrix();
 		modelStack.Translate(660.5f, 30.f, -300.0f);
@@ -1079,7 +1090,6 @@ void carnivalroaming::Render()
 	}
 
 	//balloon
-
 	{
 		modelStack.PushMatrix();
 		modelStack.Translate(650.5f, 0.5f, 0.0f);
@@ -1419,7 +1429,118 @@ void carnivalroaming::Render()
 		//modelStack.Scale(2., 7, 1);
 		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_RING], true);
 		modelStack.PopMatrix();
-}
+	}
+
+
+	if (treesSpawned == false) {
+		for (int i = 0; i < 30; i++) {
+			while (treeSpawn == false) {
+				int rangeX = 1100 - (-1100) + 1;
+				int rangeZ = 1000 - (-500) + 1;
+				treesX[i] = rand() % rangeX + (-1100);
+				treesZ[i] = rand() % rangeZ + (-500);
+
+				if (treesX[i] > 750 || treesX[i] < -750) {
+					if (treesZ[i] < 500 && treesZ[i] > -500) {
+						treeSpawn = true;
+					}
+				}
+			}
+			treeSpawn = false;
+		}
+
+		for (int i = 30; i < 50; i++) {
+			while (treeSpawn == false) {
+				int rangeX = 1100 - (-1100) + 1;
+				int rangeZ = 1000 - (-500) + 1;
+				treesX[i] = rand() % rangeX + (-1100);
+				treesZ[i] = rand() % rangeZ + (-500);
+
+				if (treesZ[i] > 500 && treesZ[i] < 1000) {
+					treeSpawn = true;
+				}
+			}
+			treeSpawn = false;
+		}
+
+		for (int i = 0; i < 50; i++) {
+			int range = 360 - 0 + 1;
+			treesRotate[i] = rand() % range + 0;
+		}
+
+		treesSpawned = true;
+	}
+
+	for (int i = 0; i < 50; i++) {
+		modelStack.PushMatrix();
+			modelStack.Translate(treesX[i], 0.f, treesZ[i]);
+			modelStack.Rotate(treesRotate[i], 0, 1, 0);
+			modelStack.Scale(15, 15, 15);
+			RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_TREE], true);
+			modelStack.PopMatrix();
+	}
+
+	if (fenceSpawned == false) {
+
+		for (int i = 0; i < 25; i++) {
+			RLfence[i] = Rstart;
+			Rstart += dist;
+		}
+
+		for (int i = 0; i < 38; i++) {
+			Tfence[i] = Tstart;
+			Tstart += dist;
+		}
+
+		for (int i = 0; i < 15; i++) {
+			FRfence[i] = FRstart;
+			FLfence[i] = FLstart;
+
+			FRstart -= dist;
+			FLstart += dist;
+		}
+		fenceSpawned = true;
+	}
+
+	for (int i = 0; i < 25; i++) 
+	{
+		modelStack.PushMatrix();
+		modelStack.Translate(-750.f, 13.f, RLfence[i]);
+		modelStack.Scale(2.5, 2.5, 2.5);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_FENCE], true);
+		modelStack.PopMatrix();
+
+		modelStack.PushMatrix();
+		modelStack.Translate(750.f, 13.f, RLfence[i]);
+		modelStack.Scale(2.5, 2.5, 2.5);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_FENCE], true);
+		modelStack.PopMatrix();
+	}
+
+	for (int i = 0; i < 38; i++) {
+		modelStack.PushMatrix();
+		modelStack.Translate(Tfence[i], 13.f, 500.f);
+		modelStack.Rotate(90, 0, 1, 0);
+		modelStack.Scale(2.5, 2.5, 2.5);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_FENCE], true);
+		modelStack.PopMatrix();
+	}
+
+	for (int i = 0; i < 15; i++) {
+		modelStack.PushMatrix();
+		modelStack.Translate(FRfence[i], 13.f, -500.f);
+		modelStack.Rotate(90, 0, 1, 0);
+		modelStack.Scale(2.5, 2.5, 2.5);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_FENCE], true);
+		modelStack.PopMatrix();
+
+		modelStack.PushMatrix();
+		modelStack.Translate(FLfence[i], 13.f, -500.f);
+		modelStack.Rotate(90, 0, 1, 0);
+		modelStack.Scale(2.5, 2.5, 2.5);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_FENCE], true);
+		modelStack.PopMatrix();
+	}
 
 	//shooting
 	//modelStack.PushMatrix();
@@ -1529,11 +1650,7 @@ void carnivalroaming::Render()
 			CheckCollisionWith(objInscene[PLAYERBOX]->getObject(), objInscene[BOX3]->getObject()) || 
 			CheckCollisionWith(objInscene[PLAYERBOX]->getObject(), objInscene[BOX4]->getObject()) || 
 			CheckCollisionWith(objInscene[PLAYERBOX]->getObject(), objInscene[BOX5]->getObject()) || 
-			CheckCollisionWith(objInscene[PLAYERBOX]->getObject(), objInscene[BOX6]->getObject()) || 
-			CheckCollisionWith(objInscene[PLAYERBOX]->getObject(), objInscene[BOX9]->getObject()) || 
-			CheckCollisionWith(objInscene[PLAYERBOX]->getObject(), objInscene[BOX10]->getObject()) || 
-			CheckCollisionWith(objInscene[PLAYERBOX]->getObject(), objInscene[BOX11]->getObject()) || 
-			CheckCollisionWith(objInscene[PLAYERBOX]->getObject(), objInscene[BOX12]->getObject()))
+			CheckCollisionWith(objInscene[PLAYERBOX]->getObject(), objInscene[BOX6]->getObject()))
 		{
 			RenderTextOnScreen(meshList[GEO_TEXT], "Press [E] to enter", YELLOW, 40, 400, 300);
 		}

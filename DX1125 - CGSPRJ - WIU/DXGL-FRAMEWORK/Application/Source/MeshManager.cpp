@@ -115,6 +115,10 @@ void MeshManager::Init()
 	meshList[GEO_BOTTOMCOTTONCANDY]->textureID = LoadPNG("Images//CR_bottom_cottoncandy.png");
 	meshList[GEO_BOTTOMCOTTONCANDY]->material = Material::Wood(WHITE);
 
+	meshList[GEO_CLOWNWORKER] = MeshBuilder::GenerateOBJMTL("clownWorker", "Models//clownWorker.obj", "Models//clownWorker.mtl");
+	meshList[GEO_CLOWNWORKER]->textureID = LoadPNG("Images//clownWorker.png");
+	meshList[GEO_CLOWNWORKER]->material = Material::Wood(WHITE);
+
 	meshList[GEO_CR_PLINKO] = MeshBuilder::GenerateOBJMTL("Plinko", "Models//CR_plinko.obj", "Models//CR_plinko.mtl");
 	meshList[GEO_CR_PLINKO]->textureID = LoadPNG("Images//CR_plinko.png");
 	meshList[GEO_CR_PLINKO]->material = Material::Wood(WHITE);
@@ -189,6 +193,14 @@ void MeshManager::Init()
 	meshList[GEO_GRASS]->textureID = LoadPNG("Images//CR_grass.png"); meshList[GEO_CIRCUSTENT] = MeshBuilder::GenerateCircle("Circle", WHITE, 200);
 	meshList[GEO_CIRCUSTENT] = MeshBuilder::GenerateOBJMTL("CircusTent", "Models//CR_circusTentTest.obj", "Models//CR_circusTentTest.mtl");
 	meshList[GEO_CIRCUSTENT]->textureID = LoadPNG("Images//CR_CircusTentTest.png");
+
+
+	meshList[GEO_TREE] = MeshBuilder::GenerateOBJ("Tree", "Models//treesRoaming.obj");
+	//meshList[GEO_TREE]->textureID = LoadPNG("Images//treesRoaming.png");
+	meshList[GEO_TREE]->material = Material::Wood(GREEN);
+
+	meshList[GEO_FENCE] = MeshBuilder::GenerateOBJ("Fence", "Models//metalFence.obj");
+	meshList[GEO_FENCE]->material = Material::Metal(GREY);
 
 	
 	meshList[GEO_ENERGYFRAME] = MeshBuilder::GenerateQuad("EnergyFrame", WHITE, 1.0f);

@@ -48,6 +48,26 @@ private:
 	float ducksX[10];
 	float ducksY[10];
 
+	float treesX[50];
+	float treesZ[50];
+	float treesRotate[50];
+	bool treeSpawn = false;
+	bool treesSpawned;
+
+	int Rstart = -480;
+	int dist = 40;
+	float RLfence[25];
+	
+	int Tstart = -730;
+	float Tfence[38];
+
+	int FRstart = 730;
+	int FLstart = -730;
+
+	float FRfence[15];
+	float FLfence[15];
+	bool fenceSpawned;
+
 	bool CanEnterCircus = false;
 	float timer = 0.0f;
 
