@@ -2,7 +2,7 @@
 #include "RigidBody.h"
 #include "GameObjectManager.h"
 #include "SceneBalloon.h"
-
+#include "MeshManager.h"
 BalloonBoard::BalloonBoard()
 {
 
@@ -47,10 +47,10 @@ void BalloonBoard::Update()
 
 void BalloonBoard::Render(Scene& scene)
 {
-	scene.meshList[SceneBalloon::GEO_BP_BALLOONBOARD]->material.kAmbient = glm::vec3(0.5, 0.5, 0.5);
-	scene.meshList[SceneBalloon::GEO_BP_BALLOONBOARD]->material.kDiffuse = glm::vec3(0.7f, 0.7f, 0.7f);
-	scene.meshList[SceneBalloon::GEO_BP_BALLOONBOARD]->material.kSpecular = glm::vec3(0.1f, 0.1f, 0.1f);
-	scene.meshList[SceneBalloon::GEO_BP_BALLOONBOARD]->material.kShininess = 1.0f;
+	scene.RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_BP_BALLOONBOARD]->material.kAmbient = glm::vec3(0.5, 0.5, 0.5));
+	scene.RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_BP_BALLOONBOARD]->material.kDiffuse = glm::vec3(0.7f, 0.7f, 0.7f));
+	scene.RenderMesh(MeshManager::GetInstance()->meshList[Meshmanager::GEO_BP_BALLOONBOARD]->material.kSpecular = glm::vec3(0.1f, 0.1f, 0.1f));
+	scene.RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_BP_BALLOONBOARD]->material.kShininess = 1.0f);
 
-	scene.RenderMesh(scene.meshList[SceneBalloon::GEO_BP_BALLOONBOARD], true, m_transform);
+	scene.RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_BP_BALLOONBOARD], true, m_transform);
 }

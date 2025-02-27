@@ -25,6 +25,7 @@
 #include "Dart.h"
 #include "BP_Counter.h"
 #include "BP_Box.h"
+#include "MeshManager.h"
 
 SceneBalloon::SceneBalloon() : numLight{ 11 }, currentDartIndex{ DART1 }
 {
@@ -120,20 +121,7 @@ void SceneBalloon::Init()
 	meshList[GEO_PLANE] = MeshBuilder::GenerateQuad("Quad", WHITE, 75.0f);
 	meshList[GEO_PLANE]->textureID = LoadPNG("Images//ground.png");
 
-	meshList[GEO_BP_BALLOON] = MeshBuilder::GenerateOBJ("Balloon", "Models//balloon.obj");
-	meshList[GEO_BP_BOOTHGUARDS] = MeshBuilder::GenerateOBJMTL("BoothGuards", "Models//BP_BoothGuards.obj", "Models//BP_BoothGuards.mtl");
-	meshList[GEO_BP_BOOTHROOF] = MeshBuilder::GenerateOBJMTL("BoothRoof", "Models//BP_BoothRoof.obj", "Models//BP_BoothRoof.mtl");
-	meshList[GEO_BP_BOOTHROOF]->textureID = LoadPNG("Images//BP_BoothRoof.png");
-	meshList[GEO_BP_BALLOONBOARD] = MeshBuilder::GenerateOBJ("BalloonBoard", "Models//noticeboard.obj");
-	meshList[GEO_BP_BALLOONBOARD]->textureID = LoadPNG("Images//boardimage.png");
-	meshList[GEO_BP_DART] = MeshBuilder::GenerateOBJ("Dart", "Models//dart.obj");
-	meshList[GEO_BP_POWERUI_FRAME] = MeshBuilder::GenerateQuad("PowerUi_Frame", glm::vec3(1, 1, 1), 1);
-	meshList[GEO_BP_POWERUI_FRAME]->textureID = LoadPNG("Images//CK_PowerUi_Frame.png");
-	meshList[GEO_BP_POWERUI_BAR] = MeshBuilder::GenerateQuad("PowerUi_Bar", glm::vec3(1, 1, 0), 1);
-	meshList[GEO_BP_COUNTER] = MeshBuilder::GenerateCube("Counter", glm::vec3(0.459, 0.302, 0), 1);
-	meshList[GEO_BP_COUNTER]->textureID = LoadPNG("Images//BP_Wood.png");
-	meshList[GEO_BP_COUNTER]->material = Material::Wood(glm::vec3(0.459, 0.302, 0));
-	meshList[GEO_BP_FAIRYLIGHT] = MeshBuilder::GenerateOBJMTL("FairyLight", "Models//BP_FairyLight.obj", "Models//BP_FairyLight.mtl");
+	
 
 	meshList[GEO_TOP] = MeshBuilder::GenerateQuad("Plane", glm::vec3(1.f, 1.f, 1.f), 10.f);
 	meshList[GEO_TOP]->textureID = LoadPNG("Images//top.png");
@@ -195,7 +183,7 @@ void SceneBalloon::Init()
 
 	for (int i = 1; i <= 5; ++i)
 	{
-		meshList[GEO_BP_FAIRYLIGHT]->materials[i - 1].kEmission = glm::vec3(0.5f, 0.5f, 0.5f);
+		MeshManager::GetInstance()->meshList[GEO_BP_FAIRYLIGHT]->materials[i - 1].kEmission = glm::vec3(0.5f, 0.5f, 0.5f);
 
 		glm::vec3 randColor = glm::vec3{
 			Math::RandFloatMinMax(0.0f, 1.0f),
@@ -203,7 +191,7 @@ void SceneBalloon::Init()
 			Math::RandFloatMinMax(0.0f, 1.0f)
 		};
 
-		meshList[GEO_BP_FAIRYLIGHT]->materials[i - 1].kAmbient = glm::vec3(randColor);
+		MeshManager::GetInstance()->meshList[GEO_BP_FAIRYLIGHT]->materials[i - 1].kAmbient = glm::vec3(randColor);
 		lights[i].color = randColor;
 		lights[5 + i].color = randColor;
 	}
@@ -336,7 +324,7 @@ void SceneBalloon::Update()
 		{
 			for (int i = 1; i <= 5; ++i)
 			{
-				meshList[GEO_BP_FAIRYLIGHT]->materials[i - 1].kEmission = glm::vec3(0.5f, 0.5f, 0.5f);
+				MeshManager::GetInstance()->meshList[MeshManager::GEO_BP_FAIRYLIGHT]->materials[i - 1].kEmission = glm::vec3(0.5f, 0.5f, 0.5f);
 
 				glm::vec3 randColor = glm::vec3{
 					Math::RandFloatMinMax(0.0f, 1.0f),
@@ -344,7 +332,7 @@ void SceneBalloon::Update()
 					Math::RandFloatMinMax(0.0f, 1.0f)
 				};
 
-				meshList[GEO_BP_FAIRYLIGHT]->materials[i - 1].kAmbient = glm::vec3(randColor);
+				MeshManager::GetInstance()->meshList[MeshManager::GEO_BP_FAIRYLIGHT]->materials[i - 1].kAmbient = glm::vec3(randColor);
 				lights[i].color = randColor;
 				glUniform3fv(m_parameters[U_LIGHT0_COLOR + U_LIGHT0_EXPONENT * i], 1, &lights[i].color.r);
 
@@ -508,7 +496,7 @@ void SceneBalloon::Render()
 	}
 
 	modelStack.PushMatrix();
-	RenderMesh(meshList[GEO_AXIS]);
+	//RenderMesh(MeshManager::GetInstance()->meshList[GEO_AXIS]);
 	modelStack.PopMatrix();
 
 	RenderSkybox();
@@ -518,11 +506,11 @@ void SceneBalloon::Render()
 	modelStack.Rotate(90, 0, 1, 0);
 	modelStack.Scale(1.5, 1, 1);
 
-	meshList[GEO_BP_BOOTHGUARDS]->material = Material::Metal(GREY);
-	RenderMesh(meshList[GEO_BP_BOOTHGUARDS], true);
+	MeshManager::GetInstance()->meshList[MeshManager::GEO_BP_BOOTHGUARDS]->material = Material::Metal(GREY);
+	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_BP_BOOTHGUARDS], true);
 
-	meshList[GEO_BP_BOOTHROOF]->material = Material::Wood(WHITE);
-	RenderMesh(meshList[GEO_BP_BOOTHROOF], true);
+	MeshManager::GetInstance()->meshList[MeshManager::GEO_BP_BOOTHROOF]->material = Material::Wood(WHITE);
+	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_BP_BOOTHROOF], true);
 	modelStack.PopMatrix();
 
 	//modelStack.PushMatrix();
@@ -535,13 +523,13 @@ void SceneBalloon::Render()
 		modelStack.PushMatrix();
 		modelStack.Translate(-0.00242271, 7.51264, -9.57801);
 		modelStack.Scale(6, 6, 6);
-		RenderMesh(meshList[GEO_BP_FAIRYLIGHT], true);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_BP_FAIRYLIGHT], true);
 		modelStack.PopMatrix();
 
 		modelStack.PushMatrix();
 		modelStack.Translate(-0.00242271, 7.51264, 9.15998);
 		modelStack.Scale(6, 6, 6);
-		RenderMesh(meshList[GEO_BP_FAIRYLIGHT], true);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_BP_FAIRYLIGHT], true);
 		modelStack.PopMatrix();
 	}
 
@@ -551,8 +539,8 @@ void SceneBalloon::Render()
 	// Render ui:
 	{
 		if (power > 5) {
-			RenderMeshOnScreen(meshList[GEO_BP_POWERUI_FRAME], 0.5, 0.3, 100 * 1.25, 25 * 1.25, glm::vec2(0, 0));
-			RenderMeshOnScreen(meshList[GEO_BP_POWERUI_BAR], 0.425, 0.3, power / maxPower * 120, 25, glm::vec2(-0.5, 0));
+			RenderMeshOnScreen(MeshManager::GetInstance()->meshList[MeshManager::GEO_BP_POWERUI_FRAME], 0.5, 0.3, 100 * 1.25, 25 * 1.25, glm::vec2(0, 0));
+			RenderMeshOnScreen(MeshManager::GetInstance()->meshList[MeshManager::GEO_BP_POWERUI_BAR], 0.425, 0.3, power / maxPower * 120, 25, glm::vec2(-0.5, 0));
 		}
 	}
 

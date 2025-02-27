@@ -29,7 +29,11 @@
 #include "MeshManager.h"
 #include "SceneRingToss.h"
 #include "SceneDuckShooting.h"
+<<<<<<< Updated upstream
 #include "SceneEnding.h"
+=======
+#include "SceneBalloon.h"
+>>>>>>> Stashed changes
 
 
 carnivalroaming::carnivalroaming() : numLight{ 9 }

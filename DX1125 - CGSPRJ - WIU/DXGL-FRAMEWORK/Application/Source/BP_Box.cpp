@@ -2,7 +2,7 @@
 #include "RigidBody.h"
 #include "GameObjectManager.h"
 #include "SceneBalloon.h"
-
+#include "MeshManager.h"
 
 BP_Box::BP_Box()
 {
@@ -26,5 +26,5 @@ void BP_Box::Update()
 
 void BP_Box::Render(Scene& scene)
 {
-	scene.RenderMesh(scene.meshList[SceneBalloon::GEO_BP_COUNTER], true, m_transform);
+	scene.RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_BP_COUNTER], true, m_transform);
 }

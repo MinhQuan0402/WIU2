@@ -2,6 +2,7 @@
 #include "RigidBody.h"
 #include "GameObjectManager.h"
 #include "SceneBalloon.h"
+#include "MeshManager.h"
 
 
 Dart::Dart()
@@ -32,9 +33,9 @@ void Dart::Update()
 
 void Dart::Render(Scene& scene)
 {
-	scene.meshList[SceneBalloon::GEO_BP_DART]->material.kAmbient = glm::vec3(0.7f, 0.0f, 0.0f);
-	scene.meshList[SceneBalloon::GEO_BP_DART]->material.kDiffuse = glm::vec3(0.9f, 0.0f, 0.0f);
-	scene.meshList[SceneBalloon::GEO_BP_DART]->material.kSpecular = glm::vec3(0.1f, 0.1f, 0.1f);
-	scene.meshList[SceneBalloon::GEO_BP_DART]->material.kShininess = 1.0f;
-	scene.RenderRigidMesh(scene.meshList[SceneBalloon::GEO_BP_DART], true, m_transform, rb);
+	MeshManager::GetInstance()->meshList[MeshManager::GEO_BP_DART]->material.kAmbient = glm::vec3(0.7f, 0.0f, 0.0f);
+	MeshManager::GetInstance()->meshList[MeshManager::GEO_BP_DART]->material.kDiffuse = glm::vec3(0.9f, 0.0f, 0.0f);
+	MeshManager::GetInstance()->meshList[MeshManager::GEO_BP_DART]->material.kSpecular = glm::vec3(0.1f, 0.1f, 0.1f);
+	MeshManager::GetInstance()->meshList[MeshManager::GEO_BP_DART]->material.kShininess = 1.0f;
+	scene.RenderRigidMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_BP_DART], true, m_transform, rb);
 }

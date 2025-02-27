@@ -8,36 +8,21 @@ template<typename T>
 class UnorderedVector : public std::vector<T>
 {
 public:
-	inline void remove(T& element) {
+    inline void remove(T& element) {
         T* el = &element;
         auto it = std::find(this->begin(), this->end(), element);
 
-<<<<<<< HEAD
         T* bck = &this->back();
 
         if (it == this->end())
             return;
         else
         {
-            T tmp(std::move(*el));
-            std::replace(this->begin(), this->end(), *el, *bck);
+            T tmp(std::move(el));
+            std::replace(this->begin(), this->end(), el, *bck);
             *bck = std::move(tmp);
         }
 
         this->pop_back();
-=======
-		T* bck = &this->back();
-
-		if (it == this->end()) 
-			return;
-		else
-		{
-			T tmp(std::move(*el));
-			std::replace(this->begin(), this->end(), *el, *bck);
-			*bck = std::move(tmp);
-		}
-
-		this->pop_back();
->>>>>>> origin/BalloonPop
-	}
+    }
 };

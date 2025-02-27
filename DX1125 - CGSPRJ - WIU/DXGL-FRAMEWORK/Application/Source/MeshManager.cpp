@@ -300,6 +300,7 @@ void MeshManager::Init()
 	meshList[GEO_DS_CONVEYOR]->material = Material::Wood(WHITE);
 	meshList[GEO_DS_FAIRYLIGHT] = MeshBuilder::GenerateOBJMTL("FairyLight", "Models//DS_FairyLight.obj", "Models//DS_FairyLight.mtl");
 
+<<<<<<< Updated upstream
 	//ending
 	meshList[GEO_E_SPHERE] = MeshBuilder::GenerateHemisphere("Sphere", BLACK, 50.0f, 50.0f, 1.0f);
 				 
@@ -426,4 +427,25 @@ void MeshManager::Init()
 	meshList[GEO_E_PENNYWISE_EYES]->textureID = LoadPNG("Images//pennywise_eyes.png");
 	meshList[GEO_E_PENNYWISE_EYES]->material = Material::Wood(WHITE);
 	meshList[GEO_E_PENNYWISE_EYES]->material.kAmbient = glm::vec3{};
+=======
+
+
+	// balloon pop:
+	meshList[GEO_BP_BALLOON] = MeshBuilder::GenerateOBJ("Balloon", "Models//balloon.obj");
+	meshList[GEO_BP_BOOTHGUARDS] = MeshBuilder::GenerateOBJMTL("BoothGuards", "Models//BP_BoothGuards.obj", "Models//BP_BoothGuards.mtl");
+	meshList[GEO_BP_BOOTHROOF] = MeshBuilder::GenerateOBJMTL("BoothRoof", "Models//BP_BoothRoof.obj", "Models//BP_BoothRoof.mtl");
+	meshList[GEO_BP_BOOTHROOF]->textureID = LoadPNG("Images//BP_BoothRoof.png");
+	meshList[GEO_BP_BALLOONBOARD] = MeshBuilder::GenerateOBJ("BalloonBoard", "Models//noticeboard.obj");
+	meshList[GEO_BP_BALLOONBOARD]->textureID = LoadPNG("Images//boardimage.png");
+	meshList[GEO_BP_DART] = MeshBuilder::GenerateOBJ("Dart", "Models//dart.obj");
+	meshList[GEO_BP_POWERUI_FRAME] = MeshBuilder::GenerateQuad("PowerUi_Frame", glm::vec3(1, 1, 1), 1);
+	meshList[GEO_BP_POWERUI_FRAME]->textureID = LoadPNG("Images//CK_PowerUi_Frame.png");
+	meshList[GEO_BP_POWERUI_BAR] = MeshBuilder::GenerateQuad("PowerUi_Bar", glm::vec3(1, 1, 0), 1);
+	meshList[GEO_BP_COUNTER] = MeshBuilder::GenerateCube("Counter", glm::vec3(0.459, 0.302, 0), 1);
+	meshList[GEO_BP_COUNTER]->textureID = LoadPNG("Images//BP_Wood.png");
+	meshList[GEO_BP_COUNTER]->material = Material::Wood(glm::vec3(0.459, 0.302, 0));
+	meshList[GEO_BP_FAIRYLIGHT] = MeshBuilder::GenerateOBJMTL("FairyLight", "Models//BP_FairyLight.obj", "Models//BP_FairyLight.mtl");
+
+
+>>>>>>> Stashed changes
 }

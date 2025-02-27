@@ -4,7 +4,7 @@
 #include "GameObjectManager.h"
 #include "SceneBalloon.h"
 #include "Dart.h"
-
+#include "MeshManager.h"
 Balloon::Balloon()
 {
 	setColour = false;
@@ -50,7 +50,7 @@ void Balloon::Render(Scene& scene)
 	scene.meshList[SceneBalloon::GEO_BP_BALLOON]->material.kSpecular = glm::vec3(0.100000, 0.100000, 0.100000);
 	scene.meshList[SceneBalloon::GEO_BP_BALLOON]->material.kShininess = 0.5f;*/
 
-	scene.meshList[SceneBalloon::GEO_BP_BALLOON]->material = Material::Metal(glm::vec3(colourR, colourG, colourB));
+	MeshManager::GetInstance()->meshList[MeshManager::GEO_BP_BALLOON]->material = Material::Metal(glm::vec3(colourR, colourG, colourB));
 
-	scene.RenderMesh(scene.meshList[SceneBalloon::GEO_BP_BALLOON], true, m_transform);
+	scene.RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_BP_BALLOON], true, m_transform);
 }

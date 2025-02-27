@@ -99,6 +99,7 @@ public:
 		GEO_DS_CONVEYOR,
 		GEO_DS_FAIRYLIGHT,
 
+<<<<<<< Updated upstream
 		//ending
 		GEO_E_TENT,
 		GEO_E_BENCH,
@@ -130,6 +131,18 @@ public:
 		GEO_E_PENNYWISE_HAIR,
 		GEO_E_SPHERE,
 			
+=======
+		//balloon pop 
+		GEO_BP_BALLOON,
+		GEO_BP_BALLOONBOARD,
+		GEO_BP_DART,
+		GEO_BP_BOOTHGUARDS,
+		GEO_BP_BOOTHROOF,
+		GEO_BP_POWERUI_FRAME,
+		GEO_BP_POWERUI_BAR,
+		GEO_BP_COUNTER,
+		GEO_BP_FAIRYLIGHT,
+>>>>>>> Stashed changes
 
 		NUM_MESHES
 	};
