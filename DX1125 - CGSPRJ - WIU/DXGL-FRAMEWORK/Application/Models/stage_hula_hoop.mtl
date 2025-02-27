@@ -1,0 +1,17 @@
+# Blender 4.1.1 MTL File: 'circus_tent.blend'
+# www.blender.org
+
+newmtl phong8
+Kd 0.027588 0.121000 0.103037
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 3
+Pr 0.332103
+Pm 0.500000
+Ps 0.000000
+Pc 0.000000
+Pcr 0.030000
+aniso 0.000000
+anisor 0.000000

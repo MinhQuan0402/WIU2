@@ -2,7 +2,8 @@
 
 Light::Light(void) : color(1, 1, 1), power(1),
 kC(1), kL(0.1f), kQ(0.001f), spotDirection(1.f), cosCutoff(45.f),
-cosInner(30.f), exponent(1.f), type(LIGHT_POINT), tempPow{ 0.0f }
+cosInner(30.f), exponent(1.f), type(LIGHT_POINT), tempPow{ 0.0f },
+isOff{ false }
 {
 }
 

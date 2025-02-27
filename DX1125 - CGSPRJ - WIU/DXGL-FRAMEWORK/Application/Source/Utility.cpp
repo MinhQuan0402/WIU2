@@ -117,3 +117,12 @@ bool isTimeReach(const float& currentTime, const float& from, const float& to)
 {
     return currentTime >= from && currentTime <= to;
 }
+
+glm::vec3 Lerp(const float elapsedTime, glm::vec3 startPos, const glm::vec3 endPos, float duration)
+{
+    if (elapsedTime / duration >= 1)
+        return endPos;
+    else
+        return startPos + (endPos - startPos) * (elapsedTime / duration);
+}
+
