@@ -296,6 +296,11 @@ void SceneRingToss::Init()
 	objInScene[RING]->rb->setIgnoreCollisionCheck(objInScene[RING2]->rb, true);
 	objInScene[RING]->rb->setIgnoreCollisionCheck(objInScene[RING3]->rb, true);
 	objInScene[RING2]->rb->setIgnoreCollisionCheck(objInScene[RING3]->rb, true);
+
+	objInScene[RING]->rb->setGravity(btVector3(0.0f, -7.0f, 0.0f));
+	objInScene[RING2]->rb->setGravity(btVector3(0.0f, -7.0f, 0.0f));
+	objInScene[RING3]->rb->setGravity(btVector3(0.0f, -7.0f, 0.0f));
+
 }
 
 void SceneRingToss::Update()
@@ -363,7 +368,7 @@ void SceneRingToss::Update()
 		{
 			if (!objInScene[RING+ j]->rb->isActive() || !((Ring*)objInScene[RING + j])->trigger) continue;
 
-			if (CheckCollisionWith(((TossBoard*)objInScene[BOARD])->bottles[i]->getObject(),
+			if (CheckCollisionWith(((TossBoard*)objInScene[BOARD])->bottles[i]->trigger->getObject(),
 				((Ring*)objInScene[RING + j])->trigger->getObject()))
 			{
 				points += 500;
@@ -397,7 +402,7 @@ void SceneRingToss::LateUpdate()
 
 		if (MouseController::GetInstance()->IsButtonPressed(0) && !isMouseLeftPressed)
 		{
-			float power = 20.0f;
+			float power = 15.0f;
 			btVector3 finalVel = btVector3(mainCamera.view.x, mainCamera.view.y, mainCamera.view.z) * power;
 			objInScene[currentIndexRing]->rb->setLinearVelocity(btVector3(finalVel));
 			objInScene[currentIndexRing]->rb->setAngularVelocity(btVector3(0.f, power, 0.0f));

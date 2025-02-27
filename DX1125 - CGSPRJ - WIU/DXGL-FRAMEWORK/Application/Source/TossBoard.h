@@ -31,6 +31,7 @@ private:
     void GenerateRigidbody(void);
 
 public:
+    GameObject* trigger;
     Bottle(glm::vec3 color);
     ~Bottle(void) = default;
 

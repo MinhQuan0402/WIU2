@@ -72,6 +72,18 @@ void Bottle::Start(void)
 {
 	colliderOffset = glm::vec3{ 0.0f, 1.275f, 0.0f };
 	GenerateRigidbody();
+
+	PhysicsMaterial mat;
+	mat.m_mass = 0.0f;
+	trigger = new GameObject;
+	trigger->m_transform.m_position = m_transform.m_position;
+	trigger->m_transform.m_position.y = m_transform.m_position.y + 2.5f;
+	trigger->rb = addSphereCollider(trigger, 0.2f, mat);
+	GameObjectManager::addItem(trigger);
+
+	trigger->rb->setSleepingThresholds(0.0f, 0.0f);
+	trigger->rb->setCollisionFlags(trigger->rb->getCollisionFlags() | btCollisionObject::CF_NO_CONTACT_RESPONSE);
+	trigger->rb->setCollisionFlags(trigger->rb->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT);
 }
 
 void Bottle::Update(void)
