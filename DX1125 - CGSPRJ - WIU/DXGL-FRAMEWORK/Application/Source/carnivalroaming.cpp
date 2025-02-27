@@ -1597,7 +1597,7 @@ void carnivalroaming::Exit()
 
 void carnivalroaming::RenderSkybox(void)
 {
-	float size = 200.0f;
+	float size = 400.0f;
 	modelStack.PushMatrix();
 	// Offset in Z direction by -50 units
 	modelStack.Translate(0.f, 0.f, -4.99f * size);
