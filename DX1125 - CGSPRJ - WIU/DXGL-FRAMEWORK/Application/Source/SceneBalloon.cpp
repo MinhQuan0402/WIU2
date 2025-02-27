@@ -558,48 +558,48 @@ void SceneBalloon::Render()
 
 	RenderTextOnScreen(meshList[GEO_TEXT], "Score:" + std::to_string(score), RED, 30, 1000, 600);
 
-//#ifdef DRAW_HITBOX
-//	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-//	for (btCollisionShape* shape : ColliderManager::GetInstance()->colliders)
-//	{
-//		modelStack.PushMatrix();
-//		modelStack.LoadIdentity();
-//		GameObject* userGO = static_cast<GameObject*>(shape->getUserPointer());
-//		modelStack.LoadMatrix(GetTransformMatrix(userGO->rb));
-//		if (shape->getShapeType() == SPHERE_SHAPE_PROXYTYPE)
-//		{
-//			SphereCollider* sphereCollider = static_cast<SphereCollider*>(shape);
-//			float size = sphereCollider->GetRadius();
-//			modelStack.Scale(size, size, size);
-//			RenderMesh(hitboxMeshList[HITBOX_SPHERE]);
-//		}
-//		else if (shape->getShapeType() == BOX_SHAPE_PROXYTYPE)
-//		{
-//			BoxCollider* boxCollider = static_cast<BoxCollider*>(shape);
-//			float width, height, depth;
-//			boxCollider->GetDimension(width, height, depth);
-//			modelStack.Scale(width, height, depth);
-//			RenderMesh(hitboxMeshList[HITBOX_BOX]);
-//		}
-//		else if (shape->getShapeType() == CYLINDER_SHAPE_PROXYTYPE)
-//		{
-//			CylinderCollider* cylinderCollider = static_cast<CylinderCollider*>(shape);
-//			float rad, height;
-//			cylinderCollider->GetDimension(rad, height);
-//			modelStack.Scale(rad / 2.0f, height, rad / 2.0f);
-//			RenderMesh(hitboxMeshList[HITBOX_CYLINDER]);
-//		}
-//		else if (shape->getShapeType() == STATIC_PLANE_PROXYTYPE)
-//		{
-//			modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
-//			RenderMesh(hitboxMeshList[HITBOX_GROUND]);
-//		}
-//		modelStack.PopMatrix();
-//	}
-//
-//	if(isFillMode) 
-//		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-//#endif
+#ifdef DRAW_HITBOX
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	for (btCollisionShape* shape : ColliderManager::GetInstance()->colliders)
+	{
+		modelStack.PushMatrix();
+		modelStack.LoadIdentity();
+		GameObject* userGO = static_cast<GameObject*>(shape->getUserPointer());
+		modelStack.LoadMatrix(GetTransformMatrix(userGO->rb));
+		if (shape->getShapeType() == SPHERE_SHAPE_PROXYTYPE)
+		{
+			SphereCollider* sphereCollider = static_cast<SphereCollider*>(shape);
+			float size = sphereCollider->GetRadius();
+			modelStack.Scale(size, size, size);
+			RenderMesh(hitboxMeshList[HITBOX_SPHERE]);
+		}
+		else if (shape->getShapeType() == BOX_SHAPE_PROXYTYPE)
+		{
+			BoxCollider* boxCollider = static_cast<BoxCollider*>(shape);
+			float width, height, depth;
+			boxCollider->GetDimension(width, height, depth);
+			modelStack.Scale(width, height, depth);
+			RenderMesh(hitboxMeshList[HITBOX_BOX]);
+		}
+		else if (shape->getShapeType() == CYLINDER_SHAPE_PROXYTYPE)
+		{
+			CylinderCollider* cylinderCollider = static_cast<CylinderCollider*>(shape);
+			float rad, height;
+			cylinderCollider->GetDimension(rad, height);
+			modelStack.Scale(rad / 2.0f, height, rad / 2.0f);
+			RenderMesh(hitboxMeshList[HITBOX_CYLINDER]);
+		}
+		else if (shape->getShapeType() == STATIC_PLANE_PROXYTYPE)
+		{
+			modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
+			RenderMesh(hitboxMeshList[HITBOX_GROUND]);
+		}
+		modelStack.PopMatrix();
+	}
+
+	if(isFillMode) 
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+#endif
 }
 
 void SceneBalloon::Exit()
