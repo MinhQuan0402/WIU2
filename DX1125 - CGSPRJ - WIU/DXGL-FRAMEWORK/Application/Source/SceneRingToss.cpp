@@ -341,8 +341,11 @@ void SceneRingToss::Update()
 			else isInView = false;
 		}
 	}
-	waitingTimer += Time::deltaTime; 
 	
+	if (numAttempt == 3)
+	{
+		waitingTimer += Time::deltaTime;
+	}
 	lightTimer += Time::deltaTime;
 	if (isTimeReach(lightTimer, 1.f, 1.05f))
 	{
@@ -653,7 +656,7 @@ void SceneRingToss::RenderGround(int size)
 
 			modelStack.PushMatrix();
 			modelStack.Translate(originPos.x, originPos.y, originPos.z);
-			modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
+			modelStack.Rotate(-90.0f, 1.0f, 0.0f, 0.0f);
 			RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_RT_PLANE], enableLight);
 			modelStack.PopMatrix();
 
