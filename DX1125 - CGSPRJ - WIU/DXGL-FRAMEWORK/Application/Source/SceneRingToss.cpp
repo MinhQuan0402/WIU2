@@ -402,7 +402,7 @@ void SceneRingToss::LateUpdate()
 
 		if (MouseController::GetInstance()->IsButtonPressed(0) && !isMouseLeftPressed)
 		{
-			float power = 15.0f;
+			float power = 12.5f;
 			btVector3 finalVel = btVector3(mainCamera.view.x, mainCamera.view.y, mainCamera.view.z) * power;
 			objInScene[currentIndexRing]->rb->setLinearVelocity(btVector3(finalVel));
 			objInScene[currentIndexRing]->rb->setAngularVelocity(btVector3(0.f, power, 0.0f));
