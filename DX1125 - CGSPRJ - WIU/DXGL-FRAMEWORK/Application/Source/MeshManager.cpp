@@ -51,9 +51,12 @@ void MeshManager::Init()
 {
 	//carnival roaming 
 	meshList[GEO_CIRCUSTENT] = MeshBuilder::GenerateCircle("Circle", WHITE, 200);
-	meshList[GEO_CIRCUSTENT] = MeshBuilder::GenerateOBJMTL("CircusTent", "Models//CR_circusTentTest.obj", "Models//CR_circusTentTest.mtl");
+	meshList[GEO_CIRCUSTENT] = MeshBuilder::GenerateOBJ("CircusTent", "Models//CR_circusTentTest.obj");
 	meshList[GEO_CIRCUSTENT]->textureID = LoadPNG("Images//CR_CircusTentTest.png");
 	meshList[GEO_CIRCUSTENT]->material = Material::Wood(WHITE);
+	meshList[GEO_CIRCUSTENT]->material.kDiffuse = glm::vec3(0.05f, 0.05f, 0.05f);
+	meshList[GEO_CIRCUSTENT]->material.kAmbient = glm::vec3(0.05f, 0.05f, 0.05f);
+	meshList[GEO_CIRCUSTENT]->material.kSpecular = glm::vec3(0.05f, 0.05f, 0.05f);
 
 	//meshList[GEO_CIRCUSTENT] = MeshBuilder::GenerateCircle("Circle", WHITE, 200);
 	meshList[GEO_CIRCUSNAME] = MeshBuilder::GenerateOBJMTL("CircusName", "Models//CR_circusName.obj", "Models//CR_circusName.mtl");

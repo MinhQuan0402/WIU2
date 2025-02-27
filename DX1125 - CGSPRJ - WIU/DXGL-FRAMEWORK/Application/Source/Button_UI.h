@@ -10,6 +10,8 @@ struct Button_UI
 	float width, height;
 	std::string label;
 
+	float meshScaleX;
+
 	bool IsTouching(const float& mouseX, const float& mouseY) const;
 
 	void RenderButton(Scene& scene, int meshIndex, int textGEOIndex, 

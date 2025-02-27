@@ -16,7 +16,7 @@
 #include "Time.h"
 #include "SceneGame.h"
 #include "ScenePlinko.h"
-#include "carnivalroaming.h"
+#include "MainMenu.h"
 #include "SceneManager.h"
 #include "CollisionManager.h"
 #include "ColliderManager.h"
@@ -153,7 +153,7 @@ void Application::Run()
 	//Main Loop
 	MeshManager::GetInstance()->Init();
 	CollisionManager::GetInstance()->SetUpDynamicWorld(10.0f);
-	SceneManager::GetInstance()->PushState(new carnivalroaming);
+	SceneManager::GetInstance()->PushState(new MainMenu);
 	Time::fixedDeltaTime = (float)FIXED_TIME_STEP;
 	m_timer.startTimer();    // Start timer to calculate how long it takes to render this frame
 	float fps = 0;

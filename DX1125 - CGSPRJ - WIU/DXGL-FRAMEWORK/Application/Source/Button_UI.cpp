@@ -17,6 +17,6 @@ bool Button_UI::IsTouching(const float& mouseX, const float& mouseY) const
 
 void Button_UI::RenderButton(Scene& scene, int meshIndex, int textGEOIndex, glm::vec3 textColor, float textSize, glm::vec2 textOffset) const
 {
-	scene.RenderMeshOnScreen(scene.meshList[meshIndex], position.x, position.y, width, height);
+	scene.RenderMeshOnScreen(scene.meshList[meshIndex], position.x, position.y, width * meshScaleX, height);
 	scene.RenderTextOnScreen(scene.meshList[textGEOIndex], label, textColor, textSize, position.x + textOffset.x, position.y + textOffset.y);
 }

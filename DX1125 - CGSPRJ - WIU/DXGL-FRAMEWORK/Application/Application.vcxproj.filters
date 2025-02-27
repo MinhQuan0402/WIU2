@@ -79,6 +79,9 @@
     <ClCompile Include="Source\SceneDuckShooting.cpp">
       <Filter>DuckShooting</Filter>
     </ClCompile>
+    <ClCompile Include="Source\MainMenu.cpp">
+      <Filter>MainMenu</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\..\..\..\School\DX1125 - CGSPRJ - WIU\DXGL-FRAMEWORK\Application\Source\CQuad.h" />
@@ -229,6 +232,9 @@
     <ClInclude Include="Source\SceneDuckShooting.h">
       <Filter>DuckShooting</Filter>
     </ClInclude>
+    <ClInclude Include="Source\MainMenu.h">
+      <Filter>MainMenu</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Application.h">
@@ -307,6 +313,9 @@
   <ItemGroup>
     <Filter Include="DuckShooting">
       <UniqueIdentifier>{32299e5b-d6db-4845-b36e-3b3e478f2d81}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="MainMenu">
+      <UniqueIdentifier>{4459fb01-da36-46e4-8deb-d9b98696bf8d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
