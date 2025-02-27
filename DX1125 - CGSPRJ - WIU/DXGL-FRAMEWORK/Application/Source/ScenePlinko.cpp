@@ -28,7 +28,7 @@
 #include "carnivalroaming.h"
 #include "MeshManager.h"
 
-ScenePlinko::ScenePlinko() : numLight{ 12 }, ballZ{ 0.0f }, currentBallIndex{ BALL1 }, plinkoScore{ 0 }
+ScenePlinko::ScenePlinko() : numLight{ 12 }, ballZ{ 0.0f }, currentBallIndex{ BALL1 }, plinkoScore{ 0 }, lightTimer{ 0 }, jackpotTimer{ 0 }
 {
 	meshList.resize(NUM_GEOMETRY);
 	lights.resize(numLight);
@@ -144,14 +144,14 @@ void ScenePlinko::Init()
 	mainCamera.Init(glm::vec3(7, 4, 0), glm::vec3(0, 4, 0), VECTOR3_UP);
 	
 	mainCamera.sensitivity = 15.f;
+	fov = 45.f;
 
-	glUniform1i(m_parameters[U_NUMLIGHTS], 2);
+	glUniform1i(m_parameters[U_NUMLIGHTS], numLight);
 
-	//lights[0].m_transform.m_position = glm::vec3{};
 	lights[0].m_transform.m_position = glm::vec3(0, 10, 0);
 	lights[0].color = glm::vec3(1, 1, 1);
 	lights[0].type = Light::LIGHT_POINT;
-	lights[0].power = 0.8f;
+	lights[0].power = 1.5f;
 	lights[0].kC = 1.f;
 	lights[0].kL = 0.01f;
 	lights[0].kQ = 0.001f;
@@ -160,20 +160,10 @@ void ScenePlinko::Init()
 	lights[0].exponent = 3.f;
 	lights[0].spotDirection = glm::vec3(0.f, 1.f, 0.f);
 
-	glUniform3fv(m_parameters[U_LIGHT0_COLOR], 1, &lights[0].color.r);
-	glUniform1i(m_parameters[U_LIGHT0_TYPE], lights[0].type);
-	glUniform1f(m_parameters[U_LIGHT0_POWER], lights[0].power);
-	glUniform1f(m_parameters[U_LIGHT0_KC], lights[0].kC);
-	glUniform1f(m_parameters[U_LIGHT0_KL], lights[0].kL);
-	glUniform1f(m_parameters[U_LIGHT0_KQ], lights[0].kQ);
-	glUniform1f(m_parameters[U_LIGHT0_COSCUTOFF], cosf(glm::radians<float>(lights[0].cosCutoff)));
-	glUniform1f(m_parameters[U_LIGHT0_COSINNER], cosf(glm::radians<float>(lights[0].cosInner)));
-	glUniform1f(m_parameters[U_LIGHT0_EXPONENT], lights[0].exponent);
-
 	lights[1].m_transform.m_position = glm::vec3(0.3, 7.5, 0);
 	lights[1].color = glm::vec3(1, 1, 0);
 	lights[1].type = Light::LIGHT_SPOT;
-	lights[1].power = 1.f;
+	lights[1].power = 0.f;
 	lights[1].kC = 1.f;
 	lights[1].kL = 0.01f;
 	lights[1].kQ = 0.001f;
@@ -182,21 +172,23 @@ void ScenePlinko::Init()
 	lights[1].exponent = 3.f;
 	lights[1].spotDirection = glm::vec3(0.f, 1.f, 0.f);
 
-	glUniform3fv(m_parameters[U_LIGHT1_COLOR], 1, &lights[1].color.r);
-	glUniform1i(m_parameters[U_LIGHT1_TYPE], lights[1].type);
-	glUniform1f(m_parameters[U_LIGHT1_POWER], lights[1].power);
-	glUniform1f(m_parameters[U_LIGHT1_KC], lights[1].kC);
-	glUniform1f(m_parameters[U_LIGHT1_KL], lights[1].kL);
-	glUniform1f(m_parameters[U_LIGHT1_KQ], lights[1].kQ);
-	glUniform1f(m_parameters[U_LIGHT1_COSCUTOFF], cosf(glm::radians<float>(lights[1].cosCutoff)));
-	glUniform1f(m_parameters[U_LIGHT1_COSINNER], cosf(glm::radians<float>(lights[1].cosInner)));
-	glUniform1f(m_parameters[U_LIGHT1_EXPONENT], lights[1].exponent);
+	lights[2].m_transform.m_position = glm::vec3(1, 4, 0);
+	lights[2].color = glm::vec3(1, 1, 0);
+	lights[2].type = Light::LIGHT_POINT;
+	lights[2].power = 0.f;
+	lights[2].kC = 1.f;
+	lights[2].kL = 0.01f;
+	lights[2].kQ = 0.001f;
+	lights[2].cosCutoff = 45.f;
+	lights[2].cosInner = 30.f;
+	lights[2].exponent = 3.f;
+	lights[2].spotDirection = glm::vec3(0.f, 1.f, 0.f);
 
-	for (int i = 2; i < numLight; ++i)
+	for (int i = 3; i < numLight; ++i)
 	{
 		lights[i].color = glm::vec3(1, 1, 1);
 		lights[i].type = Light::LIGHT_POINT;
-		lights[i].power = 0.35f;
+		lights[i].power = 0.;
 		lights[i].kC = 0.5f;
 		lights[i].kL = 0.01f;
 		lights[i].kQ = 0.001f;
@@ -206,7 +198,7 @@ void ScenePlinko::Init()
 		lights[i].spotDirection = glm::vec3(0.f, 1.f, 0.f);
 	}
 
-	for (int i = 2; i < numLight; ++i)
+	for (int i = 0; i < numLight; ++i)
 	{
 		glUniform1i(m_parameters[U_LIGHT0_TYPE + U_LIGHT0_EXPONENT * i], lights[i].type);
 		glUniform3fv(m_parameters[U_LIGHT0_COLOR + U_LIGHT0_EXPONENT * i], 1, &lights[i].color.r);
@@ -233,27 +225,118 @@ void ScenePlinko::Update()
 	HandleKeyPress();
 	mainCamera.Update();
 	glm::vec3 inputMovementDir{};
-	if (KeyboardController::GetInstance()->IsKeyDown('W'))
-		inputMovementDir = mainCamera.view;
-	if (KeyboardController::GetInstance()->IsKeyDown('S'))
-		inputMovementDir = -mainCamera.view;
-	if (KeyboardController::GetInstance()->IsKeyDown('D'))
-		inputMovementDir = mainCamera.right;
-	if (KeyboardController::GetInstance()->IsKeyDown('A'))
-		inputMovementDir = -mainCamera.right;
+	//if (KeyboardController::GetInstance()->IsKeyDown('W'))
+	//	inputMovementDir = mainCamera.view;
+	//if (KeyboardController::GetInstance()->IsKeyDown('S'))
+	//	inputMovementDir = -mainCamera.view;
+	//if (KeyboardController::GetInstance()->IsKeyDown('D'))
+	//	inputMovementDir = mainCamera.right;
+	//if (KeyboardController::GetInstance()->IsKeyDown('A'))
+	//	inputMovementDir = -mainCamera.right;
 	glm::vec3 finalForce = inputMovementDir * 10.0f * Time::deltaTime;
 	mainCamera.m_transform.Translate(finalForce);
+	glm::vec3 prevTarget = mainCamera.target;
 	mainCamera.UpdateCameraRotation();
 
-	if (KeyboardController::GetInstance()->IsKeyPressed('P'))
+	// stop player rotating too far:
 	{
-		if (lights[1].power == 1.f) {
-			lights[1].power = 0;
+		glm::vec3 toObject = glm::normalize(glm::vec3(0, 3, 0) - mainCamera.m_transform.m_position);
+
+		glm::vec3 lookVector = glm::normalize(mainCamera.target - mainCamera.m_transform.m_position);
+
+		float dotProduct = glm::dot(lookVector, toObject);
+		float threshold = glm::cos(glm::radians(fov * 0.5));
+
+		if (dotProduct <= threshold) // Rotated too much
+		{
+			mainCamera.target = prevTarget;
 		}
 		else {
-			lights[1].power = 1.f;
+			float closeness = (dotProduct - threshold) / (1.0f - threshold);
+			mainCamera.sensitivity = 10 + closeness * (50 - 10);
 		}
-		glUniform1f(m_parameters[U_LIGHT1_POWER], lights[1].power);
+	}
+
+	//if (KeyboardController::GetInstance()->IsKeyPressed('P'))
+	//{
+	//	if (lights[1].power == 1.f) {
+	//		lights[1].power = 0.f;
+	//	}
+	//	else {
+	//		lights[1].power = 1.f;
+	//	}
+
+	//	if (lights[2].power == 1.f) {
+	//		lights[2].power = 0.f;
+	//	}
+	//	else {
+	//		lights[2].power = 1.f;
+	//	}
+
+	//	glUniform1f(m_parameters[U_LIGHT1_POWER], lights[1].power);
+	//	glUniform1f(m_parameters[U_LIGHT2_POWER], lights[2].power);
+	//}
+
+	// light:
+	lightTimer1 += Time::deltaTime;
+	if (isTimeReach(lightTimer1, 2.f, 2.05f))
+	{
+		glm::vec3 randColor = glm::vec3{
+			Math::RandFloatMinMax(0.0f, 1.0f),
+			Math::RandFloatMinMax(0.0f, 1.0f),
+			Math::RandFloatMinMax(0.0f, 1.0f)
+		};
+
+		MeshManager::GetInstance()->meshList[MeshManager::GEO_LIGHTBULB]->material.kAmbient = glm::vec3(randColor);
+		lights[0].color = randColor;
+		glUniform3fv(m_parameters[U_LIGHT0_COLOR], 1, &lights[0].color.r);
+	}
+	else if (lightTimer1 >= 2.1f)
+		lightTimer1 = 0.0f;
+
+	if (jackpot) {
+		jackpotTimer += Time::deltaTime;
+		if (jackpotTimer <= 1.9) {
+			lightTimer += Time::deltaTime;
+			if (isTimeReach(lightTimer, 0.2, 0.25) && !isLightChanged)
+			{
+				if (lights[1].power == 1.f) {
+					lights[1].power = 0.f;
+				}
+				else {
+					lights[1].power = 1.f;
+				}
+
+				if (lights[2].power == 1.f) {
+					lights[2].power = 0.f;
+				}
+				else {
+					lights[2].power = 1.f;
+				}
+
+				glUniform1f(m_parameters[U_LIGHT1_POWER], lights[1].power);
+				glUniform1f(m_parameters[U_LIGHT0_POWER + U_LIGHT0_EXPONENT * 2], lights[2].power);
+
+				isLightChanged = true;
+			}
+			else if (lightTimer >= 0.3) {
+				lightTimer = 0.f;
+				isLightChanged = false;
+			}
+		}
+		else if (jackpotTimer >= 2) {
+			lightTimer = 0.f;
+			isLightChanged = false;
+			lights[1].power = 0.f;
+			lights[2].power = 0.f;
+
+			glUniform1f(m_parameters[U_LIGHT1_POWER], lights[1].power);
+			glUniform1f(m_parameters[U_LIGHT0_POWER + U_LIGHT0_EXPONENT * 2], lights[2].power);
+
+			jackpotTimer = 0.f;
+			jackpot = false;
+		}
+
 	}
 
 	GameObjectManager::GetInstance()->UpdateAll();
@@ -381,7 +464,7 @@ void ScenePlinko::Render()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glm::mat4 model = glm::mat4(1.0f);
 	// Setup Model View Projection matrix
-	projectionStack.LoadMatrix(glm::perspective(45.0f,
+	projectionStack.LoadMatrix(glm::perspective(fov,
 		Application::m_consoleWidth / (float)Application::m_consoleHeight,
 		0.1f, 1000.0f));
 
@@ -419,22 +502,22 @@ void ScenePlinko::Render()
 	RenderSkybox();
 	RenderGround(7);
 
-	for (int i = 0; i < numLight; ++i) 
-	{
-		modelStack.PushMatrix();
-		modelStack.Translate(lights[i].m_transform.m_position.x, lights[i].m_transform.m_position.y, lights[i].m_transform.m_position.z);
-		RenderMesh(meshList[GEO_LIGHT], false);
-		modelStack.PopMatrix();
-	}
+	//for (int i = 0; i < numLight; ++i) 
+	//{
+	//	modelStack.PushMatrix();
+	//	modelStack.Translate(lights[i].m_transform.m_position.x, lights[i].m_transform.m_position.y, lights[i].m_transform.m_position.z);
+	//	RenderMesh(meshList[GEO_LIGHT], false);
+	//	modelStack.PopMatrix();
+	//}
 
 	modelStack.PushMatrix();
 	RenderMesh(meshList[GEO_AXIS]);
 	modelStack.PopMatrix();
 
-	modelStack.PushMatrix();
-	modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
-	RenderMesh(meshList[GEO_PLANE], true);
-	modelStack.PopMatrix();
+	//modelStack.PushMatrix();
+	//modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
+	//RenderMesh(meshList[GEO_PLANE], true);
+	//modelStack.PopMatrix();
 
 	GameObjectManager::GetInstance()->RenderAll(*this); 
 
@@ -460,7 +543,7 @@ void ScenePlinko::Render()
 		modelStack.Rotate(90, 0, 1, 0);
 		modelStack.Rotate(-90, 0, 0, 1);
 		modelStack.Scale(0.5, 0.5, 0.5);
-		RenderText(meshList[GEO_TEXT], "1", WHITE);
+		RenderText(meshList[GEO_TEXT], "1", glm::vec3(1, 0.8, 0.8));
 		modelStack.PopMatrix();
 
 		modelStack.PushMatrix();
@@ -468,7 +551,7 @@ void ScenePlinko::Render()
 		modelStack.Rotate(90, 0, 1, 0);
 		modelStack.Rotate(-90, 0, 0, 1);
 		modelStack.Scale(0.5, 0.5, 0.5);
-		RenderText(meshList[GEO_TEXT], "0", WHITE);
+		RenderText(meshList[GEO_TEXT], "0", glm::vec3(1, 0.8, 0.8));
 		modelStack.PopMatrix();
 
 		// 20
@@ -477,7 +560,7 @@ void ScenePlinko::Render()
 		modelStack.Rotate(90, 0, 1, 0);
 		modelStack.Rotate(-90, 0, 0, 1);
 		modelStack.Scale(0.5, 0.5, 0.5);
-		RenderText(meshList[GEO_TEXT], "2", glm::vec3(1, 1, 0.75));
+		RenderText(meshList[GEO_TEXT], "2", glm::vec3(1, 0.6, 0.6));
 		modelStack.PopMatrix();
 
 		modelStack.PushMatrix();
@@ -485,7 +568,7 @@ void ScenePlinko::Render()
 		modelStack.Rotate(90, 0, 1, 0);
 		modelStack.Rotate(-90, 0, 0, 1);
 		modelStack.Scale(0.5, 0.5, 0.5);
-		RenderText(meshList[GEO_TEXT], "0", glm::vec3(1, 1, 0.75));
+		RenderText(meshList[GEO_TEXT], "0", glm::vec3(1, 0.6, 0.6));
 		modelStack.PopMatrix();
 
 		// 30
@@ -494,7 +577,7 @@ void ScenePlinko::Render()
 		modelStack.Rotate(90, 0, 1, 0);
 		modelStack.Rotate(-90, 0, 0, 1);
 		modelStack.Scale(0.5, 0.5, 0.5);
-		RenderText(meshList[GEO_TEXT], "3", glm::vec3(1, 1, 0.5));
+		RenderText(meshList[GEO_TEXT], "3", glm::vec3(1, 0.4, 0.4));
 		modelStack.PopMatrix();
 
 		modelStack.PushMatrix();
@@ -502,7 +585,7 @@ void ScenePlinko::Render()
 		modelStack.Rotate(90, 0, 1, 0);
 		modelStack.Rotate(-90, 0, 0, 1);
 		modelStack.Scale(0.5, 0.5, 0.5);
-		RenderText(meshList[GEO_TEXT], "0", glm::vec3(1, 1, 0.5));
+		RenderText(meshList[GEO_TEXT], "0", glm::vec3(1, 0.4, 0.4));
 		modelStack.PopMatrix();
 
 		// 50
@@ -511,7 +594,7 @@ void ScenePlinko::Render()
 		modelStack.Rotate(90, 0, 1, 0);
 		modelStack.Rotate(-90, 0, 0, 1);
 		modelStack.Scale(0.5, 0.5, 0.5);
-		RenderText(meshList[GEO_TEXT], "5", glm::vec3(1, 1, 0.25));
+		RenderText(meshList[GEO_TEXT], "5", glm::vec3(1, 0.2, 0.2));
 		modelStack.PopMatrix();
 
 		modelStack.PushMatrix();
@@ -519,7 +602,7 @@ void ScenePlinko::Render()
 		modelStack.Rotate(90, 0, 1, 0);
 		modelStack.Rotate(-90, 0, 0, 1);
 		modelStack.Scale(0.5, 0.5, 0.5);
-		RenderText(meshList[GEO_TEXT], "0", glm::vec3(1, 1, 0.25));
+		RenderText(meshList[GEO_TEXT], "0", glm::vec3(1, 0.2, 0.2));
 		modelStack.PopMatrix();
 
 		// 100
@@ -528,7 +611,7 @@ void ScenePlinko::Render()
 		modelStack.Rotate(90, 0, 1, 0);
 		modelStack.Rotate(-90, 0, 0, 1);
 		modelStack.Scale(0.5, 0.5, 0.5);
-		RenderText(meshList[GEO_TEXT], "1", YELLOW);
+		RenderText(meshList[GEO_TEXT], "1", RED);
 		modelStack.PopMatrix();
 
 		modelStack.PushMatrix();
@@ -536,7 +619,7 @@ void ScenePlinko::Render()
 		modelStack.Rotate(90, 0, 1, 0);
 		modelStack.Rotate(-90, 0, 0, 1);
 		modelStack.Scale(0.5, 0.5, 0.5);
-		RenderText(meshList[GEO_TEXT], "0", YELLOW);
+		RenderText(meshList[GEO_TEXT], "0", RED);
 		modelStack.PopMatrix();
 
 		modelStack.PushMatrix();
@@ -544,7 +627,7 @@ void ScenePlinko::Render()
 		modelStack.Rotate(90, 0, 1, 0);
 		modelStack.Rotate(-90, 0, 0, 1);
 		modelStack.Scale(0.5, 0.5, 0.5);
-		RenderText(meshList[GEO_TEXT], "0", YELLOW);
+		RenderText(meshList[GEO_TEXT], "0", RED);
 		modelStack.PopMatrix();
 
 		// 10
@@ -553,7 +636,7 @@ void ScenePlinko::Render()
 		modelStack.Rotate(90, 0, 1, 0);
 		modelStack.Rotate(-90, 0, 0, 1);
 		modelStack.Scale(0.5, 0.5, 0.5);
-		RenderText(meshList[GEO_TEXT], "1", WHITE);
+		RenderText(meshList[GEO_TEXT], "1", glm::vec3(1, 0.8, 0.8));
 		modelStack.PopMatrix();
 
 		modelStack.PushMatrix();
@@ -561,7 +644,7 @@ void ScenePlinko::Render()
 		modelStack.Rotate(90, 0, 1, 0);
 		modelStack.Rotate(-90, 0, 0, 1);
 		modelStack.Scale(0.5, 0.5, 0.5);
-		RenderText(meshList[GEO_TEXT], "0", WHITE);
+		RenderText(meshList[GEO_TEXT], "0", glm::vec3(1, 0.8, 0.8));
 		modelStack.PopMatrix();
 
 		// 20
@@ -570,7 +653,7 @@ void ScenePlinko::Render()
 		modelStack.Rotate(90, 0, 1, 0);
 		modelStack.Rotate(-90, 0, 0, 1);
 		modelStack.Scale(0.5, 0.5, 0.5);
-		RenderText(meshList[GEO_TEXT], "2", glm::vec3(1, 1, 0.75));
+		RenderText(meshList[GEO_TEXT], "2", glm::vec3(1, 0.6, 0.6));
 		modelStack.PopMatrix();
 
 		modelStack.PushMatrix();
@@ -578,7 +661,7 @@ void ScenePlinko::Render()
 		modelStack.Rotate(90, 0, 1, 0);
 		modelStack.Rotate(-90, 0, 0, 1);
 		modelStack.Scale(0.5, 0.5, 0.5);
-		RenderText(meshList[GEO_TEXT], "0", glm::vec3(1, 1, 0.75));
+		RenderText(meshList[GEO_TEXT], "0", glm::vec3(1, 0.6, 0.6));
 		modelStack.PopMatrix();
 
 		// 30
@@ -587,7 +670,7 @@ void ScenePlinko::Render()
 		modelStack.Rotate(90, 0, 1, 0);
 		modelStack.Rotate(-90, 0, 0, 1);
 		modelStack.Scale(0.5, 0.5, 0.5);
-		RenderText(meshList[GEO_TEXT], "3", glm::vec3(1, 1, 0.5));
+		RenderText(meshList[GEO_TEXT], "3", glm::vec3(1, 0.4, 0.4));
 		modelStack.PopMatrix();
 
 		modelStack.PushMatrix();
@@ -595,7 +678,7 @@ void ScenePlinko::Render()
 		modelStack.Rotate(90, 0, 1, 0);
 		modelStack.Rotate(-90, 0, 0, 1);
 		modelStack.Scale(0.5, 0.5, 0.5);
-		RenderText(meshList[GEO_TEXT], "0", glm::vec3(1, 1, 0.5));
+		RenderText(meshList[GEO_TEXT], "0", glm::vec3(1, 0.4, 0.4));
 		modelStack.PopMatrix();
 
 		// 50
@@ -604,7 +687,7 @@ void ScenePlinko::Render()
 		modelStack.Rotate(90, 0, 1, 0);
 		modelStack.Rotate(-90, 0, 0, 1);
 		modelStack.Scale(0.5, 0.5, 0.5);
-		RenderText(meshList[GEO_TEXT], "5", glm::vec3(1, 1, 0.25));
+		RenderText(meshList[GEO_TEXT], "5", glm::vec3(1, 0.2, 0.2));
 		modelStack.PopMatrix();
 
 		modelStack.PushMatrix();
@@ -612,7 +695,7 @@ void ScenePlinko::Render()
 		modelStack.Rotate(90, 0, 1, 0);
 		modelStack.Rotate(-90, 0, 0, 1);
 		modelStack.Scale(0.5, 0.5, 0.5);
-		RenderText(meshList[GEO_TEXT], "0", glm::vec3(1, 1, 0.25));
+		RenderText(meshList[GEO_TEXT], "0", glm::vec3(1, 0.2, 0.2));
 		modelStack.PopMatrix();
 	}
 
@@ -759,7 +842,7 @@ void ScenePlinko::RenderGround(int size)
 
 			modelStack.PushMatrix();
 			modelStack.Translate(originPos.x, originPos.y, originPos.z);
-			modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
+			modelStack.Rotate(-90.0f, 1.0f, 0.0f, 0.0f);
 			RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_RT_PLANE], enableLight);
 			modelStack.PopMatrix();
 

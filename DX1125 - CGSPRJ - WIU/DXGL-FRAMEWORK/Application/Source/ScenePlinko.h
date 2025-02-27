@@ -44,6 +44,7 @@ private:
 	void RenderGround(int size);
 	int numLight;
 	Transform player;
+	float fov;
 	float ballZ;
 	int plinkoScore;
 	bool isOnHold = true;
@@ -51,6 +52,10 @@ private:
 	bool addScore = true;
 	bool gameEnd = false;
 	bool jackpot = false;
+	bool isLightChanged = false;
+	float lightTimer;
+	float lightTimer1;
+	float jackpotTimer;
 
 	enum OBJINSCENE
 	{
