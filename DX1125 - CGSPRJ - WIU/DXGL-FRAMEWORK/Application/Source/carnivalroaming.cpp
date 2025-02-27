@@ -29,6 +29,7 @@
 #include "MeshManager.h"
 #include "SceneRingToss.h"
 #include "SceneDuckShooting.h"
+#include "SceneEnding.h"
 
 
 carnivalroaming::carnivalroaming() : numLight{ 9 }
@@ -495,6 +496,8 @@ void carnivalroaming::LateUpdate()
 		if (CheckCollisionWith(objInscene[PLAYERBOX]->getObject(), objInscene[CIRCLE]->getObject()) and KeyboardController::GetInstance()->IsKeyPressed('E') and CanEnterCircus == true)
 		{
 			std::cout << "Colliding with CircusTent" << std::endl;
+			SceneManager::GetInstance()->ChangeState(new SceneEnding); 
+			return;
 		}
 		if (CanEnterCircus == true)
 		{
@@ -1875,7 +1878,7 @@ void carnivalroaming::Exit()
 {
 	GameManager::GetInstance()->SetPlayerPosition(mainCamera.m_transform.m_position.x, mainCamera.m_transform.m_position.y, mainCamera.m_transform.m_position.z);
 	GameManager::GetInstance()->SetCameraTarget(mainCamera.target.x, mainCamera.target.y, mainCamera.target.z);
-	//GameManager::GetInstance()->SetPoints(3000);
+	GameManager::GetInstance()->SetPoints(3000);
 	Scene::Exit(); 
 	// Cleanup VBO here
 	for (int i = 0; i < NUM_GEOMETRY; ++i) { if (meshList[i]) delete meshList[i]; }

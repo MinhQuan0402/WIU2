@@ -22,6 +22,7 @@
 #include "ColliderManager.h"
 #include "GameManager.h"
 #include "MeshManager.h"
+#include "SceneEnding.h"
 
 GLFWmonitor* primaryMonitor;
 const GLFWvidmode* videoMode;
@@ -153,7 +154,7 @@ void Application::Run()
 	//Main Loop
 	MeshManager::GetInstance()->Init();
 	CollisionManager::GetInstance()->SetUpDynamicWorld(10.0f);
-	SceneManager::GetInstance()->PushState(new MainMenu);
+	SceneManager::GetInstance()->PushState(new SceneEnding);
 	Time::fixedDeltaTime = (float)FIXED_TIME_STEP;
 	m_timer.startTimer();    // Start timer to calculate how long it takes to render this frame
 	float fps = 0;

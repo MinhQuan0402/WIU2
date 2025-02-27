@@ -1,279 +1,281 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-	<ItemGroup Label="ProjectConfigurations">
-		<ProjectConfiguration Include="Debug|Win32">
-			<Configuration>Debug</Configuration>
-			<Platform>Win32</Platform>
-		</ProjectConfiguration>
-		<ProjectConfiguration Include="Release|Win32">
-			<Configuration>Release</Configuration>
-			<Platform>Win32</Platform>
-		</ProjectConfiguration>
-		<ProjectConfiguration Include="Debug|x64">
-			<Configuration>Debug</Configuration>
-			<Platform>x64</Platform>
-		</ProjectConfiguration>
-		<ProjectConfiguration Include="Release|x64">
-			<Configuration>Release</Configuration>
-			<Platform>x64</Platform>
-		</ProjectConfiguration>
-	</ItemGroup>
-	<PropertyGroup Label="Globals">
-		<VCProjectVersion>16.0</VCProjectVersion>
-		<Keyword>Win32Proj</Keyword>
-		<ProjectGuid>{98e59c9b-1903-412f-9970-da6c1c1e13c1}</ProjectGuid>
-		<RootNamespace>Application</RootNamespace>
-		<WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
-	</PropertyGroup>
-	<Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-		<ConfigurationType>Application</ConfigurationType>
-		<UseDebugLibraries>true</UseDebugLibraries>
-		<PlatformToolset>v143</PlatformToolset>
-		<CharacterSet>Unicode</CharacterSet>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-		<ConfigurationType>Application</ConfigurationType>
-		<UseDebugLibraries>false</UseDebugLibraries>
-		<PlatformToolset>v143</PlatformToolset>
-		<WholeProgramOptimization>true</WholeProgramOptimization>
-		<CharacterSet>Unicode</CharacterSet>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-		<ConfigurationType>Application</ConfigurationType>
-		<UseDebugLibraries>true</UseDebugLibraries>
-		<PlatformToolset>v143</PlatformToolset>
-		<CharacterSet>Unicode</CharacterSet>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-		<ConfigurationType>Application</ConfigurationType>
-		<UseDebugLibraries>false</UseDebugLibraries>
-		<PlatformToolset>v143</PlatformToolset>
-		<WholeProgramOptimization>true</WholeProgramOptimization>
-		<CharacterSet>Unicode</CharacterSet>
-	</PropertyGroup>
-	<Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
-	<ImportGroup Label="ExtensionSettings">
-	</ImportGroup>
-	<ImportGroup Label="Shared">
-	</ImportGroup>
-	<ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-	</ImportGroup>
-	<ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-	</ImportGroup>
-	<ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-	</ImportGroup>
-	<ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-	</ImportGroup>
-	<PropertyGroup Label="UserMacros" />
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-		<LinkIncremental>true</LinkIncremental>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-		<LinkIncremental>false</LinkIncremental>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-		<LinkIncremental>true</LinkIncremental>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-		<LinkIncremental>false</LinkIncremental>
-	</PropertyGroup>
-	<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-		<ClCompile>
-			<WarningLevel>Level3</WarningLevel>
-			<SDLCheck>true</SDLCheck>
-			<PreprocessorDefinitions>DRAW_HITBOX</PreprocessorDefinitions>
-			<ConformanceMode>true</ConformanceMode>
-			<AdditionalIncludeDirectories>$(SolutionDir)\glm;$(SolutionDir)\glfw\include;$(SolutionDir)\glew\include;$(SolutionDir)\Common\Source;$(SolutionDir)\bullet\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-			<RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-		</ClCompile>
-		<Link>
-			<SubSystem>Console</SubSystem>
-			<GenerateDebugInformation>true</GenerateDebugInformation>
-			<AdditionalLibraryDirectories>$(SolutionDir)bullet\lib\Debug;$(SolutionDir)glew\lib;$(SolutionDir)glfw\lib-vc2019;$(SolutionDir)$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-			<AdditionalDependencies>glew32.lib;glfw3.lib;opengl32.lib;winmm.lib;Common.lib;LinearMath.lib;BulletCollision.lib;BulletDynamics.lib;%(AdditionalDependencies)</AdditionalDependencies>
-			<AdditionalOptions>/NODEFAULTLIB:MSVCRT %(AdditionalOptions)</AdditionalOptions>
-		</Link>
-	</ItemDefinitionGroup>
-	<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-		<ClCompile>
-			<WarningLevel>Level3</WarningLevel>
-			<FunctionLevelLinking>true</FunctionLevelLinking>
-			<IntrinsicFunctions>true</IntrinsicFunctions>
-			<SDLCheck>true</SDLCheck>
-			<PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-			<ConformanceMode>true</ConformanceMode>
-			<AdditionalIncludeDirectories>$(SolutionDir)\glm;$(SolutionDir)\glew\include;$(SolutionDir)\glfw\include;$(SolutionDir)\Common\Source;$(SolutionDir)\bullet\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-		</ClCompile>
-		<Link>
-			<SubSystem>Console</SubSystem>
-			<EnableCOMDATFolding>true</EnableCOMDATFolding>
-			<OptimizeReferences>true</OptimizeReferences>
-			<GenerateDebugInformation>true</GenerateDebugInformation>
-			<AdditionalLibraryDirectories>$(SolutionDir)bullet\lib\Release;$(SolutionDir)glew\lib;$(SolutionDir)glfw\lib-vc2019;$(SolutionDir)$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-			<AdditionalDependencies>glew32.lib;glfw3.lib;opengl32.lib;winmm.lib;Common.lib;LinearMath.lib;BulletCollision.lib;BulletDynamics.lib;%(AdditionalDependencies)</AdditionalDependencies>
-		</Link>
-	</ItemDefinitionGroup>
-	<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-		<ClCompile>
-			<WarningLevel>Level3</WarningLevel>
-			<SDLCheck>true</SDLCheck>
-			<PreprocessorDefinitions>DEBUG</PreprocessorDefinitions>
-			<ConformanceMode>true</ConformanceMode>
-		</ClCompile>
-		<Link>
-			<SubSystem>Console</SubSystem>
-			<GenerateDebugInformation>true</GenerateDebugInformation>
-		</Link>
-	</ItemDefinitionGroup>
-	<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-		<ClCompile>
-			<WarningLevel>Level3</WarningLevel>
-			<FunctionLevelLinking>true</FunctionLevelLinking>
-			<IntrinsicFunctions>true</IntrinsicFunctions>
-			<SDLCheck>true</SDLCheck>
-			<PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-			<ConformanceMode>true</ConformanceMode>
-			<AdditionalIncludeDirectories>$(SolutionDir)\glm;</AdditionalIncludeDirectories>
-		</ClCompile>
-		<Link>
-			<SubSystem>Console</SubSystem>
-			<EnableCOMDATFolding>true</EnableCOMDATFolding>
-			<OptimizeReferences>true</OptimizeReferences>
-			<GenerateDebugInformation>true</GenerateDebugInformation>
-		</Link>
-	</ItemDefinitionGroup>
-	<ItemGroup>
-		<ClCompile Include="Source\Application.cpp" />
-		<ClCompile Include="Source\Button_UI.cpp" />
-		<ClCompile Include="Source\Camera.cpp" />
-		<ClCompile Include="Source\CarnivalHitBoxes.cpp" />
-		<ClCompile Include="Source\CircusTent.cpp" />
-		<ClCompile Include="Source\carnivalroaming.cpp" />
-		<ClCompile Include="Source\CK_Ball.cpp" />
-		<ClCompile Include="Source\CK_BoothRoof.cpp" />
-		<ClCompile Include="Source\CK_BoothWall.cpp" />
-		<ClCompile Include="Source\CK_Can.cpp" />
-		<ClCompile Include="Source\CK_Counter.cpp" />
-		<ClCompile Include="Source\CK_Counter2.cpp" />
-		<ClCompile Include="Source\CK_Floor.cpp" />
-		<ClCompile Include="Source\CK_Table.cpp" />
-		<ClCompile Include="Source\ColliderManager.cpp" />
-		<ClCompile Include="Source\CollisionManager.cpp" />
-		<ClCompile Include="Source\CQuad.cpp" />
-		<ClCompile Include="Source\DS_BoothRoof.cpp" />
-		<ClCompile Include="Source\DS_BoothWall.cpp" />
-		<ClCompile Include="Source\DS_Bullet.cpp" />
-		<ClCompile Include="Source\DS_Conveyor.cpp" />
-		<ClCompile Include="Source\DS_Counter.cpp" />
-		<ClCompile Include="Source\DS_Counter2.cpp" />
-		<ClCompile Include="Source\DS_Duck.cpp" />
-		<ClCompile Include="Source\DS_Floor.cpp" />
-		<ClCompile Include="Source\DS_Pillar.cpp" />
-		<ClCompile Include="Source\FPCamera.cpp" />
-		<ClCompile Include="Source\GameManager.cpp" />
-		<ClCompile Include="Source\GameObject.cpp" />
-		<ClCompile Include="Source\GameObjectManager.cpp" />
-		<ClCompile Include="Source\Light.cpp" />
-		<ClCompile Include="Source\LoadOBJ.cpp" />
-		<ClCompile Include="Source\LoadPNG.cpp" />
-		<ClCompile Include="Source\LoadTGA.cpp" />
-		<ClCompile Include="Source\main.cpp" />
-		<ClCompile Include="Source\MainMenu.cpp" />
-		<ClCompile Include="Source\Material.cpp" />
-		<ClCompile Include="Source\Mesh.cpp" />
-		<ClCompile Include="Source\MeshBuilder.cpp" />
-		<ClCompile Include="Source\MeshManager.cpp" />
-		<ClCompile Include="Source\PlayerHitBox.cpp" />
-		<ClCompile Include="Source\PlinkoBall.cpp" />
-		<ClCompile Include="Source\PlinkoBoard.cpp" />
-		<ClCompile Include="Source\PlinkoCylinder.cpp" />
-		<ClCompile Include="Source\PlinkoGlass.cpp" />
-		<ClCompile Include="Source\PlinkoPointsWall.cpp" />
-		<ClCompile Include="Source\PlinkoWall.cpp" />
-		<ClCompile Include="Source\RigidBody.cpp" />
-		<ClCompile Include="Source\Scene.cpp" />
-		<ClCompile Include="Source\SceneCanKnockdown.cpp" />
-		<ClCompile Include="Source\SceneDuckShooting.cpp" />
-		<ClCompile Include="Source\SceneGame.cpp" />
-		<ClCompile Include="Source\SceneManager.cpp" />
-		<ClCompile Include="Source\ScenePlinko.cpp" />
-		<ClCompile Include="Source\SceneRingToss.cpp" />
-		<ClCompile Include="Source\shader.cpp" />
-		<ClCompile Include="Source\Time.cpp" />
-		<ClCompile Include="Source\TossBoard.cpp" />
-		<ClCompile Include="Source\Utility.cpp" />
-	</ItemGroup>
-	<ItemGroup>
-		<ClInclude Include="..\..\..\..\..\..\..\..\School\DX1125 - CGSPRJ - WIU\DXGL-FRAMEWORK\Application\Source\CQuad.h" />
-		<ClInclude Include="..\Common\Source\MyMath.h" />
-		<ClInclude Include="Source\Application.h" />
-		<ClInclude Include="Source\Button_UI.h" />
-		<ClInclude Include="Source\Camera.h" />
-		<ClInclude Include="Source\CarnivalHitBoxes.h" />
-		<ClInclude Include="Source\CircusTent.h" />
-		<ClInclude Include="Source\carnivalroaming.h" />
-		<ClInclude Include="Source\CK_Ball.h" />
-		<ClInclude Include="Source\CK_BoothRoof.h" />
-		<ClInclude Include="Source\CK_BoothWall.h" />
-		<ClInclude Include="Source\CK_Can.h" />
-		<ClInclude Include="Source\CK_Counter.h" />
-		<ClInclude Include="Source\CK_Counter2.h" />
-		<ClInclude Include="Source\CK_Floor.h" />
-		<ClInclude Include="Source\CK_Table.h" />
-		<ClInclude Include="Source\ColliderManager.h" />
-		<ClInclude Include="Source\CollisionManager.h" />
-		<ClInclude Include="Source\DS_BoothRoof.h" />
-		<ClInclude Include="Source\DS_BoothWall.h" />
-		<ClInclude Include="Source\DS_Bullet.h" />
-		<ClInclude Include="Source\DS_Conveyor.h" />
-		<ClInclude Include="Source\DS_Counter.h" />
-		<ClInclude Include="Source\DS_Counter2.h" />
-		<ClInclude Include="Source\DS_Duck.h" />
-		<ClInclude Include="Source\DS_Floor.h" />
-		<ClInclude Include="Source\DS_Pillar.h" />
-		<ClInclude Include="Source\FPCamera.h" />
-		<ClInclude Include="Source\GameManager.h" />
-		<ClInclude Include="Source\GameObject.h" />
-		<ClInclude Include="Source\GameObjectManager.h" />
-		<ClInclude Include="Source\Light.h" />
-		<ClInclude Include="Source\LoadOBJ.h" />
-		<ClInclude Include="Source\LoadPNG.h">
-			<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-			</ExcludedFromBuild>
-		</ClInclude>
-		<ClInclude Include="Source\LoadTGA.h" />
-		<ClInclude Include="Source\MainMenu.h" />
-		<ClInclude Include="Source\Material.h" />
-		<ClInclude Include="Source\Mesh.h" />
-		<ClInclude Include="Source\MeshBuilder.h" />
-		<ClInclude Include="Source\MeshManager.h" />
-		<ClInclude Include="Source\PlayerHitBox.h" />
-		<ClInclude Include="Source\PlinkoBall.h" />
-		<ClInclude Include="Source\PlinkoBoard.h" />
-		<ClInclude Include="Source\PlinkoCylinder.h" />
-		<ClInclude Include="Source\PlinkoGlass.h" />
-		<ClInclude Include="Source\PlinkoPointsWall.h" />
-		<ClInclude Include="Source\PlinkoWall.h" />
-		<ClInclude Include="Source\RigidBody.h" />
-		<ClInclude Include="Source\Scene.h" />
-		<ClInclude Include="Source\SceneCanKnockdown.h" />
-		<ClInclude Include="Source\SceneDuckShooting.h" />
-		<ClInclude Include="Source\SceneGame.h" />
-		<ClInclude Include="Source\SceneManager.h" />
-		<ClInclude Include="Source\ScenePlinko.h" />
-		<ClInclude Include="Source\SceneRingToss.h" />
-		<ClInclude Include="Source\shader.hpp" />
-		<ClInclude Include="Source\Time.h" />
-		<ClInclude Include="Source\TossBoard.h" />
-		<ClInclude Include="Source\Utility.h" />
-		<ClInclude Include="Source\Vertex.h" />
-	</ItemGroup>
-	<Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-	<ImportGroup Label="ExtensionTargets">
-	</ImportGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{98e59c9b-1903-412f-9970-da6c1c1e13c1}</ProjectGuid>
+    <RootNamespace>Application</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>DRAW_HITBOX</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(SolutionDir)\glm;$(SolutionDir)\glfw\include;$(SolutionDir)\glew\include;$(SolutionDir)\Common\Source;$(SolutionDir)\bullet\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(SolutionDir)bullet\lib\Debug;$(SolutionDir)glew\lib;$(SolutionDir)glfw\lib-vc2019;$(SolutionDir)$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glew32.lib;glfw3.lib;opengl32.lib;winmm.lib;Common.lib;LinearMath.lib;BulletCollision.lib;BulletDynamics.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalOptions>/NODEFAULTLIB:MSVCRT %(AdditionalOptions)</AdditionalOptions>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(SolutionDir)\glm;$(SolutionDir)\glew\include;$(SolutionDir)\glfw\include;$(SolutionDir)\Common\Source;$(SolutionDir)\bullet\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(SolutionDir)bullet\lib\Release;$(SolutionDir)glew\lib;$(SolutionDir)glfw\lib-vc2019;$(SolutionDir)$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glew32.lib;glfw3.lib;opengl32.lib;winmm.lib;Common.lib;LinearMath.lib;BulletCollision.lib;BulletDynamics.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>DEBUG</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(SolutionDir)\glm;</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="Source\Application.cpp" />
+    <ClCompile Include="Source\Button_UI.cpp" />
+    <ClCompile Include="Source\Camera.cpp" />
+    <ClCompile Include="Source\CarnivalHitBoxes.cpp" />
+    <ClCompile Include="Source\CircusTent.cpp" />
+    <ClCompile Include="Source\carnivalroaming.cpp" />
+    <ClCompile Include="Source\CK_Ball.cpp" />
+    <ClCompile Include="Source\CK_BoothRoof.cpp" />
+    <ClCompile Include="Source\CK_BoothWall.cpp" />
+    <ClCompile Include="Source\CK_Can.cpp" />
+    <ClCompile Include="Source\CK_Counter.cpp" />
+    <ClCompile Include="Source\CK_Counter2.cpp" />
+    <ClCompile Include="Source\CK_Floor.cpp" />
+    <ClCompile Include="Source\CK_Table.cpp" />
+    <ClCompile Include="Source\ColliderManager.cpp" />
+    <ClCompile Include="Source\CollisionManager.cpp" />
+    <ClCompile Include="Source\CQuad.cpp" />
+    <ClCompile Include="Source\DS_BoothRoof.cpp" />
+    <ClCompile Include="Source\DS_BoothWall.cpp" />
+    <ClCompile Include="Source\DS_Bullet.cpp" />
+    <ClCompile Include="Source\DS_Conveyor.cpp" />
+    <ClCompile Include="Source\DS_Counter.cpp" />
+    <ClCompile Include="Source\DS_Counter2.cpp" />
+    <ClCompile Include="Source\DS_Duck.cpp" />
+    <ClCompile Include="Source\DS_Floor.cpp" />
+    <ClCompile Include="Source\DS_Pillar.cpp" />
+    <ClCompile Include="Source\FPCamera.cpp" />
+    <ClCompile Include="Source\GameManager.cpp" />
+    <ClCompile Include="Source\GameObject.cpp" />
+    <ClCompile Include="Source\GameObjectManager.cpp" />
+    <ClCompile Include="Source\Light.cpp" />
+    <ClCompile Include="Source\LoadOBJ.cpp" />
+    <ClCompile Include="Source\LoadPNG.cpp" />
+    <ClCompile Include="Source\LoadTGA.cpp" />
+    <ClCompile Include="Source\main.cpp" />
+    <ClCompile Include="Source\MainMenu.cpp" />
+    <ClCompile Include="Source\Material.cpp" />
+    <ClCompile Include="Source\Mesh.cpp" />
+    <ClCompile Include="Source\MeshBuilder.cpp" />
+    <ClCompile Include="Source\MeshManager.cpp" />
+    <ClCompile Include="Source\PlayerHitBox.cpp" />
+    <ClCompile Include="Source\PlinkoBall.cpp" />
+    <ClCompile Include="Source\PlinkoBoard.cpp" />
+    <ClCompile Include="Source\PlinkoCylinder.cpp" />
+    <ClCompile Include="Source\PlinkoGlass.cpp" />
+    <ClCompile Include="Source\PlinkoPointsWall.cpp" />
+    <ClCompile Include="Source\PlinkoWall.cpp" />
+    <ClCompile Include="Source\RigidBody.cpp" />
+    <ClCompile Include="Source\Scene.cpp" />
+    <ClCompile Include="Source\SceneCanKnockdown.cpp" />
+    <ClCompile Include="Source\SceneDuckShooting.cpp" />
+    <ClCompile Include="Source\SceneEnding.cpp" />
+    <ClCompile Include="Source\SceneGame.cpp" />
+    <ClCompile Include="Source\SceneManager.cpp" />
+    <ClCompile Include="Source\ScenePlinko.cpp" />
+    <ClCompile Include="Source\SceneRingToss.cpp" />
+    <ClCompile Include="Source\shader.cpp" />
+    <ClCompile Include="Source\Time.cpp" />
+    <ClCompile Include="Source\TossBoard.cpp" />
+    <ClCompile Include="Source\Utility.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\..\..\..\School\DX1125 - CGSPRJ - WIU\DXGL-FRAMEWORK\Application\Source\CQuad.h" />
+    <ClInclude Include="..\Common\Source\MyMath.h" />
+    <ClInclude Include="Source\Application.h" />
+    <ClInclude Include="Source\Button_UI.h" />
+    <ClInclude Include="Source\Camera.h" />
+    <ClInclude Include="Source\CarnivalHitBoxes.h" />
+    <ClInclude Include="Source\CircusTent.h" />
+    <ClInclude Include="Source\carnivalroaming.h" />
+    <ClInclude Include="Source\CK_Ball.h" />
+    <ClInclude Include="Source\CK_BoothRoof.h" />
+    <ClInclude Include="Source\CK_BoothWall.h" />
+    <ClInclude Include="Source\CK_Can.h" />
+    <ClInclude Include="Source\CK_Counter.h" />
+    <ClInclude Include="Source\CK_Counter2.h" />
+    <ClInclude Include="Source\CK_Floor.h" />
+    <ClInclude Include="Source\CK_Table.h" />
+    <ClInclude Include="Source\ColliderManager.h" />
+    <ClInclude Include="Source\CollisionManager.h" />
+    <ClInclude Include="Source\DS_BoothRoof.h" />
+    <ClInclude Include="Source\DS_BoothWall.h" />
+    <ClInclude Include="Source\DS_Bullet.h" />
+    <ClInclude Include="Source\DS_Conveyor.h" />
+    <ClInclude Include="Source\DS_Counter.h" />
+    <ClInclude Include="Source\DS_Counter2.h" />
+    <ClInclude Include="Source\DS_Duck.h" />
+    <ClInclude Include="Source\DS_Floor.h" />
+    <ClInclude Include="Source\DS_Pillar.h" />
+    <ClInclude Include="Source\FPCamera.h" />
+    <ClInclude Include="Source\GameManager.h" />
+    <ClInclude Include="Source\GameObject.h" />
+    <ClInclude Include="Source\GameObjectManager.h" />
+    <ClInclude Include="Source\Light.h" />
+    <ClInclude Include="Source\LoadOBJ.h" />
+    <ClInclude Include="Source\LoadPNG.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Source\LoadTGA.h" />
+    <ClInclude Include="Source\MainMenu.h" />
+    <ClInclude Include="Source\Material.h" />
+    <ClInclude Include="Source\Mesh.h" />
+    <ClInclude Include="Source\MeshBuilder.h" />
+    <ClInclude Include="Source\MeshManager.h" />
+    <ClInclude Include="Source\PlayerHitBox.h" />
+    <ClInclude Include="Source\PlinkoBall.h" />
+    <ClInclude Include="Source\PlinkoBoard.h" />
+    <ClInclude Include="Source\PlinkoCylinder.h" />
+    <ClInclude Include="Source\PlinkoGlass.h" />
+    <ClInclude Include="Source\PlinkoPointsWall.h" />
+    <ClInclude Include="Source\PlinkoWall.h" />
+    <ClInclude Include="Source\RigidBody.h" />
+    <ClInclude Include="Source\Scene.h" />
+    <ClInclude Include="Source\SceneCanKnockdown.h" />
+    <ClInclude Include="Source\SceneDuckShooting.h" />
+    <ClInclude Include="Source\SceneEnding.h" />
+    <ClInclude Include="Source\SceneGame.h" />
+    <ClInclude Include="Source\SceneManager.h" />
+    <ClInclude Include="Source\ScenePlinko.h" />
+    <ClInclude Include="Source\SceneRingToss.h" />
+    <ClInclude Include="Source\shader.hpp" />
+    <ClInclude Include="Source\Time.h" />
+    <ClInclude Include="Source\TossBoard.h" />
+    <ClInclude Include="Source\Utility.h" />
+    <ClInclude Include="Source\Vertex.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
 </Project>
