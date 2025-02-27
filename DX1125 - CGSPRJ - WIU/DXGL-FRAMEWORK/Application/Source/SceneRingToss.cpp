@@ -21,6 +21,9 @@
 #include "RigidBody.h"
 #include "ColliderManager.h"
 #include "TossBoard.h"
+#include "MeshManager.h"
+#include "carnivalroaming.h"
+#include "SceneManager.h"
 
 SceneRingToss::SceneRingToss()
 	: numLight{ 25 }, isShoot{ false }, isPickable{ true },
@@ -204,7 +207,7 @@ void SceneRingToss::Init()
 
 	for (int i = 1; i <= 12; ++i)
 	{
-		meshList[MeshManager::GEO_RT_LIGHTPOLE]->materials[i - 1].kEmission = glm::vec3(0.5f, 0.5f, 0.5f);
+		MeshManager::GetInstance()->meshList[MeshManager::GEO_RT_LIGHTPOLE]->materials[i - 1].kEmission = glm::vec3(0.5f, 0.5f, 0.5f);
 
 		glm::vec3 randColor = glm::vec3{
 			Math::RandFloatMinMax(0.0f, 1.0f),
@@ -212,7 +215,7 @@ void SceneRingToss::Init()
 			Math::RandFloatMinMax(0.0f, 1.0f)
 		};
 
-		meshList[MeshManager::GEO_RT_LIGHTPOLE]->materials[i - 1].kAmbient = glm::vec3(randColor);
+		MeshManager::GetInstance()->meshList[MeshManager::GEO_RT_LIGHTPOLE]->materials[i - 1].kAmbient = glm::vec3(randColor);
 		lights[i].color = randColor;
 		lights[12 + i].color = randColor;
 	}
@@ -338,13 +341,14 @@ void SceneRingToss::Update()
 			else isInView = false;
 		}
 	}
-
+	waitingTimer += Time::deltaTime; 
+	
 	lightTimer += Time::deltaTime;
 	if (isTimeReach(lightTimer, 1.f, 1.05f))
 	{
 		for (int i = 1; i <= 12; ++i)
 		{
-			meshList[MeshManager::GEO_RT_LIGHTPOLE]->materials[i - 1].kEmission = glm::vec3(0.5f, 0.5f, 0.5f);
+			MeshManager::GetInstance()->meshList[MeshManager::GEO_RT_LIGHTPOLE]->materials[i - 1].kEmission = glm::vec3(0.5f, 0.5f, 0.5f); 
 
 			glm::vec3 randColor = glm::vec3{
 				Math::RandFloatMinMax(0.0f, 1.0f),
@@ -352,7 +356,7 @@ void SceneRingToss::Update()
 				Math::RandFloatMinMax(0.0f, 1.0f)
 			};
 
-			meshList[MeshManager::GEO_RT_LIGHTPOLE]->materials[i - 1].kAmbient = glm::vec3(randColor);
+			MeshManager::GetInstance()->meshList[MeshManager::GEO_RT_LIGHTPOLE]->materials[i - 1].kAmbient = glm::vec3(randColor);
 			lights[i].color = randColor;
 			glUniform3fv(m_parameters[U_LIGHT0_COLOR + U_LIGHT0_EXPONENT * i], 1, &lights[i].color.r);
 
@@ -412,7 +416,11 @@ void SceneRingToss::LateUpdate()
 			numAttempt++;
 		}
 	}
-
+	if (numAttempt == 3 and waitingTimer >= 5.0f)
+	{
+		SceneManager::GetInstance()->ChangeState(new carnivalroaming);
+		return;
+	}
 	if (MouseController::GetInstance()->IsButtonReleased(0) && isMouseLeftPressed)
 		isMouseLeftPressed = false;
 
@@ -477,7 +485,7 @@ void SceneRingToss::Render()
 	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_RT_LIGHTPOLE], enableLight);
 	modelStack.PopMatrix();
 
-	meshList[GEO_COUNTER]->material = Material::Wood(WHITE);
+	MeshManager::GetInstance()->meshList[MeshManager::GEO_RT_COUNTER]->material = Material::Wood(WHITE);
 	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_RT_COUNTER], enableLight, objInScene[COUNTER]->m_transform);
 	GameObjectManager::RenderAll(*this);
 
@@ -636,7 +644,7 @@ void SceneRingToss::RenderGround(int size)
 	int valueToMul = (size - 1) / 2;
 	glm::vec3 originPos = glm::vec3{ 75.0f * (float)valueToMul, 0.0f, 75.0f * (float)valueToMul };
 	float orignalX = originPos.x;
-	meshList[MeshManager::GEO_RT_PLANE]->material = Material::Wood(WHITE);
+	MeshManager::GetInstance()->meshList[MeshManager::GEO_RT_PLANE]->material = Material::Wood(WHITE);
 	for (int i = 0; i < size; i++)
 	{
 		originPos.x = orignalX;
@@ -646,7 +654,7 @@ void SceneRingToss::RenderGround(int size)
 			modelStack.PushMatrix();
 			modelStack.Translate(originPos.x, originPos.y, originPos.z);
 			modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
-			RenderMesh(meshList[MeshManager::GEO_RT_PLANE], enableLight);
+			RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_RT_PLANE], enableLight);
 			modelStack.PopMatrix();
 
 			originPos.x -= 75.0f;
