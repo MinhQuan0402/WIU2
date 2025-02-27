@@ -21,7 +21,12 @@
 #include "RigidBody.h"
 #include "ColliderManager.h"
 
-SceneEnding::SceneEnding() : numLight{ 1 }, sceneTimer{ 0.0f }
+SceneEnding::SceneEnding()
+	: numLight{ 6 }, sceneTimer{ 0.0f },
+	sceneTimerN{ 0.0f }, currentCameraTarget{},
+	timerOffset{}, currentClownPose{ GEO_CLOWN_POSE_1 },
+	ballonPos{ 0.0f, 15.0f, 0.0f }, lightSpeed{ 1.0f }, pennywisePos{0.0f, 0.8f, 0.0f},
+	rotationXAngle{90.0f}
 {
 	meshList.resize(NUM_GEOMETRY);
 	lights.resize(numLight);
@@ -67,17 +72,30 @@ void SceneEnding::Init()
 
 	for (int i = 0; i < numLight; ++i)
 	{
-		m_parameters[U_LIGHT0_TYPE + U_LIGHT0_EXPONENT * i] = glGetUniformLocation(m_programID, "lights[0].type");
-		m_parameters[U_LIGHT0_POSITION + U_LIGHT0_EXPONENT * i] = glGetUniformLocation(m_programID, "lights[0].position_cameraspace");
-		m_parameters[U_LIGHT0_COLOR + U_LIGHT0_EXPONENT * i] = glGetUniformLocation(m_programID, "lights[0].color");
-		m_parameters[U_LIGHT0_POWER + U_LIGHT0_EXPONENT * i] = glGetUniformLocation(m_programID, "lights[0].power");
-		m_parameters[U_LIGHT0_KC + U_LIGHT0_EXPONENT * i] = glGetUniformLocation(m_programID, "lights[0].kC");
-		m_parameters[U_LIGHT0_KL + U_LIGHT0_EXPONENT * i] = glGetUniformLocation(m_programID, "lights[0].kL");
-		m_parameters[U_LIGHT0_KQ + U_LIGHT0_EXPONENT * i] = glGetUniformLocation(m_programID, "lights[0].kQ");
-		m_parameters[U_LIGHT0_SPOTDIRECTION + U_LIGHT0_EXPONENT * i] = glGetUniformLocation(m_programID, "lights[0].spotDirection");
-		m_parameters[U_LIGHT0_COSCUTOFF + U_LIGHT0_EXPONENT * i] = glGetUniformLocation(m_programID, "lights[0].cosCutoff");
-		m_parameters[U_LIGHT0_COSINNER + U_LIGHT0_EXPONENT * i] = glGetUniformLocation(m_programID, "lights[0].cosInner");
-		m_parameters[U_LIGHT0_EXPONENT + U_LIGHT0_EXPONENT * i] = glGetUniformLocation(m_programID, "lights[0].exponent");
+		std::string index = std::to_string(i);
+		std::string typeString = "lights[" + index + "].type";
+		std::string positionString = "lights[" + index + "].position_cameraspace";
+		std::string colorString = "lights[" + index + "].color";
+		std::string powerString = "lights[" + index + "].power";
+		std::string kCString = "lights[" + index + "].kC";
+		std::string kLString = "lights[" + index + "].kL";
+		std::string kQString = "lights[" + index + "].kQ";
+		std::string spotString = "lights[" + index + "].spotDirection";
+		std::string cosCutOffString = "lights[" + index + "].cosCutoff";
+		std::string cosInnerString = "lights[" + index + "].cosInner";
+		std::string exponentString = "lights[" + index + "].exponent";
+
+		m_parameters[U_LIGHT0_TYPE + U_LIGHT0_EXPONENT * i] = glGetUniformLocation(m_programID, typeString.data());
+		m_parameters[U_LIGHT0_POSITION + U_LIGHT0_EXPONENT * i] = glGetUniformLocation(m_programID, positionString.data());
+		m_parameters[U_LIGHT0_COLOR + U_LIGHT0_EXPONENT * i] = glGetUniformLocation(m_programID, colorString.data());
+		m_parameters[U_LIGHT0_POWER + U_LIGHT0_EXPONENT * i] = glGetUniformLocation(m_programID, powerString.data());
+		m_parameters[U_LIGHT0_KC + U_LIGHT0_EXPONENT * i] = glGetUniformLocation(m_programID, kCString.data());
+		m_parameters[U_LIGHT0_KL + U_LIGHT0_EXPONENT * i] = glGetUniformLocation(m_programID, kLString.data());
+		m_parameters[U_LIGHT0_KQ + U_LIGHT0_EXPONENT * i] = glGetUniformLocation(m_programID, kQString.data());
+		m_parameters[U_LIGHT0_SPOTDIRECTION + U_LIGHT0_EXPONENT * i] = glGetUniformLocation(m_programID, spotString.data());
+		m_parameters[U_LIGHT0_COSCUTOFF + U_LIGHT0_EXPONENT * i] = glGetUniformLocation(m_programID, cosCutOffString.data());
+		m_parameters[U_LIGHT0_COSINNER + U_LIGHT0_EXPONENT * i] = glGetUniformLocation(m_programID, cosInnerString.data());
+		m_parameters[U_LIGHT0_EXPONENT + U_LIGHT0_EXPONENT * i] = glGetUniformLocation(m_programID, exponentString.data());
 	}
 
 	m_parameters[U_LIGHTENABLED] = glGetUniformLocation(m_programID, "lightEnabled");
@@ -96,8 +114,11 @@ void SceneEnding::Init()
 	meshList[GEO_LIGHT] = MeshBuilder::GenerateSphere("Sphere", WHITE, .05f, 180, 180);
 	meshList[GEO_TEXT] = MeshBuilder::GenerateText("text", 16, 16);
 	meshList[GEO_TEXT]->textureID = LoadTGA("Images//calibri.tga");
-	meshList[GEO_PLANE] = MeshBuilder::GenerateQuad("Quad", WHITE, 75.0f);
+	meshList[GEO_PLANE] = MeshBuilder::GenerateQuad("Quad", WHITE, 10.0f);
 	meshList[GEO_PLANE]->textureID = LoadPNG("Images//ground.png");
+	meshList[GEO_PLANE]->material = Material::Wood(WHITE);
+	meshList[GEO_PLANE]->material.kAmbient = glm::vec3{};
+
 	meshList[GEO_SPHERE] = MeshBuilder::GenerateHemisphere("Sphere", BLACK, 50.0f, 50.0f, 1.0f);
 
 	meshList[GEO_TENT] = MeshBuilder::GenerateOBJ("Dust tent", "Models//tent.obj");
@@ -183,34 +204,109 @@ void SceneEnding::Init()
 	meshList[GEO_CLOWN_POSE_1]->material = Material::Wood(WHITE);
 	meshList[GEO_CLOWN_POSE_1]->material.kAmbient = glm::vec3{};
 
-	mainCamera.Init(glm::vec3(0, 6, 6), glm::vec3(0, 6, 0), VECTOR3_UP);
+	meshList[GEO_CLOWN_POSE_2] = MeshBuilder::GenerateOBJ("Outer ring", "Models//clown_pose_2.obj");
+	meshList[GEO_CLOWN_POSE_2]->textureID = LoadPNG("Images//clown_pose_2.png");
+	meshList[GEO_CLOWN_POSE_2]->material = Material::Wood(WHITE);
+	meshList[GEO_CLOWN_POSE_2]->material.kAmbient = glm::vec3{};
+
+	meshList[GEO_CLOWN_POSE_3] = MeshBuilder::GenerateOBJ("Outer ring", "Models//clown_pose_3.obj");
+	meshList[GEO_CLOWN_POSE_3]->textureID = LoadPNG("Images//clown_pose_3.png");
+	meshList[GEO_CLOWN_POSE_3]->material = Material::Wood(WHITE);
+	meshList[GEO_CLOWN_POSE_3]->material.kAmbient = glm::vec3{};
+
+	meshList[GEO_BALLON_STRING] = MeshBuilder::GenerateOBJMTL("Ballon string", "Models//ballon_string.obj", "Models//ballon_string.mtl");
+	meshList[GEO_BALLON] = MeshBuilder::GenerateOBJ("Ballon", "Models//ballon.obj");
+	meshList[GEO_BALLON]->textureID = LoadPNG("Images//ballon.png");
+	meshList[GEO_BALLON]->material = Material::Wood(WHITE);
+	meshList[GEO_BALLON]->material.kAmbient = glm::vec3{};
+
+	meshList[GEO_PENNYWISE_BODY] = MeshBuilder::GenerateOBJ("Body", "Models//pennywise_body.obj");
+	meshList[GEO_PENNYWISE_BODY]->textureID = LoadPNG("Images//pennywise_body.png");
+	meshList[GEO_PENNYWISE_BODY]->material = Material::Wood(WHITE);
+	meshList[GEO_PENNYWISE_BODY]->material.kAmbient = glm::vec3{};
+
+	meshList[GEO_PENNYWISE_FACE] = MeshBuilder::GenerateOBJ("Ballon", "Models//pennywise_face.obj");
+	meshList[GEO_PENNYWISE_FACE]->textureID = LoadPNG("Images//pennywise_face.png");
+	meshList[GEO_PENNYWISE_FACE]->material = Material::Wood(WHITE);
+	meshList[GEO_PENNYWISE_FACE]->material.kAmbient = glm::vec3{};
+
+	meshList[GEO_PENNYWISE_TEETH] = MeshBuilder::GenerateOBJ("Ballon", "Models//pennywise_teeth.obj");
+	meshList[GEO_PENNYWISE_TEETH]->textureID = LoadPNG("Images//pennywise_teeth.png");
+	meshList[GEO_PENNYWISE_TEETH]->material = Material::Wood(WHITE);
+	meshList[GEO_PENNYWISE_TEETH]->material.kAmbient = glm::vec3{};
+
+	meshList[GEO_PENNYWISE_HAIR] = MeshBuilder::GenerateOBJ("Ballon", "Models//pennywise_hair.obj");
+	meshList[GEO_PENNYWISE_HAIR]->textureID = LoadPNG("Images//pennywise_hair.png");
+	meshList[GEO_PENNYWISE_HAIR]->material = Material::Wood(WHITE);
+	meshList[GEO_PENNYWISE_HAIR]->material.kAmbient = glm::vec3{};
+
+	meshList[GEO_PENNYWISE_EYES] = MeshBuilder::GenerateOBJ("Ballon", "Models//pennywise_eyes.obj");
+	meshList[GEO_PENNYWISE_EYES]->textureID = LoadPNG("Images//pennywise_eyes.png");
+	meshList[GEO_PENNYWISE_EYES]->material = Material::Wood(WHITE);
+	meshList[GEO_PENNYWISE_EYES]->material.kAmbient = glm::vec3{};
+
+	mainCamera.Init(glm::vec3(12.1513f, 2.23612f, -0.0855163), glm::vec3(10.1522f, 2.29354f, -0.0610635f), VECTOR3_UP);
 	
 	glUniform1i(m_parameters[U_NUMLIGHTS], numLight);
 
-	lights[0].m_transform.m_position = glm::vec3{};
-	lights[0].m_transform.m_position = glm::vec3(0, 5, 0);
+	lights[0].m_transform.m_position = glm::vec3{0.f, 7.0f, 0.0f};
+	lights[2].m_transform.m_position = glm::vec3{0.0f, 20.0f, 0.0f};
+	lights[4].m_transform.m_position = glm::vec3{ 0.0f, 20.0f, 0.0f };
+
 	lights[0].color = glm::vec3(1, 1, 1);
 	lights[0].type = Light::LIGHT_SPOT;
-	lights[0].power = 1;
-	lights[0].kC = 1.f;
-	lights[0].kL = 0.01f;
-	lights[0].kQ = 0.001f;
-	lights[0].cosCutoff = 45.f;
+	lights[0].kC = 1.0f;
+	lights[0].kL = 0.0005f;
+	lights[0].kQ = 0.00005f;
+	lights[0].power = 0.0f;
+	lights[0].cosCutoff = 35.0f;
 	lights[0].cosInner = 30.f;
-	lights[0].exponent = 3.f;
+	lights[0].exponent = 3.0f;
 	lights[0].spotDirection = glm::vec3(0.f, 1.f, 0.f);
+	lights[0].isOff = true;
+	
+	for (int i = 1; i < numLight; ++i)
+	{
+		lights[i].color = glm::vec3(1, 1, 1);
+		lights[i].type = Light::LIGHT_SPOT;
+		lights[i].kC = 1.0f;
+		lights[i].kL = 0.0005f;
+		lights[i].kQ = 0.00005f;
+		lights[i].power = 3.0f;
+		lights[i].cosCutoff = 75.0f;
+		lights[i].cosInner = 60.f;
+		lights[i].exponent = 3.0f;
+	}
+
+	lights[1].color = glm::vec3(1, 1, 0);
+	lights[2].color = glm::vec3(1, 1, 0);
+
+	lights[3].color = glm::vec3(0.8f, 0, 0);
+	lights[4].color = glm::vec3(0.8f, 0, 0);
+
+	lights[5].color = glm::vec3(1, 1, 1);
+	lights[5].type = Light::LIGHT_SPOT;
+	lights[5].kC = 1.0f;
+	lights[5].kL = 0.0005f;
+	lights[5].kQ = 0.00005f;
+	lights[5].power = 0.0f;
+	lights[5].cosCutoff = 35.0f;
+	lights[5].cosInner = 10.f;
+	lights[5].exponent = 1.0f;
+	lights[5].spotDirection = glm::vec3(0.f, 1.f, 0.f);
+	lights[5].isOff = true;
 
 	for (int i = 0; i < numLight; ++i)
 	{
-		glUniform3fv(m_parameters[U_LIGHT0_COLOR + U_LIGHT0_EXPONENT * i], 1, &lights[0].color.r);
-		glUniform1i(m_parameters[U_LIGHT0_TYPE + U_LIGHT0_EXPONENT * i], lights[0].type);
-		glUniform1f(m_parameters[U_LIGHT0_POWER + U_LIGHT0_EXPONENT * i], lights[0].power);
-		glUniform1f(m_parameters[U_LIGHT0_KC + U_LIGHT0_EXPONENT * i], lights[0].kC);
-		glUniform1f(m_parameters[U_LIGHT0_KL + U_LIGHT0_EXPONENT * i], lights[0].kL);
-		glUniform1f(m_parameters[U_LIGHT0_KQ + U_LIGHT0_EXPONENT * i], lights[0].kQ);
-		glUniform1f(m_parameters[U_LIGHT0_COSCUTOFF + U_LIGHT0_EXPONENT * i], cosf(glm::radians<float>(lights[0].cosCutoff)));
-		glUniform1f(m_parameters[U_LIGHT0_COSINNER + U_LIGHT0_EXPONENT * i], cosf(glm::radians<float>(lights[0].cosInner)));
-		glUniform1f(m_parameters[U_LIGHT0_EXPONENT + U_LIGHT0_EXPONENT * i], lights[0].exponent);
+		glUniform3fv(m_parameters[U_LIGHT0_COLOR + U_LIGHT0_EXPONENT * i], 1, &lights[i].color.r);
+		glUniform1i(m_parameters[U_LIGHT0_TYPE + U_LIGHT0_EXPONENT * i], lights[i].type);
+		glUniform1f(m_parameters[U_LIGHT0_POWER + U_LIGHT0_EXPONENT * i], lights[i].power);
+		glUniform1f(m_parameters[U_LIGHT0_KC + U_LIGHT0_EXPONENT * i], lights[i].kC);
+		glUniform1f(m_parameters[U_LIGHT0_KL + U_LIGHT0_EXPONENT * i], lights[i].kL);
+		glUniform1f(m_parameters[U_LIGHT0_KQ + U_LIGHT0_EXPONENT * i], lights[i].kQ);
+		glUniform1f(m_parameters[U_LIGHT0_COSCUTOFF + U_LIGHT0_EXPONENT * i], cosf(glm::radians<float>(lights[i].cosCutoff)));
+		glUniform1f(m_parameters[U_LIGHT0_COSINNER + U_LIGHT0_EXPONENT * i], cosf(glm::radians<float>(lights[i].cosInner)));
+		glUniform1f(m_parameters[U_LIGHT0_EXPONENT + U_LIGHT0_EXPONENT * i], lights[i].exponent);
 	}
 
 	enableLight = true;
@@ -218,7 +314,7 @@ void SceneEnding::Init()
 	PhysicsMaterial groundMat;
 	groundMat.m_bounciness = 0.5f;
 	groundMat.m_friction = 0.5f;
-	objInScene[GROUND] = new GameObject();
+	objInScene[GROUND] = new GameObject;
 	objInScene[GROUND]->rb = addStaticPlane(objInScene[GROUND], VECTOR3_UP, groundMat);
 	GameObjectManager::GetInstance()->addItem(objInScene[GROUND]);
 }
@@ -226,24 +322,250 @@ void SceneEnding::Init()
 void SceneEnding::Update()
 {
 	sceneTimer += Time::deltaTime;
+	sceneTimerN -= Time::deltaTime;
 	HandleKeyPress();
-	mainCamera.Update();
-	glm::vec3 inputMovementDir{};
-	if (KeyboardController::GetInstance()->IsKeyDown('W'))
-		inputMovementDir = mainCamera.view;
-	if (KeyboardController::GetInstance()->IsKeyDown('S'))
-		inputMovementDir = -mainCamera.view;
-	if (KeyboardController::GetInstance()->IsKeyDown('D'))
-		inputMovementDir = mainCamera.right;
-	if (KeyboardController::GetInstance()->IsKeyDown('A'))
-		inputMovementDir = -mainCamera.right;
-	glm::vec3 finalForce = inputMovementDir * 10.0f * Time::deltaTime;
-	mainCamera.m_transform.Translate(finalForce);
-	mainCamera.UpdateCameraRotation();
 
-	if (isTimeReach(sceneTimer, 0.0f, 1.0f))
+	if (isTimeReach(sceneTimer, 0.0f, 9.0f) || isTimeReach(sceneTimer, 11.0f, 20.0f) 
+		|| isTimeReach(sceneTimer, 22.0f, 31.0f) || isTimeReach(sceneTimer, 33.0f, 48.0f)
+		|| isTimeReach(sceneTimer, 50.0f, 55.0f))
 	{
+		float RADIUS = 9.0f;
+		glm::vec3 lightTarget1 = glm::vec3(std::sin(sceneTimer * lightSpeed) * RADIUS, 1.0f, std::cos(sceneTimer * lightSpeed) * RADIUS);
 
+		RADIUS = 5.0f;
+		lights[1].m_transform.m_position = glm::vec3(std::sin(sceneTimer * lightSpeed) * RADIUS, 5.0f, std::cos(sceneTimer * lightSpeed) * RADIUS);
+		glm::vec3 lightDir = glm::normalize(lightTarget1 - lights[1].m_transform.m_position);
+		lights[1].spotDirection = -lightDir;
+
+		RADIUS = 20.0f;
+		lightTarget1 = glm::vec3(std::sin(sceneTimer * lightSpeed) * RADIUS, 20.0f, std::cos(sceneTimer * lightSpeed) * RADIUS);
+		lightDir = glm::normalize(lightTarget1 - lights[2].m_transform.m_position);
+		lights[2].spotDirection = -lightDir;
+
+		RADIUS = 9.0f;
+		lightTarget1 = glm::vec3(std::sin(sceneTimerN * lightSpeed) * RADIUS, 1.0f, std::cos(sceneTimerN * lightSpeed) * RADIUS);
+		RADIUS = 5.0f;
+		lights[3].m_transform.m_position = glm::vec3(std::sin(sceneTimerN * lightSpeed) * RADIUS, 5.0f, std::cos(sceneTimerN * lightSpeed) * RADIUS);
+		lightDir = glm::normalize(lightTarget1 - lights[3].m_transform.m_position);
+		lights[3].spotDirection = -lightDir;
+
+		lightTarget1 = glm::vec3(std::sin(sceneTimerN * lightSpeed) * RADIUS, 20.0f, std::cos(sceneTimerN * lightSpeed) * RADIUS);
+		lightDir = glm::normalize(lightTarget1 - lights[4].m_transform.m_position);
+		lights[4].spotDirection = -lightDir;
+	}
+
+	if (isTimeReach(sceneTimer, 0.0f, 6.0f)) //Move cam view
+	{
+		glm::vec3 endTarget{};
+
+		if (isTimeReach(sceneTimer, 0.0f, 1.0f))
+		{
+			currentCameraTarget = glm::vec3(10.15f, 2.3f, -0.06f);
+			endTarget = glm::vec3(10.4f, 3.04f, 0.4f);
+
+			if (sceneTimer >= 0.95f)
+			{
+				timerOffset = 1.0f;
+				currentCameraTarget = endTarget;
+			}
+		}
+		else if (isTimeReach(sceneTimer, 1.0f, 2.0f))
+		{
+			endTarget = glm::vec3(10.5f, 3.26f, -0.55f);
+
+			if (sceneTimer >= 1.95f)
+			{
+				timerOffset = 2.0f;
+				currentCameraTarget = endTarget;
+			}
+		}
+		else if (isTimeReach(sceneTimer, 2.0f, 3.0f))
+		{
+			endTarget = glm::vec3(10.15f, 2.5f, -0.06f);
+
+			if (sceneTimer >= 2.95f)
+			{
+				timerOffset = 3.0f;
+				currentCameraTarget = endTarget;
+			}
+		}
+		glm::vec3 newCameraTarget = Lerp(sceneTimer - timerOffset, currentCameraTarget, endTarget, 1.0f);
+		mainCamera.target = newCameraTarget;
+	}
+	else if (isTimeReach(sceneTimer, 8.0f, 10.0f) && lights[0].isOff) //Turn middle light on
+	{
+		lights[0].power = 3.0f;
+		glUniform1f(m_parameters[U_LIGHT0_POWER], lights[0].power);
+		lights[0].isOff = false;
+	}
+	else if (isTimeReach(sceneTimer, 10.0f, 10.05f)) //off all light
+	{
+		for (int i = 0; i < numLight; ++i)
+		{
+			lights[i].power = 0.0f;
+			glUniform1f(m_parameters[U_LIGHT0_POWER + U_LIGHT0_EXPONENT * i], lights[i].power);
+			lights[i].isOff = true;
+		}
+	}
+	else if (isTimeReach(sceneTimer, 11.0f, 11.05f)) //turn on other light
+	{
+		for (int i = 1; i < numLight; ++i)
+		{
+			lights[i].power = 3.0f;
+			glUniform1f(m_parameters[U_LIGHT0_POWER + U_LIGHT0_EXPONENT * i], lights[i].power);
+			lights[i].isOff = false;
+		}
+	}
+	else if (isTimeReach(sceneTimer, 19.f, 21.0f) && lights[0].isOff)
+	{
+		currentClownPose = GEO_CLOWN_POSE_2;
+		lights[0].power = 3.0f;
+		glUniform1f(m_parameters[U_LIGHT0_POWER], lights[0].power);
+		lights[0].isOff = false;
+	}
+	else if (isTimeReach(sceneTimer, 21.0f, 21.1f))
+	{
+		for (int i = 0; i < numLight; ++i)
+		{
+			lights[i].power = 0.0f;
+			glUniform1f(m_parameters[U_LIGHT0_POWER + U_LIGHT0_EXPONENT * i], lights[i].power);
+			lights[i].isOff = true;
+		}
+
+	}
+	else if (isTimeReach(sceneTimer, 22.0f, 22.1f)) //turn on other light
+	{
+		for (int i = 1; i < numLight; ++i)
+		{
+			lights[i].power = 3.0f;
+			glUniform1f(m_parameters[U_LIGHT0_POWER + U_LIGHT0_EXPONENT * i], lights[i].power);
+			lights[i].isOff = false;
+		}
+	}
+	else if (isTimeReach(sceneTimer, 31.0f, 33.0f) && lights[0].isOff)
+	{
+		currentClownPose = GEO_CLOWN_POSE_3;
+		lights[0].power = 3.0f;
+		glUniform1f(m_parameters[U_LIGHT0_POWER], lights[0].power);
+		lights[0].isOff = false;
+	}
+	else if (isTimeReach(sceneTimer, 33.0f, 33.1f))
+	{
+		for (int i = 0; i < numLight; ++i)
+		{
+			lights[i].power = 0.0f;
+			glUniform1f(m_parameters[U_LIGHT0_POWER + U_LIGHT0_EXPONENT * i], lights[i].power);
+			lights[i].isOff = true;
+		}
+
+	}
+	else if (isTimeReach(sceneTimer, 34.0f, 34.1f)) //turn on other light
+	{
+		for (int i = 1; i < numLight; ++i)
+		{
+			lights[i].power = 3.0f;
+			glUniform1f(m_parameters[U_LIGHT0_POWER + U_LIGHT0_EXPONENT * i], lights[i].power);
+			lights[i].isOff = false;
+		}
+	}
+	else if (isTimeReach(sceneTimer, 44.0f, 48.0f))
+	{
+		lightSpeed = 3.0f;
+		if (lights[5].isOff)
+		{
+			lights[5].power = 1.0f;
+			glUniform1f(m_parameters[U_LIGHT0_POWER] + U_LIGHT0_EXPONENT * 5, lights[5].power);
+			lights[5].isOff = false;
+		}
+
+		glm::vec3 endTarget{};
+		if (isTimeReach(sceneTimer, 44.0f, 45.0f))
+		{
+			endTarget = ballonPos;
+			timerOffset = 44.0f;
+			glm::vec3 newCameraTarget = Lerp(sceneTimer - timerOffset, currentCameraTarget, endTarget, 1.0f);
+			mainCamera.target = newCameraTarget;
+
+			if (sceneTimer >= 44.9f)
+			{
+				timerOffset = 45.0f;
+				currentCameraTarget = endTarget;
+			}
+		}
+		else if (isTimeReach(sceneTimer, 45.0f, 48.0f))
+		{
+			ballonPos = Lerp(sceneTimer - timerOffset, glm::vec3(0.0f, 15.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), 3.0f);
+
+			endTarget = glm::vec3(10.2f, 2.5f, -0.11f);
+			mainCamera.target = Lerp(sceneTimer - timerOffset, currentCameraTarget, endTarget, 3.0f);
+
+		}
+		lights[5].m_transform.m_position = glm::vec3{ 0.0f, ballonPos.y + 10.0f, 0.0f };
+	}
+	else if (isTimeReach(sceneTimer, 48.0f, 48.1f) && !lights[5].isOff)
+	{
+		for (int i = 0; i < numLight; ++i)
+		{
+			lights[i].power = 0.0f;
+			glUniform1f(m_parameters[U_LIGHT0_POWER + U_LIGHT0_EXPONENT * i], lights[i].power);
+			lights[i].isOff = true;
+		}
+	}
+	else if (isTimeReach(sceneTimer, 50.0f, 50.5f) && lights[0].isOff)
+	{
+		lightSpeed = 5.0f;
+		for (int i = 0; i < numLight; ++i)
+		{
+			lights[i].power = 3.0f;
+			glUniform1f(m_parameters[U_LIGHT0_POWER + U_LIGHT0_EXPONENT * i], lights[i].power);
+			lights[i].isOff = false;
+		}
+
+		ballonPos.y = 2.0f;
+		ballonPos.z = -1.0f;
+		ballonPos.x = -1.0f;
+
+		lightTarget1 = glm::vec3(pennywisePos.x, 13.0f, pennywisePos.z);
+		lights[5].m_transform.m_position = glm::vec3{ pennywisePos.x + 2.0f, 0.0f, pennywisePos.z };
+		glm::vec3 lightDir = glm::normalize(lightTarget1 - lights[5].m_transform.m_position);
+		lights[5].spotDirection = -lightDir;
+	}
+	else if (isTimeReach(sceneTimer, 55.0f, 56.0f) && !lights[0].isOff)
+	{
+		for (int i = 0; i < numLight; ++i)
+		{
+			lights[i].power = 0.0f;
+			glUniform1f(m_parameters[U_LIGHT0_POWER + U_LIGHT0_EXPONENT * i], lights[i].power);
+			lights[i].isOff = true;
+		}
+	}
+	else if (isTimeReach(sceneTimer, 57.0f, 58.0f))
+	{
+		if (lights[5].isOff)
+		{
+			lights[5].power = 3.0f;
+			glUniform1f(m_parameters[U_LIGHT0_POWER + U_LIGHT0_EXPONENT * 5], lights[5].power);
+			lights[5].isOff = false;
+		}
+
+		pennywisePos = Lerp(sceneTimer - 57.0f, glm::vec3(0.0f, 0.8f, 0.0f), glm::vec3(mainCamera.m_transform.m_position.x - 1.0f, -1.4f, 0.0f), 0.15f);
+
+		lightTarget1 = glm::vec3(pennywisePos.x, 13.0f, pennywisePos.z);
+		lights[5].m_transform.m_position = glm::vec3{ pennywisePos.x + 2.0f, 0.0f, pennywisePos.z };
+		glm::vec3 lightDir = glm::normalize(lightTarget1 - lights[5].m_transform.m_position);
+		lights[5].spotDirection = -lightDir;
+		rotationXAngle = 100.0f;
+	}
+	else if (isTimeReach(sceneTimer, 58.0f, 59.0f) && !lights[5].isOff)
+	{
+		lights[5].power = 0.0f;
+		glUniform1f(m_parameters[U_LIGHT0_POWER + U_LIGHT0_EXPONENT * 5], lights[5].power);
+		lights[5].isOff = true;
+	}
+
+	if (sceneTimer >= 62.0f)
+	{
+		//SceneManager::GetInstance().ChangeState();
 	}
 }
 
@@ -274,7 +596,7 @@ void SceneEnding::Render()
 	{
 		if (lights[i].type == Light::LIGHT_DIRECTIONAL)
 		{
-			glm::vec3 lightDir(lights[i].m_transform.m_position.x, lights[i].m_transform.m_position.y, lights[i].m_transform.m_position.z);
+			glm::vec3 lightDir(lights[i].m_transform.m_position);
 			glm::vec3 lightDirection_cameraspace = viewStack.Top() * glm::vec4(lightDir, 0);
 			glUniform3fv(m_parameters[U_LIGHT0_POSITION + U_LIGHT0_EXPONENT * i], 1, glm::value_ptr(lightDirection_cameraspace));
 		}
@@ -367,12 +689,148 @@ void SceneEnding::Render()
 	RenderMesh(meshList[GEO_DEC_RING], enableLight);
 	modelStack.PopMatrix();
 
-	modelStack.PushMatrix();
-	modelStack.Translate(0.0f, 1.0f, 0.0f);
-	modelStack.Scale(5, 5, 5);
-	RenderMesh(meshList[GEO_CLOWN_POSE_1], enableLight);
-	modelStack.PopMatrix();
+	float textSize = 20.0f;
+	std::string text{};
+	float textOffset{};
+	if (isTimeReach(sceneTimer, 0.0f, 6.0f))
+	{
+		textOffset = 200.0f;
+		if(isTimeReach(sceneTimer, 0.0f, 3.0f))
+			text = "WOOW! The show is so gorgeous :)";
+		else if (isTimeReach(sceneTimer, 3.0f, 6.0f))
+		{
+			text = "Can't wait to see all the clowns";
+			RenderTextOnScreen(meshList[GEO_TEXT], "in action", WHITE, textSize, Application::m_consoleWidth / 2.0f - 50.0f, Application::m_consoleHeight / 2.0f - 300.0f);
+		}
 
+		RenderTextOnScreen(meshList[GEO_TEXT], text, WHITE, textSize, Application::m_consoleWidth / 2.0f - textOffset, Application::m_consoleHeight / 2.0f - 270.0f);
+	}
+	else if (isTimeReach(sceneTimer, 11.0f, 19.0f))
+	{
+		if (isTimeReach(sceneTimer, 11.0f, 13.0f))
+		{
+			textOffset = 300.0f;
+			text = "That's was a spetacular performance by Mr Clown Jonhy";
+		}
+		else if (isTimeReach(sceneTimer, 13.0f, 16.0f))
+		{
+			textOffset = 200.0f;
+			text = "Oh Mr Clown Tommy is next!";
+		}
+		else if (isTimeReach(sceneTimer, 16.0f, 19.0f))
+		{
+			textOffset = 230.0f;
+			text = "I'm so excited to see him on stage.";
+		}
+		RenderTextOnScreen(meshList[GEO_TEXT], text, WHITE, textSize, Application::m_consoleWidth / 2.0f - textOffset, Application::m_consoleHeight / 2.0f - 270.0f);
+	}
+	else if (isTimeReach(sceneTimer, 22.0f, 31.0f))
+	{
+		if (isTimeReach(sceneTimer, 22.5f, 23.5f))
+		{
+			textOffset = 30.0f;
+			text = "???";
+		}
+		else if (isTimeReach(sceneTimer, 23.5f, 26.0f))
+		{
+			textOffset = 350.0f;
+			text = "Why does Mr Clown Tommy's face seems to be scary today.";
+		}
+		else if (isTimeReach(sceneTimer, 26.5f, 28.0f))
+		{
+			textOffset = 200.0f;
+			text = "Nevermind. I must be hallucinating .";
+		}
+		else if (isTimeReach(sceneTimer, 28.5f, 31.0f))
+		{
+			textOffset = 200.0f;
+			text = "Yes! Mrs Clown Jessie is upcoming.";
+		}
+		RenderTextOnScreen(meshList[GEO_TEXT], text, WHITE, textSize, Application::m_consoleWidth / 2.0f - textOffset, Application::m_consoleHeight / 2.0f - 270.0f);
+	}
+	else if (isTimeReach(sceneTimer, 33.0f, 44.0f))
+	{
+		if (isTimeReach(sceneTimer, 35.0f, 36.0f))
+		{
+			textOffset = 30.0f;
+			text = "...";
+		}
+		else if (isTimeReach(sceneTimer, 36.5f, 38.0f))
+		{
+			textOffset = 100.0f;
+			text = "What is going!?";
+		}
+		else if (isTimeReach(sceneTimer, 38.0f, 41.0f))
+		{
+			textOffset = 200.0f;
+			text = "Why Mrs Jessie has only one eye?.";
+		}
+		else if (isTimeReach(sceneTimer, 41.5f, 44.0f))
+		{
+			textOffset = 250.0f;
+			text = "What's wrong with the clowns? I'm scared.";
+		}
+		RenderTextOnScreen(meshList[GEO_TEXT], text, WHITE, textSize, Application::m_consoleWidth / 2.0f - textOffset, Application::m_consoleHeight / 2.0f - 270.0f);
+	}
+	else if (isTimeReach(sceneTimer, 44.0f, 58.0f))
+	{
+		glm::vec3 color = WHITE;
+		if (isTimeReach(sceneTimer, 44.0f, 47.0f))
+		{
+			textOffset = 50.0f;
+			text = "Ballon???";
+		}
+		else if (isTimeReach(sceneTimer, 47.0f, 49.0f))
+		{
+			textOffset = 200.0f;
+			text = "What is happening? Somebody help!";
+		}
+
+		RenderTextOnScreen(meshList[GEO_TEXT], text, color, textSize, Application::m_consoleWidth / 2.0f - textOffset, Application::m_consoleHeight / 2.0f - 270.0f);
+	}
+	else if (isTimeReach(sceneTimer, 58.0f, 59.0f))
+	{
+		textSize = 50.0;
+		textOffset = 100.0f;
+		text = "THE END";
+
+		RenderTextOnScreen(meshList[GEO_TEXT], text, RED, textSize, Application::m_consoleWidth / 2.0f - textOffset, Application::m_consoleHeight / 2.0f);
+	}
+	
+	if (isTimeReach(sceneTimer, 44.0f, 57.0f))
+	{
+		modelStack.PushMatrix();
+		modelStack.LoadIdentity();
+		modelStack.Translate(ballonPos.x, ballonPos.y, ballonPos.z);
+		RenderMesh(meshList[GEO_BALLON_STRING], enableLight);
+		RenderMesh(meshList[GEO_BALLON], enableLight);
+		modelStack.Scale(5, 5, 5);
+		modelStack.PopMatrix();
+	}
+
+	if (!lights[0].isOff)
+	{
+		if (sceneTimer < 50.0f)
+		{
+			modelStack.PushMatrix();
+			modelStack.Translate(0.0f, 0.8f, 0.0f);
+			modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+			modelStack.Scale(5, 5, 5);
+			RenderMesh(meshList[currentClownPose], enableLight);
+			modelStack.PopMatrix();
+		}
+	}
+	
+	if (sceneTimer > 50.0f && !lights[5].isOff)
+		{
+			modelStack.PushMatrix();
+			modelStack.Translate(pennywisePos.x, pennywisePos.y, pennywisePos.z);
+			modelStack.Rotate(rotationXAngle, 0, 1, 0);
+			modelStack.Scale(1.15f, 1.15f, 1.15f);
+			RenderPennywise();
+			modelStack.PopMatrix();
+		}
+	
 #ifdef DRAW_HITBOX
 
 	modelStack.PushMatrix();
@@ -449,9 +907,8 @@ void SceneEnding::RenderGround(int size)
 	if (size % 2 == 0) size += 1;
 
 	int valueToMul = (size - 1) / 2;
-	glm::vec3 originPos = glm::vec3{ 75.0f * (float)valueToMul, 0.0f, 75.0f * (float)valueToMul };
+	glm::vec3 originPos = glm::vec3{ 10.0f * (float)valueToMul, 0.0f, 10.0f * (float)valueToMul };
 	float orignalX = originPos.x;
-	meshList[GEO_PLANE]->material = Material::Wood(WHITE);
 	for (int i = 0; i < size; i++)
 	{
 		originPos.x = orignalX;
@@ -460,13 +917,36 @@ void SceneEnding::RenderGround(int size)
 
 			modelStack.PushMatrix();
 			modelStack.Translate(originPos.x, originPos.y, originPos.z);
-			modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
+			modelStack.Rotate(-90.0f, 1.0f, 0.0f, 0.0f);
 			RenderMesh(meshList[GEO_PLANE], enableLight);
 			modelStack.PopMatrix();
 
-			originPos.x -= 75.0f;
+			originPos.x -= 10.0f;
 		}
 
-		originPos.z -= 75.0f;
+		originPos.z -= 10.0f;
 	}
+}
+
+void SceneEnding::RenderPennywise(void)
+{
+	modelStack.PushMatrix();
+	RenderMesh(meshList[GEO_PENNYWISE_BODY], enableLight);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	RenderMesh(meshList[GEO_PENNYWISE_FACE], enableLight);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	RenderMesh(meshList[GEO_PENNYWISE_EYES], enableLight);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	RenderMesh(meshList[GEO_PENNYWISE_TEETH], enableLight);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	RenderMesh(meshList[GEO_PENNYWISE_HAIR], enableLight);
+	modelStack.PopMatrix();
 }

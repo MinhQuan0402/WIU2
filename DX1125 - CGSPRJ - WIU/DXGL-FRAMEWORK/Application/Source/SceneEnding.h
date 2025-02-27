@@ -40,6 +40,15 @@ public:
 		GEO_CEILING_RING,
 		GEO_DEC_RING,
 		GEO_CLOWN_POSE_1,
+		GEO_CLOWN_POSE_2,
+		GEO_CLOWN_POSE_3,
+		GEO_BALLON_STRING,
+		GEO_BALLON,
+		GEO_PENNYWISE_BODY,
+		GEO_PENNYWISE_FACE,
+		GEO_PENNYWISE_EYES,
+		GEO_PENNYWISE_TEETH,
+		GEO_PENNYWISE_HAIR,
 		GEO_SPHERE,
 
 		NUM_GEOMETRY
@@ -57,8 +66,19 @@ public:
 private:
 	void RenderSkybox(void);
 	void RenderGround(int size);
+	void RenderPennywise(void);
+
 	int numLight;
 	float sceneTimer;
+	float sceneTimerN;
+	glm::vec3 lightTarget1;
+	glm::vec3 currentCameraTarget;
+	float timerOffset;
+	int currentClownPose;
+	glm::vec3 ballonPos;
+	float lightSpeed;
+	glm::vec3 pennywisePos;
+	float rotationXAngle;
 	
 	enum OBJINSCENE
 	{

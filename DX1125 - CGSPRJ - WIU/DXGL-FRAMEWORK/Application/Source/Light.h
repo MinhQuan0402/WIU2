@@ -27,6 +27,7 @@ public:
 	float exponent;
 	
 	float tempPow;
+	bool isOff;
 
 	Light(void);
 	virtual ~Light(void);

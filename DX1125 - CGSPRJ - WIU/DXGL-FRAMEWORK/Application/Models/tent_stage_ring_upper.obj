@@ -1,7 +1,7 @@
 # Blender 4.1.1
 # www.blender.org
 mtllib tent_stage_ring_upper.mtl
-g polySurface132_Mesh
+o polySurface132
 v 9.138141 1.270920 -1.447337
 v 8.799222 1.270920 -2.859039
 v 8.243637 1.270920 -4.200341
