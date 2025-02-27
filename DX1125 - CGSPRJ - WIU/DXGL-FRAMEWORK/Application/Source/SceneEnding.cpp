@@ -20,11 +20,14 @@
 #include "Utility.h"
 #include "RigidBody.h"
 #include "ColliderManager.h"
+#include "MeshManager.h"
+#include "MainMenu.h"
+#include "SceneManager.h"
 
 SceneEnding::SceneEnding()
 	: numLight{ 6 }, sceneTimer{ 0.0f },
 	sceneTimerN{ 0.0f }, currentCameraTarget{},
-	timerOffset{}, currentClownPose{ GEO_CLOWN_POSE_1 },
+	timerOffset{}, currentClownPose{ MeshManager::GEO_E_CLOWN_POSE_1 },
 	ballonPos{ 0.0f, 15.0f, 0.0f }, lightSpeed{ 1.0f }, pennywisePos{0.0f, 0.8f, 0.0f},
 	rotationXAngle{90.0f}
 {
@@ -119,131 +122,7 @@ void SceneEnding::Init()
 	meshList[GEO_PLANE]->material = Material::Wood(WHITE);
 	meshList[GEO_PLANE]->material.kAmbient = glm::vec3{};
 
-	meshList[GEO_SPHERE] = MeshBuilder::GenerateHemisphere("Sphere", BLACK, 50.0f, 50.0f, 1.0f);
-
-	meshList[GEO_TENT] = MeshBuilder::GenerateOBJ("Dust tent", "Models//tent.obj");
-	meshList[GEO_TENT]->textureID = LoadPNG("Images//tent.png");
-	meshList[GEO_TENT]->material = Material::Wood(WHITE);
-	meshList[GEO_TENT]->material.kAmbient = glm::vec3{};
-
-	meshList[GEO_BENCH] = MeshBuilder::GenerateOBJ("Bench", "Models//bench_seats.obj");
-	meshList[GEO_BENCH]->textureID = LoadPNG("Images//wood_bench.png");
-	meshList[GEO_BENCH]->material = Material::Wood(WHITE);
-	meshList[GEO_BENCH]->material.kAmbient = glm::vec3{};
-
-	meshList[GEO_BENCH_POLE] = MeshBuilder::GenerateOBJ("Bench pole", "Models//bench_pole.obj");
-	meshList[GEO_BENCH_POLE]->textureID = LoadPNG("Images//wood_bench.png");
-	meshList[GEO_BENCH_POLE]->material = Material::Wood(WHITE);
-	meshList[GEO_BENCH_POLE]->material.kAmbient = glm::vec3{};
-
-	meshList[GEO_UNDERSEATS] = MeshBuilder::GenerateOBJ("Bench underseats", "Models//bench_underseats.obj");
-	meshList[GEO_UNDERSEATS]->textureID = LoadPNG("Images//rusted_metal_bench_underseats.png");
-	meshList[GEO_UNDERSEATS]->material = Material::Metal(WHITE);
-	meshList[GEO_UNDERSEATS]->material.kAmbient = glm::vec3{};
-
-	meshList[GEO_BENCH_STAIRS] = MeshBuilder::GenerateOBJ("stairs", "Models//bench_stairs.obj");
-	meshList[GEO_BENCH_STAIRS]->textureID = LoadPNG("Images//wood_bench_stairs.png");
-	meshList[GEO_BENCH_STAIRS]->material = Material::Wood(WHITE);
-	meshList[GEO_BENCH_STAIRS]->material.kAmbient = glm::vec3{};
-
-	meshList[GEO_CIRCLE_STAGE] = MeshBuilder::GenerateOBJ("circle stage", "Models//tent_circle_stage.obj");
-	meshList[GEO_CIRCLE_STAGE]->textureID = LoadPNG("Images//wood_circle_stage.png");
-	meshList[GEO_CIRCLE_STAGE]->material = Material::Wood(WHITE);
-	meshList[GEO_CIRCLE_STAGE]->material.kAmbient = glm::vec3{};
-
-	meshList[GEO_STAGE_RING_LOWER] = MeshBuilder::GenerateOBJ("ring", "Models//tent_stage_ring_lower.obj");
-	meshList[GEO_STAGE_RING_LOWER]->textureID = LoadPNG("Images//stage_ring_lower.png");
-	meshList[GEO_STAGE_RING_LOWER]->material = Material::Plastic(WHITE);
-	meshList[GEO_STAGE_RING_LOWER]->material.kAmbient = glm::vec3{};
-
-	meshList[GEO_STAGE_RING_UPPER] = MeshBuilder::GenerateOBJMTL("ring", "Models//tent_stage_ring_upper.obj", "Models//tent_stage_ring_upper.mtl");
-
-	meshList[GEO_STAGE_POLE] = MeshBuilder::GenerateOBJ("pole", "Models//stage_pole.obj");
-	meshList[GEO_STAGE_POLE]->textureID = LoadPNG("Images//rusted_metal_bench_underseats.png");
-	meshList[GEO_STAGE_POLE]->material = Material::Metal(WHITE);
-	meshList[GEO_STAGE_POLE]->material.kAmbient = glm::vec3{};
-
-	meshList[GEO_TENT_POLE] = MeshBuilder::GenerateOBJ("Pole", "Models//tent_pole.obj");
-	meshList[GEO_TENT_POLE]->textureID = LoadPNG("Images//wood_bench.png");
-	meshList[GEO_TENT_POLE]->material = Material::Wood(WHITE);
-	meshList[GEO_TENT_POLE]->material.kAmbient = glm::vec3{};
-
-	meshList[GEO_STAGE_HANGING_POLE] = MeshBuilder::GenerateOBJMTL("hanging pole", "Models//stage_hanging_pole.obj", "Models//stage_hanging_pole.mtl");
-
-	meshList[GEO_STAGE_STRING] = MeshBuilder::GenerateOBJ("String", "Models//stage_string.obj");
-	meshList[GEO_STAGE_STRING]->textureID = LoadPNG("Images//stage_string.png");
-	meshList[GEO_STAGE_STRING]->material = Material::Wood(WHITE);
-	meshList[GEO_STAGE_STRING]->material.kAmbient = glm::vec3{};
-
-	meshList[GEO_STAGE_HOOK] = MeshBuilder::GenerateOBJ("String", "Models//stage_hook.obj");
-	meshList[GEO_STAGE_HOOK]->textureID = LoadPNG("Images//rusted_metal_bench_underseats.png");
-	meshList[GEO_STAGE_HOOK]->material = Material::Plastic(WHITE);
-	meshList[GEO_STAGE_HOOK]->material.kAmbient = glm::vec3{};
-
-	meshList[GEO_STAGE_HULA_HOOP] = MeshBuilder::GenerateOBJMTL("Hula hoop", "Models//stage_hula_hoop.obj", "Models//stage_hula_hoop.mtl");
-
-	meshList[GEO_DEC_SPHERE] = MeshBuilder::GenerateOBJMTL("Hula hoop", "Models//tent_dec_sphere.obj", "Models//tent_dec_sphere.mtl");
-
-	meshList[GEO_DEC_STRIP] = MeshBuilder::GenerateOBJ("String", "Models//tent_dec_strip.obj");
-	meshList[GEO_DEC_STRIP]->textureID = LoadPNG("Images//stage_dec_strip.png");
-	meshList[GEO_DEC_STRIP]->material = Material::Wood(WHITE);
-	meshList[GEO_DEC_STRIP]->material.kAmbient = glm::vec3{};
-
-	meshList[GEO_CEILING_RING] = MeshBuilder::GenerateOBJ("Ceiling ring", "Models//tent_ceiling_ring.obj");
-	meshList[GEO_CEILING_RING]->textureID = LoadPNG("Images//wood_bench.png");
-	meshList[GEO_CEILING_RING]->material = Material::Wood(WHITE);
-	meshList[GEO_CEILING_RING]->material.kAmbient = glm::vec3{};
-
-	meshList[GEO_DEC_RING] = MeshBuilder::GenerateOBJ("Outer ring", "Models//tent_dec_ring.obj");
-	meshList[GEO_DEC_RING]->textureID = LoadPNG("Images//stage_dec_strip.png");
-	meshList[GEO_DEC_RING]->material = Material::Wood(WHITE);
-	meshList[GEO_DEC_RING]->material.kAmbient = glm::vec3{};
-
-	meshList[GEO_CLOWN_POSE_1] = MeshBuilder::GenerateOBJ("Outer ring", "Models//clown_pose_1.obj");
-	meshList[GEO_CLOWN_POSE_1]->textureID = LoadPNG("Images//clown_pose_1.png");
-	meshList[GEO_CLOWN_POSE_1]->material = Material::Wood(WHITE);
-	meshList[GEO_CLOWN_POSE_1]->material.kAmbient = glm::vec3{};
-
-	meshList[GEO_CLOWN_POSE_2] = MeshBuilder::GenerateOBJ("Outer ring", "Models//clown_pose_2.obj");
-	meshList[GEO_CLOWN_POSE_2]->textureID = LoadPNG("Images//clown_pose_2.png");
-	meshList[GEO_CLOWN_POSE_2]->material = Material::Wood(WHITE);
-	meshList[GEO_CLOWN_POSE_2]->material.kAmbient = glm::vec3{};
-
-	meshList[GEO_CLOWN_POSE_3] = MeshBuilder::GenerateOBJ("Outer ring", "Models//clown_pose_3.obj");
-	meshList[GEO_CLOWN_POSE_3]->textureID = LoadPNG("Images//clown_pose_3.png");
-	meshList[GEO_CLOWN_POSE_3]->material = Material::Wood(WHITE);
-	meshList[GEO_CLOWN_POSE_3]->material.kAmbient = glm::vec3{};
-
-	meshList[GEO_BALLON_STRING] = MeshBuilder::GenerateOBJMTL("Ballon string", "Models//ballon_string.obj", "Models//ballon_string.mtl");
-	meshList[GEO_BALLON] = MeshBuilder::GenerateOBJ("Ballon", "Models//ballon.obj");
-	meshList[GEO_BALLON]->textureID = LoadPNG("Images//ballon.png");
-	meshList[GEO_BALLON]->material = Material::Wood(WHITE);
-	meshList[GEO_BALLON]->material.kAmbient = glm::vec3{};
-
-	meshList[GEO_PENNYWISE_BODY] = MeshBuilder::GenerateOBJ("Body", "Models//pennywise_body.obj");
-	meshList[GEO_PENNYWISE_BODY]->textureID = LoadPNG("Images//pennywise_body.png");
-	meshList[GEO_PENNYWISE_BODY]->material = Material::Wood(WHITE);
-	meshList[GEO_PENNYWISE_BODY]->material.kAmbient = glm::vec3{};
-
-	meshList[GEO_PENNYWISE_FACE] = MeshBuilder::GenerateOBJ("Ballon", "Models//pennywise_face.obj");
-	meshList[GEO_PENNYWISE_FACE]->textureID = LoadPNG("Images//pennywise_face.png");
-	meshList[GEO_PENNYWISE_FACE]->material = Material::Wood(WHITE);
-	meshList[GEO_PENNYWISE_FACE]->material.kAmbient = glm::vec3{};
-
-	meshList[GEO_PENNYWISE_TEETH] = MeshBuilder::GenerateOBJ("Ballon", "Models//pennywise_teeth.obj");
-	meshList[GEO_PENNYWISE_TEETH]->textureID = LoadPNG("Images//pennywise_teeth.png");
-	meshList[GEO_PENNYWISE_TEETH]->material = Material::Wood(WHITE);
-	meshList[GEO_PENNYWISE_TEETH]->material.kAmbient = glm::vec3{};
-
-	meshList[GEO_PENNYWISE_HAIR] = MeshBuilder::GenerateOBJ("Ballon", "Models//pennywise_hair.obj");
-	meshList[GEO_PENNYWISE_HAIR]->textureID = LoadPNG("Images//pennywise_hair.png");
-	meshList[GEO_PENNYWISE_HAIR]->material = Material::Wood(WHITE);
-	meshList[GEO_PENNYWISE_HAIR]->material.kAmbient = glm::vec3{};
-
-	meshList[GEO_PENNYWISE_EYES] = MeshBuilder::GenerateOBJ("Ballon", "Models//pennywise_eyes.obj");
-	meshList[GEO_PENNYWISE_EYES]->textureID = LoadPNG("Images//pennywise_eyes.png");
-	meshList[GEO_PENNYWISE_EYES]->material = Material::Wood(WHITE);
-	meshList[GEO_PENNYWISE_EYES]->material.kAmbient = glm::vec3{};
+	
 
 	mainCamera.Init(glm::vec3(12.1513f, 2.23612f, -0.0855163), glm::vec3(10.1522f, 2.29354f, -0.0610635f), VECTOR3_UP);
 	
@@ -418,7 +297,7 @@ void SceneEnding::Update()
 	}
 	else if (isTimeReach(sceneTimer, 19.f, 21.0f) && lights[0].isOff)
 	{
-		currentClownPose = GEO_CLOWN_POSE_2;
+		currentClownPose = MeshManager::GEO_E_CLOWN_POSE_2;
 		lights[0].power = 3.0f;
 		glUniform1f(m_parameters[U_LIGHT0_POWER], lights[0].power);
 		lights[0].isOff = false;
@@ -444,7 +323,7 @@ void SceneEnding::Update()
 	}
 	else if (isTimeReach(sceneTimer, 31.0f, 33.0f) && lights[0].isOff)
 	{
-		currentClownPose = GEO_CLOWN_POSE_3;
+		currentClownPose = MeshManager::GEO_E_CLOWN_POSE_3;
 		lights[0].power = 3.0f;
 		glUniform1f(m_parameters[U_LIGHT0_POWER], lights[0].power);
 		lights[0].isOff = false;
@@ -563,14 +442,15 @@ void SceneEnding::Update()
 		lights[5].isOff = true;
 	}
 
-	if (sceneTimer >= 62.0f)
-	{
-		//SceneManager::GetInstance().ChangeState();
-	}
+	
 }
 
 void SceneEnding::LateUpdate()
 {
+	if (sceneTimer >= 62.0f)
+	{
+		SceneManager::GetInstance()->ChangeState(new MainMenu);
+	}
 }
 
 void SceneEnding::Render()
@@ -618,75 +498,75 @@ void SceneEnding::Render()
 	RenderGround(7);
 
 	modelStack.PushMatrix();
-	RenderMesh(meshList[GEO_TENT], enableLight);
+	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_E_TENT], enableLight);
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
-	RenderMesh(meshList[GEO_BENCH], enableLight);
+	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_E_BENCH], enableLight);
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
-	RenderMesh(meshList[GEO_BENCH_POLE], enableLight);
+	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_E_BENCH_POLE], enableLight);
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
-	RenderMesh(meshList[GEO_UNDERSEATS], enableLight);
+	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_E_UNDERSEATS], enableLight);
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
-	RenderMesh(meshList[GEO_BENCH_STAIRS], enableLight);
+	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_E_BENCH_STAIRS], enableLight);
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
-	RenderMesh(meshList[GEO_CIRCLE_STAGE], enableLight);
+	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_E_CIRCLE_STAGE], enableLight);
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
-	RenderMesh(meshList[GEO_STAGE_RING_LOWER], enableLight);
+	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_E_STAGE_RING_LOWER], enableLight);
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
-	RenderMesh(meshList[GEO_STAGE_RING_UPPER], enableLight);
+	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_E_STAGE_RING_UPPER], enableLight);
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
-	RenderMesh(meshList[GEO_STAGE_POLE], enableLight);
+	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_E_STAGE_POLE], enableLight);
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
-	RenderMesh(meshList[GEO_TENT_POLE], enableLight);
+	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_E_TENT_POLE], enableLight);
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
-	RenderMesh(meshList[GEO_STAGE_HANGING_POLE], enableLight);
+	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_E_STAGE_HANGING_POLE], enableLight);
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
-	RenderMesh(meshList[GEO_STAGE_STRING], enableLight);
+	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_E_STAGE_STRING], enableLight);
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
-	RenderMesh(meshList[GEO_STAGE_HOOK], enableLight);
+	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_E_STAGE_HOOK], enableLight);
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
-	RenderMesh(meshList[GEO_STAGE_HULA_HOOP], enableLight);
+	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_E_STAGE_HULA_HOOP], enableLight);
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
-	RenderMesh(meshList[GEO_DEC_SPHERE], enableLight);
+	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_E_DEC_SPHERE], enableLight);
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
-	RenderMesh(meshList[GEO_DEC_STRIP], enableLight);
+	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_E_DEC_STRIP], enableLight);
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
-	RenderMesh(meshList[GEO_CEILING_RING], enableLight);
+	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_E_CEILING_RING], enableLight);
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
-	RenderMesh(meshList[GEO_DEC_RING], enableLight);
+	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_E_DEC_RING], enableLight);
 	modelStack.PopMatrix();
 
 	float textSize = 20.0f;
@@ -802,8 +682,8 @@ void SceneEnding::Render()
 		modelStack.PushMatrix();
 		modelStack.LoadIdentity();
 		modelStack.Translate(ballonPos.x, ballonPos.y, ballonPos.z);
-		RenderMesh(meshList[GEO_BALLON_STRING], enableLight);
-		RenderMesh(meshList[GEO_BALLON], enableLight);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_E_BALLON_STRING], enableLight);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_E_BALLON], enableLight);
 		modelStack.Scale(5, 5, 5);
 		modelStack.PopMatrix();
 	}
@@ -816,7 +696,7 @@ void SceneEnding::Render()
 			modelStack.Translate(0.0f, 0.8f, 0.0f);
 			modelStack.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
 			modelStack.Scale(5, 5, 5);
-			RenderMesh(meshList[currentClownPose], enableLight);
+			RenderMesh(MeshManager::GetInstance()->meshList[currentClownPose], enableLight);
 			modelStack.PopMatrix();
 		}
 	}
@@ -898,7 +778,7 @@ void SceneEnding::RenderSkybox(void)
 	modelStack.PushMatrix();
 	modelStack.Translate(0.0f, -0.01f, 0.0f);
 	modelStack.Scale(size, size + 7.0f, size);
-	RenderMesh(meshList[GEO_SPHERE], false);
+	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_E_SPHERE], false);
 	modelStack.PopMatrix();
 }
 
@@ -931,22 +811,22 @@ void SceneEnding::RenderGround(int size)
 void SceneEnding::RenderPennywise(void)
 {
 	modelStack.PushMatrix();
-	RenderMesh(meshList[GEO_PENNYWISE_BODY], enableLight);
+	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_E_PENNYWISE_BODY], enableLight);
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
-	RenderMesh(meshList[GEO_PENNYWISE_FACE], enableLight);
+	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_E_PENNYWISE_FACE], enableLight);
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
-	RenderMesh(meshList[GEO_PENNYWISE_EYES], enableLight);
+	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_E_PENNYWISE_EYES], enableLight);
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
-	RenderMesh(meshList[GEO_PENNYWISE_TEETH], enableLight);
+	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_E_PENNYWISE_TEETH], enableLight);
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
-	RenderMesh(meshList[GEO_PENNYWISE_HAIR], enableLight);
+	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_E_PENNYWISE_HAIR], enableLight);
 	modelStack.PopMatrix();
 }

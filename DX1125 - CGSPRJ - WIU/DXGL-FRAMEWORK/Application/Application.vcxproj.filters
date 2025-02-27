@@ -82,6 +82,7 @@
     <ClCompile Include="Source\MainMenu.cpp">
       <Filter>MainMenu</Filter>
     </ClCompile>
+    <ClCompile Include="Source\SceneEnding.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\..\..\..\School\DX1125 - CGSPRJ - WIU\DXGL-FRAMEWORK\Application\Source\CQuad.h" />
@@ -238,9 +239,7 @@
     <ClCompile Include="Source\Button_UI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\SceneEnding.cpp">
-      <Filter>Source Files\Scene</Filter>
-    </ClCompile>
+    <ClInclude Include="Source\SceneEnding.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Application.h">
@@ -325,9 +324,6 @@
     </Filter>
     <ClInclude Include="Source\Button_UI.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\SceneEnding.h">
-      <Filter>Header Files\Scene</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
