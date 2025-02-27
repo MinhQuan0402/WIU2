@@ -30,7 +30,7 @@
 #include "SceneRingToss.h"
 
 
-carnivalroaming::carnivalroaming() : numLight{ 2 }
+carnivalroaming::carnivalroaming() : numLight{ 1 }
 {
 	meshList.resize(NUM_GEOMETRY);
 	lights.resize(numLight);
@@ -68,103 +68,113 @@ void carnivalroaming::Init()
 		"Shader//MainShader.fragmentshader");
 	glUseProgram(m_programID);
 
-	// Get a handle for our "MVP" uniform
-	m_parameters[U_MVP] = glGetUniformLocation(m_programID, "MVP");
-	m_parameters[U_MODELVIEW] = glGetUniformLocation(m_programID, "MV");
-	m_parameters[U_MODELVIEW_INVERSE_TRANSPOSE] = glGetUniformLocation(m_programID, "MV_inverse_transpose");
-	m_parameters[U_MATERIAL_AMBIENT] = glGetUniformLocation(m_programID, "material.kAmbient");
-	m_parameters[U_MATERIAL_DIFFUSE] = glGetUniformLocation(m_programID, "material.kDiffuse");
-	m_parameters[U_MATERIAL_SPECULAR] = glGetUniformLocation(m_programID, "material.kSpecular");
-	m_parameters[U_MATERIAL_SHININESS] = glGetUniformLocation(m_programID, "material.kShininess");
+	// Parameters:
+	{
+		// Get a handle for our "MVP" uniform
+		m_parameters[U_MVP] = glGetUniformLocation(m_programID, "MVP");
+		m_parameters[U_MODELVIEW] = glGetUniformLocation(m_programID, "MV");
+		m_parameters[U_MODELVIEW_INVERSE_TRANSPOSE] = glGetUniformLocation(m_programID, "MV_inverse_transpose");
+		m_parameters[U_MATERIAL_AMBIENT] = glGetUniformLocation(m_programID, "material.kAmbient");
+		m_parameters[U_MATERIAL_DIFFUSE] = glGetUniformLocation(m_programID, "material.kDiffuse");
+		m_parameters[U_MATERIAL_SPECULAR] = glGetUniformLocation(m_programID, "material.kSpecular");
+		m_parameters[U_MATERIAL_SHININESS] = glGetUniformLocation(m_programID, "material.kShininess");
 
-	m_parameters[U_LIGHT0_TYPE] = glGetUniformLocation(m_programID, "lights[0].type");
-	m_parameters[U_LIGHT0_POSITION] = glGetUniformLocation(m_programID, "lights[0].position_cameraspace");
-	m_parameters[U_LIGHT0_COLOR] = glGetUniformLocation(m_programID, "lights[0].color");
-	m_parameters[U_LIGHT0_POWER] = glGetUniformLocation(m_programID, "lights[0].power");
-	m_parameters[U_LIGHT0_KC] = glGetUniformLocation(m_programID, "lights[0].kC");
-	m_parameters[U_LIGHT0_KL] = glGetUniformLocation(m_programID, "lights[0].kL");
-	m_parameters[U_LIGHT0_KQ] = glGetUniformLocation(m_programID, "lights[0].kQ");
-	m_parameters[U_LIGHT0_SPOTDIRECTION] = glGetUniformLocation(m_programID, "lights[0].spotDirection");
-	m_parameters[U_LIGHT0_COSCUTOFF] = glGetUniformLocation(m_programID, "lights[0].cosCutoff");
-	m_parameters[U_LIGHT0_COSINNER] = glGetUniformLocation(m_programID, "lights[0].cosInner");
-	m_parameters[U_LIGHT0_EXPONENT] = glGetUniformLocation(m_programID, "lights[0].exponent");
+		m_parameters[U_LIGHT0_TYPE] = glGetUniformLocation(m_programID, "lights[0].type");
+		m_parameters[U_LIGHT0_POSITION] = glGetUniformLocation(m_programID, "lights[0].position_cameraspace");
+		m_parameters[U_LIGHT0_COLOR] = glGetUniformLocation(m_programID, "lights[0].color");
+		m_parameters[U_LIGHT0_POWER] = glGetUniformLocation(m_programID, "lights[0].power");
+		m_parameters[U_LIGHT0_KC] = glGetUniformLocation(m_programID, "lights[0].kC");
+		m_parameters[U_LIGHT0_KL] = glGetUniformLocation(m_programID, "lights[0].kL");
+		m_parameters[U_LIGHT0_KQ] = glGetUniformLocation(m_programID, "lights[0].kQ");
+		m_parameters[U_LIGHT0_SPOTDIRECTION] = glGetUniformLocation(m_programID, "lights[0].spotDirection");
+		m_parameters[U_LIGHT0_COSCUTOFF] = glGetUniformLocation(m_programID, "lights[0].cosCutoff");
+		m_parameters[U_LIGHT0_COSINNER] = glGetUniformLocation(m_programID, "lights[0].cosInner");
+		m_parameters[U_LIGHT0_EXPONENT] = glGetUniformLocation(m_programID, "lights[0].exponent");
 
-	m_parameters[U_LIGHTENABLED] = glGetUniformLocation(m_programID, "lightEnabled");
-	m_parameters[U_NUMLIGHTS] = glGetUniformLocation(m_programID, "numLights");
-	m_parameters[U_COLOR_TEXTURE_ENABLED] = glGetUniformLocation(m_programID, "colorTextureEnabled");
-	m_parameters[U_COLOR_TEXTURE] = glGetUniformLocation(m_programID, "colorTexture");
-	m_parameters[U_TEXT_ENABLED] = glGetUniformLocation(m_programID, "textEnabled");
-	m_parameters[U_TEXT_COLOR] = glGetUniformLocation(m_programID, "textColor");
-
-
+		m_parameters[U_LIGHTENABLED] = glGetUniformLocation(m_programID, "lightEnabled");
+		m_parameters[U_NUMLIGHTS] = glGetUniformLocation(m_programID, "numLights");
+		m_parameters[U_COLOR_TEXTURE_ENABLED] = glGetUniformLocation(m_programID, "colorTextureEnabled");
+		m_parameters[U_COLOR_TEXTURE] = glGetUniformLocation(m_programID, "colorTexture");
+		m_parameters[U_TEXT_ENABLED] = glGetUniformLocation(m_programID, "textEnabled");
+		m_parameters[U_TEXT_COLOR] = glGetUniformLocation(m_programID, "textColor");
+	}
 
 	Mesh::SetMaterialLoc(m_parameters[U_MATERIAL_AMBIENT], m_parameters[U_MATERIAL_DIFFUSE], m_parameters[U_MATERIAL_SPECULAR], m_parameters[U_MATERIAL_SHININESS]);
 
-	meshList[GEO_HITBOX] = MeshBuilder::GenerateCube("HitBox", glm::vec3(0.0f, 1.0f, 0.0f), 1.0f);
-	meshList[GEO_AXIS] = MeshBuilder::GenerateAxes("Axes", 10000.f, 10000.f, 10000.f);
-	meshList[GEO_LIGHT] = MeshBuilder::GenerateSphere("Sphere", WHITE, .05f, 180, 180);
-	meshList[GEO_TEXT] = MeshBuilder::GenerateText("text", 16, 16);
-	meshList[GEO_TEXT]->textureID = LoadTGA("Images//calibri.tga");
-	meshList[GEO_MODEL1] = MeshBuilder::GenerateOBJ("Doorman", "Models//doorman.obj");
-	meshList[GEO_MODEL1]->textureID = LoadPNG("Images//doorman.png");
-	meshList[GEO_SPHERE] = MeshBuilder::GenerateSphere("Sphere", WHITE, 1.0f, 100, 100);
-	meshList[GEO_CUBE] = MeshBuilder::GenerateCube("Cube", YELLOW, 1.0f);
-
-	meshList[GEO_TICKET] = MeshBuilder::GenerateQuad("Quad", YELLOW, 1.0f);
-	meshList[GEO_TICKET]->textureID = LoadPNG("Images//ticket.png");
-
-	meshList[GEO_PLANE] = MeshBuilder::GenerateQuad("Quad", GREEN, 75.0f);
-	meshList[GEO_PLANE]->textureID = LoadPNG("Images//ground.png");
-
-	meshList[GEO_TOP] = MeshBuilder::GenerateQuad("Plane", glm::vec3(1.f, 1.f, 1.f), 10.f);
-	meshList[GEO_TOP]->textureID = LoadPNG("Images//top.png");
-	meshList[GEO_BOTTOM] = MeshBuilder::GenerateQuad("Plane", glm::vec3(1.f, 1.f, 1.f), 10.f);
-	meshList[GEO_BOTTOM]->textureID = LoadPNG("Images//bottom.png");
-	meshList[GEO_RIGHT] = MeshBuilder::GenerateQuad("Plane", glm::vec3(1.f, 1.f, 1.f), 10.f);
-	meshList[GEO_RIGHT]->textureID = LoadPNG("Images//front.png");
-	meshList[GEO_LEFT] = MeshBuilder::GenerateQuad("Plane", glm::vec3(1.f, 1.f, 1.f), 10.f);
-	meshList[GEO_LEFT]->textureID = LoadPNG("Images//back.png");
-	meshList[GEO_FRONT] = MeshBuilder::GenerateQuad("Plane", glm::vec3(1.f, 1.f, 1.f), 10.f);
-	meshList[GEO_FRONT]->textureID = LoadPNG("Images//right.png");
-	meshList[GEO_BACK] = MeshBuilder::GenerateQuad("Plane", glm::vec3(1.f, 1.f, 1.f), 10.f);
-	meshList[GEO_BACK]->textureID = LoadPNG("Images//left.png");
-
-	glm::vec3 savedPositionn = GameManager::GetInstance()->GetPlayerPosition();
-	if (savedPositionn.x &&
-		savedPositionn.y &&
-		savedPositionn.z)
+	// Meshes:
 	{
-		mainCamera.Init(savedPositionn, glm::vec3(0.0f, GameManager::GetInstance()->GetCameraTarget().y, 0.0f), VECTOR3_UP);
+		meshList[GEO_HITBOX] = MeshBuilder::GenerateCube("HitBox", glm::vec3(0.0f, 1.0f, 0.0f), 1.0f);
+		meshList[GEO_AXIS] = MeshBuilder::GenerateAxes("Axes", 10000.f, 10000.f, 10000.f);
+		meshList[GEO_LIGHT] = MeshBuilder::GenerateSphere("Sphere", WHITE, .05f, 180, 180);
+		meshList[GEO_TEXT] = MeshBuilder::GenerateText("text", 16, 16);
+		meshList[GEO_TEXT]->textureID = LoadTGA("Images//calibri.tga");
+		meshList[GEO_MODEL1] = MeshBuilder::GenerateOBJ("Doorman", "Models//doorman.obj");
+		meshList[GEO_MODEL1]->textureID = LoadPNG("Images//doorman.png");
+		meshList[GEO_SPHERE] = MeshBuilder::GenerateSphere("Sphere", WHITE, 1.0f, 100, 100);
+		meshList[GEO_CUBE] = MeshBuilder::GenerateCube("Cube", YELLOW, 1.0f);
+
+		meshList[GEO_TICKET] = MeshBuilder::GenerateQuad("Quad", YELLOW, 1.0f);
+		meshList[GEO_TICKET]->textureID = LoadPNG("Images//ticket.png");
+
+		meshList[GEO_PLANE] = MeshBuilder::GenerateQuad("Quad", WHITE, 75.0f);
+		meshList[GEO_PLANE]->textureID = LoadPNG("Images//ground.png");
+
+		meshList[GEO_TOP] = MeshBuilder::GenerateQuad("Plane", glm::vec3(1.f, 1.f, 1.f), 10.f);
+		meshList[GEO_TOP]->textureID = LoadPNG("Images//top.png");
+		meshList[GEO_BOTTOM] = MeshBuilder::GenerateQuad("Plane", glm::vec3(1.f, 1.f, 1.f), 10.f);
+		meshList[GEO_BOTTOM]->textureID = LoadPNG("Images//bottom.png");
+		meshList[GEO_RIGHT] = MeshBuilder::GenerateQuad("Plane", glm::vec3(1.f, 1.f, 1.f), 10.f);
+		meshList[GEO_RIGHT]->textureID = LoadPNG("Images//front.png");
+		meshList[GEO_LEFT] = MeshBuilder::GenerateQuad("Plane", glm::vec3(1.f, 1.f, 1.f), 10.f);
+		meshList[GEO_LEFT]->textureID = LoadPNG("Images//back.png");
+		meshList[GEO_FRONT] = MeshBuilder::GenerateQuad("Plane", glm::vec3(1.f, 1.f, 1.f), 10.f);
+		meshList[GEO_FRONT]->textureID = LoadPNG("Images//right.png");
+		meshList[GEO_BACK] = MeshBuilder::GenerateQuad("Plane", glm::vec3(1.f, 1.f, 1.f), 10.f);
+		meshList[GEO_BACK]->textureID = LoadPNG("Images//left.png");
 	}
-	else mainCamera.Init(glm::vec3(0,35,-400), glm::vec3(0,35,0), VECTOR3_UP);
 
-	mainCamera.sensitivity = 20;
+	// Camera Setup:
+	{
+		glm::vec3 savedPosition = GameManager::GetInstance()->GetPlayerPosition();
+		if (savedPosition.x &&
+			savedPosition.y &&
+			savedPosition.z)
+		{
+			mainCamera.Init(savedPosition, glm::vec3(0.0f, GameManager::GetInstance()->GetCameraTarget().y, 0.0f), VECTOR3_UP);
+		}
+		else mainCamera.Init(glm::vec3(0, 35, -400), glm::vec3(0, 35, 0), VECTOR3_UP);
 
-	glUniform1i(m_parameters[U_NUMLIGHTS], 1);
+		mainCamera.sensitivity = 20;
+	}
 
-	lights[0].m_transform.m_position = devVec;
-	lights[0].color = glm::vec3(1, 1, 1);
-	lights[0].type = Light::LIGHT_DIRECTIONAL;
-	lights[0].power = 2.0f;
-	lights[0].kC = 1.f;
-	lights[0].kL = 0.01f;
-	lights[0].kQ = 0.001f;
-	lights[0].cosCutoff = 150.f;
-	lights[0].cosInner = 45.f;
-	lights[0].exponent = 3.f;
-	lights[0].spotDirection = glm::vec3(0.f, -1.f, 0.f);
+	// Lights:
+	{
+		glUniform1i(m_parameters[U_NUMLIGHTS], numLight);
 
-	glUniform3fv(m_parameters[U_LIGHT0_COLOR], 1, &lights[0].color.r);
-	glUniform1i(m_parameters[U_LIGHT0_TYPE], lights[0].type);
-	glUniform1f(m_parameters[U_LIGHT0_POWER], lights[0].power);
-	glUniform1f(m_parameters[U_LIGHT0_KC], lights[0].kC);
-	glUniform1f(m_parameters[U_LIGHT0_KL], lights[0].kL);
-	glUniform1f(m_parameters[U_LIGHT0_KQ], lights[0].kQ);
-	glUniform1f(m_parameters[U_LIGHT0_COSCUTOFF], cosf(glm::radians<float>(lights[0].cosCutoff)));
-	glUniform1f(m_parameters[U_LIGHT0_COSINNER], cosf(glm::radians<float>(lights[0].cosInner)));
-	glUniform1f(m_parameters[U_LIGHT0_EXPONENT], lights[0].exponent);
+		lights[0].m_transform.m_position = devVec;
+		lights[0].color = glm::vec3(1, 1, 1);
+		lights[0].type = Light::LIGHT_DIRECTIONAL;
+		lights[0].power = 2.0f;
+		lights[0].kC = 1.f;
+		lights[0].kL = 0.01f;
+		lights[0].kQ = 0.001f;
+		lights[0].cosCutoff = 150.f;
+		lights[0].cosInner = 45.f;
+		lights[0].exponent = 3.f;
+		lights[0].spotDirection = glm::vec3(0.f, -1.f, 0.f);
 
-	enableLight = true;
+		glUniform3fv(m_parameters[U_LIGHT0_COLOR], 1, &lights[0].color.r);
+		glUniform1i(m_parameters[U_LIGHT0_TYPE], lights[0].type);
+		glUniform1f(m_parameters[U_LIGHT0_POWER], lights[0].power);
+		glUniform1f(m_parameters[U_LIGHT0_KC], lights[0].kC);
+		glUniform1f(m_parameters[U_LIGHT0_KL], lights[0].kL);
+		glUniform1f(m_parameters[U_LIGHT0_KQ], lights[0].kQ);
+		glUniform1f(m_parameters[U_LIGHT0_COSCUTOFF], cosf(glm::radians<float>(lights[0].cosCutoff)));
+		glUniform1f(m_parameters[U_LIGHT0_COSINNER], cosf(glm::radians<float>(lights[0].cosInner)));
+		glUniform1f(m_parameters[U_LIGHT0_EXPONENT], lights[0].exponent);
+
+		enableLight = true;
+	}
 
 	PhysicsMaterial mat;
 	mat.m_mass = 0.0f;
@@ -275,9 +285,8 @@ void carnivalroaming::Init()
 
 		ducksX[i] = x;
 		ducksY[i] = y;
-
 	}
-	energy = maxEnergy; 
+
 	std::cout << GameManager::GetInstance()->GetPoints() << std::endl;
 
 }
@@ -288,13 +297,18 @@ void carnivalroaming::Update()
 	mainCamera.Update();
 	glm::vec3 inputMovementDir{};
 	if (KeyboardController::GetInstance()->IsKeyDown('W'))
-		inputMovementDir = mainCamera.forward;
+		inputMovementDir += mainCamera.forward;
 	if (KeyboardController::GetInstance()->IsKeyDown('S'))
-		inputMovementDir = -mainCamera.forward;
+		inputMovementDir -= mainCamera.forward;
 	if (KeyboardController::GetInstance()->IsKeyDown('D'))
-		inputMovementDir = mainCamera.right;
+		inputMovementDir += mainCamera.right;
 	if (KeyboardController::GetInstance()->IsKeyDown('A'))
-		inputMovementDir = -mainCamera.right;
+		inputMovementDir -= mainCamera.right;
+
+	// Normalize to maintain constant speed for diagonal movement
+	if (glm::length(inputMovementDir) > 0.0f)
+		inputMovementDir = glm::normalize(inputMovementDir);
+
 	glm::vec3 finalForce = inputMovementDir * 100.0f;
 	
 	objInscene[PLAYERBOX]->rb->setLinearVelocity(btVector3(finalForce.x, 0.0f, finalForce.z));
@@ -334,59 +348,68 @@ void carnivalroaming::LateUpdate()
 		GameObjectManager::GetInstance()->UpdateAll(); 
 	}
 
-	if (CheckCollisionWith(objInscene[PLAYERBOX]->getObject(), objInscene[BOX]->getObject())  and KeyboardController::GetInstance()->IsKeyDown('E'))
-	{
-		std::cout << "Colliding with duck shooting" << std::endl;
+	if (GameManager::GetInstance()->GetEnergy() > 10) {
+		if (CheckCollisionWith(objInscene[PLAYERBOX]->getObject(), objInscene[BOX]->getObject()) and KeyboardController::GetInstance()->IsKeyPressed('E'))
+		{
+			std::cout << "Colliding with duck shooting" << std::endl;
+			GameManager::GetInstance()->SetEnergy(GameManager::GetInstance()->GetEnergy() - 10);
+		}
+		if (CheckCollisionWith(objInscene[PLAYERBOX]->getObject(), objInscene[BOX2]->getObject()) and KeyboardController::GetInstance()->IsKeyPressed('E'))
+		{
+			std::cout << "Colliding with ring toss" << std::endl;
+			GameManager::GetInstance()->SetEnergy(GameManager::GetInstance()->GetEnergy() - 10);
+			SceneManager::GetInstance()->ChangeState(new SceneRingToss);
+			return;
+
+		}
+		if (CheckCollisionWith(objInscene[PLAYERBOX]->getObject(), objInscene[BOX3]->getObject()) and KeyboardController::GetInstance()->IsKeyPressed('E'))
+		{
+			std::cout << "Colliding with can game" << std::endl;
+			GameManager::GetInstance()->SetEnergy(GameManager::GetInstance()->GetEnergy() - 10);
+			SceneManager::GetInstance()->ChangeState(new SceneCanKnockdown);
+			return;
+		}
+		if (CheckCollisionWith(objInscene[PLAYERBOX]->getObject(), objInscene[BOX4]->getObject()) and KeyboardController::GetInstance()->IsKeyPressed('E'))
+		{
+			std::cout << "Colliding with balloon pop" << std::endl;
+			GameManager::GetInstance()->SetEnergy(GameManager::GetInstance()->GetEnergy() - 10);
+		}
+		if (CheckCollisionWith(objInscene[PLAYERBOX]->getObject(), objInscene[BOX5]->getObject()) and KeyboardController::GetInstance()->IsKeyPressed('E'))
+		{
+			std::cout << "Colliding with duck fishing" << std::endl;
+			GameManager::GetInstance()->SetEnergy(GameManager::GetInstance()->GetEnergy() - 10);
+		}
+		if (CheckCollisionWith(objInscene[PLAYERBOX]->getObject(), objInscene[BOX6]->getObject()) and KeyboardController::GetInstance()->IsKeyPressed('E'))
+		{
+			std::cout << "Colliding with plinko" << std::endl;
+			GameManager::GetInstance()->SetEnergy(GameManager::GetInstance()->GetEnergy() - 10);
+			SceneManager::GetInstance()->ChangeState(new ScenePlinko);
+			return;
+		}
 		
-		
+		if (CheckCollisionWith(objInscene[PLAYERBOX]->getObject(), objInscene[CIRCLE]->getObject()) and KeyboardController::GetInstance()->IsKeyPressed('E') and CanEnterCircus == true)
+		{
+			std::cout << "Colliding with CircusTent" << std::endl;
+		}
+		if (CanEnterCircus == true)
+		{
+			timer += Time::deltaTime;
+		}
 	}
-	if (CheckCollisionWith(objInscene[PLAYERBOX]->getObject(), objInscene[BOX2]->getObject()) and KeyboardController::GetInstance()->IsKeyDown('E'))
-	{
-		std::cout << "Colliding with ring toss" << std::endl;
-		SceneManager::GetInstance()->ChangeState(new SceneRingToss);
-		return;
-	
-	}
-	if (CheckCollisionWith(objInscene[PLAYERBOX]->getObject(), objInscene[BOX3]->getObject()) and KeyboardController::GetInstance()->IsKeyDown('E'))
-	{
-		std::cout << "Colliding with can game" << std::endl;
-		SceneManager::GetInstance()->ChangeState(new SceneCanKnockdown); 
-		return;
-		
-	}
-	if (CheckCollisionWith(objInscene[PLAYERBOX]->getObject(), objInscene[BOX4]->getObject()) and KeyboardController::GetInstance()->IsKeyDown('E'))
-	{
-		std::cout << "Colliding with balloon pop" << std::endl;
-	}
-	if (CheckCollisionWith(objInscene[PLAYERBOX]->getObject(), objInscene[BOX5]->getObject()) and KeyboardController::GetInstance()->IsKeyDown('E'))
-	{
-		std::cout << "Colliding with duck fishing" << std::endl;
-	}
-	if (CheckCollisionWith(objInscene[PLAYERBOX]->getObject(), objInscene[BOX6]->getObject()) and KeyboardController::GetInstance()->IsKeyDown('E'))
-	{
-		std::cout << "Colliding with plinko" << std::endl;
-		SceneManager::GetInstance()->ChangeState(new ScenePlinko);
-		return;
-	}
+
 	if (CheckCollisionWith(objInscene[PLAYERBOX]->getObject(), objInscene[BOX7]->getObject()) and KeyboardController::GetInstance()->IsKeyDown('E'))
 	{
 		std::cout << "Colliding with food truck" << std::endl;
+		GameManager::GetInstance()->SetEnergy(GameManager::GetInstance()->GetEnergy() + 1);
 	}
 	if (CheckCollisionWith(objInscene[PLAYERBOX]->getObject(), objInscene[BOX8]->getObject()) and KeyboardController::GetInstance()->IsKeyDown('E'))
 	{
 		std::cout << "Colliding with food truck" << std::endl;
+		GameManager::GetInstance()->SetEnergy(GameManager::GetInstance()->GetEnergy() + 1);
 	}
-	if (CheckCollisionWith(objInscene[PLAYERBOX]->getObject(), objInscene[BOX13]->getObject()) and KeyboardController::GetInstance()->IsKeyDown('E')) 
+	if (CheckCollisionWith(objInscene[PLAYERBOX]->getObject(), objInscene[BOX13]->getObject()) and KeyboardController::GetInstance()->IsKeyPressed('E'))
 	{
 		std::cout << "Colliding with Ticket booth" << std::endl;
-	}
-	if (CheckCollisionWith(objInscene[PLAYERBOX]->getObject(), objInscene[CIRCLE]->getObject()) and KeyboardController::GetInstance()->IsKeyDown('E') and CanEnterCircus == true)
-	{
-		std::cout << "Colliding with CircusTent" << std::endl;
-	}
-	if (CanEnterCircus == true)
-	{
-		timer += Time::deltaTime; 
 	}
 }
 
@@ -485,19 +508,19 @@ void carnivalroaming::Render()
 
 	modelStack.PopMatrix();
 
-	//can game
+	// Can game:
 	{
 		modelStack.PushMatrix();
 		modelStack.Translate(-512.5f, 0.5f, 405.0f);
 		modelStack.Rotate(180.0f, 0.0f, 1.0f, 0.0f);
 		modelStack.Scale(20, 7, 6);
 		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CANTENT], true);
-		modelStack.PushMatrix();
+		//modelStack.PushMatrix();
 		//modelStack.Translate(-512.5f, 0.5f, 405.0f);
 		//modelStack.Rotate(180.0f, 0.0f, 1.0f, 0.0f);
 		//modelStack.Scale(20, 7, 6);
 		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_CANTENTROOF], true);
-		modelStack.PopMatrix();
+		//modelStack.PopMatrix();
 		modelStack.PopMatrix();
 
 		modelStack.PushMatrix();
@@ -1489,7 +1512,7 @@ void carnivalroaming::Render()
 		RenderMeshOnScreen(MeshManager::GetInstance()->meshList[MeshManager::GEO_ENERGYFRAME], 175, 53, 288, 53);
 
 		float maxWidth = 275;
-		float barWidth = energy / maxEnergy * maxWidth;
+		float barWidth = GameManager::GetInstance()->GetEnergy() / GameManager::GetInstance()->GetMaxEnergy() * maxWidth;
 		float posX = 175 - (maxWidth / 2) + (barWidth / 2);
 
 		RenderMeshOnScreen(MeshManager::GetInstance()->meshList[MeshManager::GEO_ENERGYBAR], posX, 53, barWidth, 39); 
@@ -1560,7 +1583,7 @@ void carnivalroaming::Exit()
 {
 	GameManager::GetInstance()->SetPlayerPosition(mainCamera.m_transform.m_position.x, mainCamera.m_transform.m_position.y, mainCamera.m_transform.m_position.z);
 	GameManager::GetInstance()->SetCameraTarget(mainCamera.target.x, mainCamera.target.y, mainCamera.target.z);
-	GameManager::GetInstance()->SetPoints(3000);
+	//GameManager::GetInstance()->SetPoints(3000);
 	Scene::Exit(); 
 	// Cleanup VBO here
 	for (int i = 0; i < NUM_GEOMETRY; ++i) { if (meshList[i]) delete meshList[i]; }
@@ -1645,7 +1668,7 @@ void carnivalroaming::RenderGround(int size)
 
 			modelStack.PushMatrix();
 			modelStack.Translate(originPos.x, originPos.y, originPos.z);
-			modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
+			modelStack.Rotate(-90.0f, 1.0f, 0.0f, 0.0f);
 			RenderMesh(meshList[GEO_PLANE], enableLight);
 			modelStack.PopMatrix();
 

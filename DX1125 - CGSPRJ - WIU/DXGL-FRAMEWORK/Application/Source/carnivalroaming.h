@@ -51,9 +51,6 @@ private:
 	bool CanEnterCircus = false;
 	float timer = 0.0f;
 
-	float energy;
-	const float maxEnergy = 100;
-
 	enum OBJSCENE
 	{
 		CIRCLE,

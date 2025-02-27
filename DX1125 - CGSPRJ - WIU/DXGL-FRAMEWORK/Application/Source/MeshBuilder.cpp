@@ -19,7 +19,7 @@ Then generate the VBO/IBO and store them in Mesh object
 \return Pointer to mesh storing VBO/IBO of reference axes
 */
 /******************************************************************************/
-Mesh* MeshBuilder::GenerateAxes(const std::string &meshName, float lengthX, float lengthY, float lengthZ)
+Mesh* MeshBuilder::GenerateAxes(const std::string& meshName, float lengthX, float lengthY, float lengthZ)
 {
 	Vertex v{};
 	std::vector<Vertex> vertex_buffer_data;
@@ -47,8 +47,8 @@ Mesh* MeshBuilder::GenerateAxes(const std::string &meshName, float lengthX, floa
 	index_buffer_data.push_back(4);
 	index_buffer_data.push_back(5);
 
-	Mesh *mesh = new Mesh(meshName);
-	
+	Mesh* mesh = new Mesh(meshName);
+
 	glBindBuffer(GL_ARRAY_BUFFER, mesh->vertexBuffer);
 	glBufferData(GL_ARRAY_BUFFER, vertex_buffer_data.size() * sizeof(Vertex), &vertex_buffer_data[0], GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->indexBuffer);
@@ -73,7 +73,7 @@ Then generate the VBO/IBO and store them in Mesh object
 \return Pointer to mesh storing VBO/IBO of quad
 */
 /******************************************************************************/
-Mesh* MeshBuilder::GenerateQuad(const std::string &meshName, glm::vec3 color, float length)
+Mesh* MeshBuilder::GenerateQuad(const std::string& meshName, glm::vec3 color, float length)
 {
 	Vertex v{};
 	std::vector<Vertex> vertex_buffer_data;
@@ -137,9 +137,9 @@ Mesh* MeshBuilder::GenerateSphere(const std::string& meshName,
 				radius * glm::cos(phi) * glm::sin(theta));
 
 			v.textCoord = glm::vec2(-(slice / (float)numSlice) + 1, (stack / (float)numStack));
-			
+
 			v.normal = glm::vec3(glm::cos(phi) * glm::cos(theta),
-				glm::sin(phi), 
+				glm::sin(phi),
 				glm::cos(phi) * glm::sin(theta));
 			vertex_buffer_data.push_back(v);
 		}
@@ -153,7 +153,7 @@ Mesh* MeshBuilder::GenerateSphere(const std::string& meshName,
 			index_buffer_data.push_back((numStack + 1) * (stack + 1) + slice); // fill the index to push
 		}
 	}
-	
+
 	// Create the new mesh
 	Mesh* mesh = new Mesh(meshName);
 	glBindBuffer(GL_ARRAY_BUFFER, mesh->vertexBuffer);
@@ -381,7 +381,7 @@ Mesh* MeshBuilder::GenerateCylinder(const std::string& meshName, glm::vec3 color
 		vertex_buffer_data.push_back(v);
 
 		v.pos = glm::vec3(radius * glm::cos(theta), height * 0.5f, radius * glm::sin(theta));
-		v.normal = glm::vec3 (cos(theta), 0, sin(theta));
+		v.normal = glm::vec3(cos(theta), 0, sin(theta));
 		vertex_buffer_data.push_back(v);
 	}
 

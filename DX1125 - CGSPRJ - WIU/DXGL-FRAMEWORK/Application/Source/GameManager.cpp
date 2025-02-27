@@ -2,7 +2,7 @@
 
 GameManager* GameManager::m_instance = nullptr;
 GameManager::GameManager()
-	: points{}, playerPosition{}, cameraTarget{}
+	: points{}, playerPosition{}, cameraTarget{}, energy{ 0 }, maxEnergy{ 100 }
 {
 }
 
@@ -58,4 +58,26 @@ int GameManager::GetPoints()
 void GameManager::SetPoints(int point)
 {
 	points = point;
+}
+
+float GameManager::GetEnergy()
+{
+	return energy;
+}
+
+float GameManager::GetMaxEnergy()
+{
+	return maxEnergy;
+}
+
+void GameManager::SetEnergy(int e)
+{
+	energy = e;
+
+	if (energy > maxEnergy) {
+		energy = maxEnergy;
+	}
+	else if (energy <= 0) {
+		energy = 0;
+	}
 }

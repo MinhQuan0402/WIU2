@@ -23,7 +23,7 @@ constexpr glm::vec3 GREY = glm::vec3(0.349f, 0.349f, 0.349f);
 class MeshBuilder
 {
 public:
-	static Mesh* GenerateAxes(const std::string &meshName, float lengthX, float lengthY, float lengthZ);
+	static Mesh* GenerateAxes(const std::string& meshName, float lengthX, float lengthY, float lengthZ);
 	static Mesh* GenerateQuad(const std::string& meshName, glm::vec3 color, float length = 1.f);
 	static Mesh* GenerateSphere(const std::string& meshName, glm::vec3 color, float radius = 1.f, int numSlice = 360, int numStack = 360);
 	static Mesh* GenerateRing(const std::string& meshName, glm::vec3 color, int numSlice, float outerR, float innerR);
@@ -31,7 +31,7 @@ public:
 	static Mesh* GenerateHemisphere(const std::string& meshName, glm::vec3 color, int numStack, int numSlice, float radius);
 	static Mesh* GenerateCylinder(const std::string& meshName, glm::vec3 color, int numSlice, float radius, float height);
 	static Mesh* GenerateCustomCylinder(const std::string& meshName, glm::vec3 color, int numSlice, float fstRadius, float secRadius, float height);
-	static Mesh* GenerateTorus(const std::string& meshName,	glm::vec3 color, float innerR = 1.f, float outerR = 1.f, int numSlice = 360, int numStack = 360);
+	static Mesh* GenerateTorus(const std::string& meshName, glm::vec3 color, float innerR = 1.f, float outerR = 1.f, int numSlice = 360, int numStack = 360);
 	static Mesh* GenerateRamp(const std::string& meshName, glm::vec3 color, float length, float height);
 	static Mesh* GenerateCircle(const std::string& meshName, glm::vec3 color, float radius = 1.0f);
 	static Mesh* GenerateSemiCircle(const std::string& meshName, glm::vec3 color, float radius = 1.0f, int numberOfSides = 180);

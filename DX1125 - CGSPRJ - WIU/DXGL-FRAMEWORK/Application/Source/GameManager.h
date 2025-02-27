@@ -10,6 +10,9 @@ private:
 	
 	int points;
 
+	float energy;
+	const float maxEnergy;
+
 	GameManager();
 
 public:
@@ -26,4 +29,8 @@ public:
 
 	int GetPoints();
 	void SetPoints(int point);
+
+	float GetEnergy();
+	float GetMaxEnergy();
+	void SetEnergy(int e);
 };
