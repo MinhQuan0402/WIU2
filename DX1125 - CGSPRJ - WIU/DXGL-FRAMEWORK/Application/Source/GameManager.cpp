@@ -2,7 +2,7 @@
 
 GameManager* GameManager::m_instance = nullptr;
 GameManager::GameManager()
-	: points{}, playerPosition{}, cameraTarget{}, energy{ 0 }, maxEnergy{ 100 }
+	: points{}, playerPosition{}, cameraTarget{}, energy{ 100 }, maxEnergy{ 100 }
 {
 }
 
