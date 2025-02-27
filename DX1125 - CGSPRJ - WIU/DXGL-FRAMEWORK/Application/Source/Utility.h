@@ -18,6 +18,4 @@ bool isObjectInteractable(const glm::vec3& objectPos, FPCamera camera, float cam
 
 void printVector(glm::vec3 rhs);
 
-bool isTimeReach(const float& currentTime, const float& from, const float& to);
-
-glm::vec3 Lerp(const float elapsedTime, glm::vec3 startPos, const glm::vec3 endPos, float duration);
+bool isTimeReach(const float& currentTime, const float& from, const float& to); 
