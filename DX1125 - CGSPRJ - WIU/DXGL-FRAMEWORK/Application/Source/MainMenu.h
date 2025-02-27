@@ -76,7 +76,7 @@ private:
 	float elapsedPlaySceneTime;
 
 
-	glm::vec3 devVec = glm::vec3{ 15, 15, 15 };
+//	glm::vec3 devVec = glm::vec3{ 15, 15, 15 };
 };
 
 #endif

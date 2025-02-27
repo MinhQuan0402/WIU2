@@ -218,7 +218,6 @@ void MainMenu::Update()
 
 
 	if (enableUIs) {
-		std::cout << Application::m_consoleWidth << " " << Application::m_consoleHeight << std::endl;
 
 		playBtn.position = glm::vec2(Application::m_consoleWidth * 0.5, Application::m_consoleHeight * 0.375);
 		playBtn.width = Application::m_consoleWidth / 5.71f;
@@ -319,25 +318,25 @@ void MainMenu::LateUpdate()
 {
 	// Developer Controls:
 	{
-		float speed = 20;
-		if (KeyboardController::GetInstance()->IsKeyDown('Y')) {
-			devVec.y += speed * Time::deltaTime;
-		}
-		if (KeyboardController::GetInstance()->IsKeyDown('U')) {
-			devVec.y -= speed * Time::deltaTime;
-		}
-		if (KeyboardController::GetInstance()->IsKeyDown('T')) {
-			devVec.z += speed * Time::deltaTime;
-		}
-		if (KeyboardController::GetInstance()->IsKeyDown('G')) {
-			devVec.z -= speed * Time::deltaTime;
-		}
-		if (KeyboardController::GetInstance()->IsKeyDown('F')) {
-			devVec.x += speed * Time::deltaTime;
-		}
-		if (KeyboardController::GetInstance()->IsKeyDown('H')) {
-			devVec.x -= speed * Time::deltaTime;
-		}
+		//float speed = 20;
+		//if (KeyboardController::GetInstance()->IsKeyDown('Y')) {
+		//	devVec.y += speed * Time::deltaTime;
+		//}
+		//if (KeyboardController::GetInstance()->IsKeyDown('U')) {
+		//	devVec.y -= speed * Time::deltaTime;
+		//}
+		//if (KeyboardController::GetInstance()->IsKeyDown('T')) {
+		//	devVec.z += speed * Time::deltaTime;
+		//}
+		//if (KeyboardController::GetInstance()->IsKeyDown('G')) {
+		//	devVec.z -= speed * Time::deltaTime;
+		//}
+		//if (KeyboardController::GetInstance()->IsKeyDown('F')) {
+		//	devVec.x += speed * Time::deltaTime;
+		//}
+		//if (KeyboardController::GetInstance()->IsKeyDown('H')) {
+		//	devVec.x -= speed * Time::deltaTime;
+		//}
 
 		//std::cout << devVec.x << ", " << devVec.y << ", " << devVec.z << std::endl;
 
