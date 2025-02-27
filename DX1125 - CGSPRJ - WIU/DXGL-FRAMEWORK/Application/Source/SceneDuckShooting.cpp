@@ -27,6 +27,9 @@
 #include "DS_Counter2.h"
 #include "SceneManager.h"
 
+#include "MeshManager.h"
+#include "carnivalroaming.h"
+
 SceneDuckShooting::SceneDuckShooting() : numLight{ 12 }
 {
 	meshList.resize(NUM_GEOMETRY);
@@ -140,42 +143,10 @@ void SceneDuckShooting::Init()
 	meshList[GEO_SPHERE] = MeshBuilder::GenerateSphere("Sphere", WHITE, 1.0f, 100, 100);
 	meshList[GEO_CYLINDER] = MeshBuilder::GenerateCylinder("Cylinder", WHITE, 100, 1, 1);
 	meshList[GEO_CUBE] = MeshBuilder::GenerateCube("Cube", WHITE, 1.0f);
-	meshList[GEO_DS_QUAD] = MeshBuilder::GenerateQuad("Quad", BLACK, 1.0f);
-	meshList[GEO_DS_PLANE] = MeshBuilder::GenerateQuad("Quad", glm::vec3(0.1, 0.1, 0.1), 1000.0f);
-	meshList[GEO_DS_PLANE]->material = Material::Concrete(GREY);
 
-	meshList[GEO_DS_BOOTHROOF] = MeshBuilder::GenerateOBJMTL("BoothRoof", "Models//DS_BoothRoof.obj", "Models//DS_BoothRoof.mtl");
-	meshList[GEO_DS_BOOTHROOF]->textureID = LoadPNG("Images//DS_BoothRoof.png");
-	meshList[GEO_DS_BOOTHROOF]->material = Material::Wood(WHITE);
+	meshList[GEO_PLANE] = MeshBuilder::GenerateQuad("Quad", glm::vec3(0.1, 0.1, 0.1), 75.0f);
+	meshList[GEO_PLANE]->material = Material::Concrete(GREY);
 
-	meshList[GEO_DS_BOOTHGUARDS] = MeshBuilder::GenerateOBJMTL("BoothGuards", "Models//DS_BoothGuards.obj", "Models//DS_BoothGuards.mtl");
-	meshList[GEO_DS_BOOTHGUARDS]->material = Material::Metal(GREY);
-
-	meshList[GEO_DS_COUNTER] = MeshBuilder::GenerateCube("Counter", glm::vec3(0.459, 0.302, 0), 1);
-	meshList[GEO_DS_COUNTER]->textureID = LoadPNG("Images//DS_Wood.png");
-	meshList[GEO_DS_COUNTER]->material = Material::Wood(glm::vec3(0.459, 0.302, 0));
-
-	meshList[GEO_DS_LIGHTBULB] = MeshBuilder::GenerateOBJMTL("Lamp", "Models//DS_LightBulb.obj", "Models//DS_LightBulb.mtl");
-	meshList[GEO_DS_LIGHTBULB]->material = Material::Wood(WHITE);
-
-	meshList[GEO_DS_DUCK] = MeshBuilder::GenerateOBJMTL("Duck", "Models//DS_Duck.obj", "Models//DS_Duck.mtl");
-	meshList[GEO_DS_DUCK]->material = Material::Wood(YELLOW);
-
-	meshList[GEO_DS_GUN] = MeshBuilder::GenerateOBJ("Gun", "Models//DS_Gun.obj");
-	meshList[GEO_DS_GUN]->material = Material::Wood(WHITE);
-	meshList[GEO_DS_GUN]->textureID = LoadPNG("Images//DS_Gun.png");
-
-	meshList[GEO_DS_BULLET] = MeshBuilder::GenerateSphere("Bullet", WHITE, 1);
-	meshList[GEO_DS_BULLET]->material = Material::Plastic(BLUE);
-
-	meshList[GEO_DS_PILLAR] = MeshBuilder::GenerateCube("Pillar", WHITE, 1);
-	meshList[GEO_DS_PILLAR]->material = Material::Concrete(glm::vec3(1, 0.2, 0.2));
-
-	meshList[GEO_DS_CONVEYOR] = MeshBuilder::GenerateOBJ("Conveyor", "Models//DS_ConveyorBelt.obj");
-	meshList[GEO_DS_CONVEYOR]->textureID = LoadPNG("Images//DS_ConveyorBelt.png");
-	meshList[GEO_DS_CONVEYOR]->material = Material::Wood(WHITE);
-
-	meshList[GEO_DS_FAIRYLIGHT] = MeshBuilder::GenerateOBJMTL("FairyLight", "Models//DS_FairyLight.obj", "Models//DS_FairyLight.mtl");
 
 	mainCamera.Init(glm::vec3(0, 3, 7.5), glm::vec3(0, 3, 0), VECTOR3_UP);
 	mainCamera.sensitivity = 50.0f;
@@ -224,7 +195,7 @@ void SceneDuckShooting::Init()
 
 	for (int i = 2; i <= 6; ++i)
 	{
-		meshList[GEO_DS_FAIRYLIGHT]->materials[i - 1].kEmission = glm::vec3(0.5f, 0.5f, 0.5f);
+		MeshManager::GetInstance()->meshList[MeshManager::GEO_DS_FAIRYLIGHT]->materials[i - 1].kEmission = glm::vec3(0.5f, 0.5f, 0.5f);
 
 		glm::vec3 randColor = glm::vec3{
 			Math::RandFloatMinMax(0.0f, 1.0f),
@@ -232,7 +203,7 @@ void SceneDuckShooting::Init()
 			Math::RandFloatMinMax(0.0f, 1.0f)
 		};
 
-		meshList[GEO_DS_FAIRYLIGHT]->materials[i - 1].kAmbient = glm::vec3(randColor);
+		MeshManager::GetInstance()->meshList[MeshManager::GEO_DS_FAIRYLIGHT]->materials[i - 1].kAmbient = glm::vec3(randColor);
 		lights[i].color = randColor;
 		lights[6 + i-1].color = randColor;
 	}
@@ -309,6 +280,7 @@ void SceneDuckShooting::Init()
 	recoilTime = 0;
 	cooldownTimer = 0;
 	gameComplete = false;
+	gameCompletePause = 3;
 	spawnRate = 0.5;
 
 	points = 0;
@@ -374,6 +346,20 @@ void SceneDuckShooting::Update()
 
 	GameObjectManager::GetInstance()->UpdateAll();
 
+	// update game completion timer:
+	{
+		if (gameComplete) {
+			if (gameCompletePause > 0) {
+				gameCompletePause -= Time::deltaTime;
+			}
+			else {
+				SceneManager::GetInstance()->PushState(new carnivalroaming);
+				return;
+			}
+		}
+	}
+
+
 	// update timer:
 	{
 		if (timer > 0) {
@@ -394,7 +380,7 @@ void SceneDuckShooting::Update()
 		{
 			for (int i = 2; i <= 6; ++i)
 			{
-				meshList[GEO_DS_FAIRYLIGHT]->materials[i - 1].kEmission = glm::vec3(0.5f, 0.5f, 0.5f);
+				MeshManager::GetInstance()->meshList[MeshManager::GEO_DS_FAIRYLIGHT]->materials[i - 1].kEmission = glm::vec3(0.5f, 0.5f, 0.5f);
 
 				glm::vec3 randColor = glm::vec3{
 					Math::RandFloatMinMax(0.0f, 1.0f),
@@ -402,7 +388,7 @@ void SceneDuckShooting::Update()
 					Math::RandFloatMinMax(0.0f, 1.0f)
 				};
 
-				meshList[GEO_DS_FAIRYLIGHT]->materials[i - 1].kAmbient = glm::vec3(randColor);
+				MeshManager::GetInstance()->meshList[MeshManager::GEO_DS_FAIRYLIGHT]->materials[i - 1].kAmbient = glm::vec3(randColor);
 				lights[i].color = randColor;
 				glUniform3fv(m_parameters[U_LIGHT0_COLOR + U_LIGHT0_EXPONENT * i], 1, &lights[i].color.r);
 
@@ -656,8 +642,8 @@ void SceneDuckShooting::Render()
 		modelStack.PushMatrix();
 		modelStack.Translate(0,0,0);
 		modelStack.Scale(objInScene[BOOTH_ROOF]->m_transform.m_scale.x, objInScene[BOOTH_ROOF]->m_transform.m_scale.y, objInScene[BOOTH_ROOF]->m_transform.m_scale.z);
-		RenderMesh(meshList[GEO_DS_BOOTHROOF], enableLight);
-		RenderMesh(meshList[GEO_DS_BOOTHGUARDS], enableLight);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_DS_BOOTHROOF], enableLight);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_DS_BOOTHGUARDS], enableLight);
 		modelStack.PopMatrix();
 	}
 
@@ -667,7 +653,7 @@ void SceneDuckShooting::Render()
 		modelStack.Translate(0.302714, 11.9211, 0.0587656);
 		modelStack.Rotate(180, 1, 0, 0);
 		modelStack.Scale(7, 7, 7);
-		RenderMesh(meshList[GEO_DS_LIGHTBULB], false);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_DS_LIGHTBULB], false);
 		modelStack.PopMatrix();
 	}
 
@@ -677,7 +663,7 @@ void SceneDuckShooting::Render()
 		modelStack.Translate(gunTransform.m_position.x, gunTransform.m_position.y, gunTransform.m_position.z);
 		modelStack.Rotate(glm::degrees(gunTransform.m_rotation.y), 0, 1, 0); // Yaw
 		modelStack.Rotate(glm::degrees(gunTransform.m_rotation.x), 1, 0, 0); // Pitch
-		RenderMesh(meshList[GEO_DS_GUN], enableLight);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_DS_GUN], enableLight);
 		modelStack.PopMatrix();
 	}
 
@@ -688,14 +674,14 @@ void SceneDuckShooting::Render()
 		modelStack.Translate(19.0514, 7.56, 0);
 		modelStack.Rotate(90, 0, 1, 0);
 		modelStack.Scale(6, 6, 6);
-		RenderMesh(meshList[GEO_DS_FAIRYLIGHT], enableLight);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_DS_FAIRYLIGHT], enableLight);
 		modelStack.PopMatrix();
 
 		modelStack.PushMatrix();
 		modelStack.Translate(-18.4292, 7.56, 0);
 		modelStack.Rotate(90, 0, 1, 0);
 		modelStack.Scale(6, 6, 6);
-		RenderMesh(meshList[GEO_DS_FAIRYLIGHT], enableLight);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_DS_FAIRYLIGHT], enableLight);
 		modelStack.PopMatrix();
 	}
 
@@ -709,7 +695,7 @@ void SceneDuckShooting::Render()
 		float cHeight = Application::m_consoleHeight;
 
 		// Render the dividing quad
-		RenderMeshOnScreen(meshList[GEO_DS_QUAD], cWidth * 0.5 - (cWidth * 0.001), cHeight * 0.8, cWidth * 0.001, cHeight * 0.1);
+		RenderMeshOnScreen(MeshManager::GetInstance()->meshList[MeshManager::GEO_DS_QUAD], cWidth * 0.5 - (cWidth * 0.001), cHeight * 0.8, cWidth * 0.001, cHeight * 0.1);
 
 		// Render timer:
 		RenderTextOnScreen(meshList[GEO_TEXT], "Time Left", BLACK, 30, cWidth * 0.345, cHeight * 0.8);
@@ -838,4 +824,31 @@ void SceneDuckShooting::RenderSkybox(void)
 	// Skybox should be rendered without light
 	RenderMesh(meshList[GEO_BOTTOM], false);
 	modelStack.PopMatrix();
+}
+
+void SceneDuckShooting::RenderGround(int size)
+{
+	if (size % 2 == 0) size += 1;
+
+	int valueToMul = (size - 1) / 2;
+	glm::vec3 originPos = glm::vec3{ 75.0f * (float)valueToMul, 0.0f, 75.0f * (float)valueToMul };
+	float orignalX = originPos.x;
+	meshList[GEO_PLANE]->material = Material::Wood(WHITE);
+	for (int i = 0; i < size; i++)
+	{
+		originPos.x = orignalX;
+		for (int j = 0; j < size; ++j)
+		{
+
+			modelStack.PushMatrix();
+			modelStack.Translate(originPos.x, originPos.y, originPos.z);
+			modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
+			RenderMesh(meshList[GEO_PLANE], enableLight);
+			modelStack.PopMatrix();
+
+			originPos.x -= 75.0f;
+		}
+
+		originPos.z -= 75.0f;
+	}
 }

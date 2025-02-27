@@ -353,6 +353,8 @@ void carnivalroaming::LateUpdate()
 		{
 			std::cout << "Colliding with duck shooting" << std::endl;
 			GameManager::GetInstance()->SetEnergy(GameManager::GetInstance()->GetEnergy() - 10);
+			//SceneManager::GetInstance()->ChangeState(new SceneDuckShooting);
+			//return;
 		}
 		if (CheckCollisionWith(objInscene[PLAYERBOX]->getObject(), objInscene[BOX2]->getObject()) and KeyboardController::GetInstance()->IsKeyPressed('E'))
 		{
@@ -378,6 +380,7 @@ void carnivalroaming::LateUpdate()
 		{
 			std::cout << "Colliding with duck fishing" << std::endl;
 			GameManager::GetInstance()->SetEnergy(GameManager::GetInstance()->GetEnergy() - 10);
+			
 		}
 		if (CheckCollisionWith(objInscene[PLAYERBOX]->getObject(), objInscene[BOX6]->getObject()) and KeyboardController::GetInstance()->IsKeyPressed('E'))
 		{

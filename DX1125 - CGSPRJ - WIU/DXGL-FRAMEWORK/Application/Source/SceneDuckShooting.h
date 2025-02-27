@@ -29,23 +29,10 @@ public:
 		GEO_TEXT,
 		GEO_SPHERE,
 		GEO_MODEL1,
-		GEO_DS_PLANE,
 		GEO_CUBE,
-		GEO_DS_QUAD,
 		GEO_CYLINDER,
 
-		GEO_DS_BOOTHROOF,
-		GEO_DS_BOOTHGUARDS,
-		GEO_DS_COUNTER,
-		GEO_DS_LIGHTBULB,
-
-		GEO_DS_DUCK,
-		GEO_DS_GUN,
-		GEO_DS_BULLET,
-		GEO_DS_PILLAR,
-		GEO_DS_CONVEYOR,
-
-		GEO_DS_FAIRYLIGHT,
+		GEO_PLANE,
 
 		NUM_GEOMETRY
 	};
@@ -61,6 +48,7 @@ public:
 
 private:
 	void RenderSkybox(void);
+	void RenderGround(int size);
 	//void RenderMeshOnScreen(Mesh* mesh, float x, float y, float width, float height, glm::vec2 anchorPoint);
 
 	int numLight;
@@ -109,6 +97,7 @@ private:
 	int points;
 
 	bool gameComplete;
+	float gameCompletePause;
 };
 
 #endif

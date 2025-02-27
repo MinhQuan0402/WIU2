@@ -255,4 +255,33 @@ void MeshManager::Init()
 
 	meshList[GEO_RT_BOARD]->material = Material::Wood(WHITE);
 
+
+
+
+
+	// duck shooting:
+	meshList[GEO_DS_QUAD] = MeshBuilder::GenerateQuad("Quad", BLACK, 1.0f);
+	meshList[GEO_DS_BOOTHROOF] = MeshBuilder::GenerateOBJMTL("BoothRoof", "Models//DS_BoothRoof.obj", "Models//DS_BoothRoof.mtl");
+	meshList[GEO_DS_BOOTHROOF]->textureID = LoadPNG("Images//DS_BoothRoof.png");
+	meshList[GEO_DS_BOOTHROOF]->material = Material::Wood(WHITE);
+	meshList[GEO_DS_BOOTHGUARDS] = MeshBuilder::GenerateOBJMTL("BoothGuards", "Models//DS_BoothGuards.obj", "Models//DS_BoothGuards.mtl");
+	meshList[GEO_DS_BOOTHGUARDS]->material = Material::Metal(GREY);
+	meshList[GEO_DS_COUNTER] = MeshBuilder::GenerateCube("Counter", glm::vec3(0.459, 0.302, 0), 1);
+	meshList[GEO_DS_COUNTER]->textureID = LoadPNG("Images//DS_Wood.png");
+	meshList[GEO_DS_COUNTER]->material = Material::Wood(glm::vec3(0.459, 0.302, 0));
+	meshList[GEO_DS_LIGHTBULB] = MeshBuilder::GenerateOBJMTL("Lamp", "Models//DS_LightBulb.obj", "Models//DS_LightBulb.mtl");
+	meshList[GEO_DS_LIGHTBULB]->material = Material::Wood(WHITE);
+	meshList[GEO_DS_DUCK] = MeshBuilder::GenerateOBJMTL("Duck", "Models//DS_Duck.obj", "Models//DS_Duck.mtl");
+	meshList[GEO_DS_DUCK]->material = Material::Wood(YELLOW);
+	meshList[GEO_DS_GUN] = MeshBuilder::GenerateOBJ("Gun", "Models//DS_Gun.obj");
+	meshList[GEO_DS_GUN]->material = Material::Wood(WHITE);
+	meshList[GEO_DS_GUN]->textureID = LoadPNG("Images//DS_Gun.png");
+	meshList[GEO_DS_BULLET] = MeshBuilder::GenerateSphere("Bullet", WHITE, 1);
+	meshList[GEO_DS_BULLET]->material = Material::Plastic(BLUE);
+	meshList[GEO_DS_PILLAR] = MeshBuilder::GenerateCube("Pillar", WHITE, 1);
+	meshList[GEO_DS_PILLAR]->material = Material::Concrete(glm::vec3(1, 0.2, 0.2));
+	meshList[GEO_DS_CONVEYOR] = MeshBuilder::GenerateOBJ("Conveyor", "Models//DS_ConveyorBelt.obj");
+	meshList[GEO_DS_CONVEYOR]->textureID = LoadPNG("Images//DS_ConveyorBelt.png");
+	meshList[GEO_DS_CONVEYOR]->material = Material::Wood(WHITE);
+	meshList[GEO_DS_FAIRYLIGHT] = MeshBuilder::GenerateOBJMTL("FairyLight", "Models//DS_FairyLight.obj", "Models//DS_FairyLight.mtl");
 }

@@ -165,6 +165,15 @@
     <ClCompile Include="Source\ColliderManager.cpp" />
     <ClCompile Include="Source\CollisionManager.cpp" />
     <ClCompile Include="Source\CQuad.cpp" />
+    <ClCompile Include="Source\DS_BoothRoof.cpp" />
+    <ClCompile Include="Source\DS_BoothWall.cpp" />
+    <ClCompile Include="Source\DS_Bullet.cpp" />
+    <ClCompile Include="Source\DS_Conveyor.cpp" />
+    <ClCompile Include="Source\DS_Counter.cpp" />
+    <ClCompile Include="Source\DS_Counter2.cpp" />
+    <ClCompile Include="Source\DS_Duck.cpp" />
+    <ClCompile Include="Source\DS_Floor.cpp" />
+    <ClCompile Include="Source\DS_Pillar.cpp" />
     <ClCompile Include="Source\FPCamera.cpp" />
     <ClCompile Include="Source\GameManager.cpp" />
     <ClCompile Include="Source\GameObject.cpp" />
@@ -188,6 +197,7 @@
     <ClCompile Include="Source\RigidBody.cpp" />
     <ClCompile Include="Source\Scene.cpp" />
     <ClCompile Include="Source\SceneCanKnockdown.cpp" />
+    <ClCompile Include="Source\SceneDuckShooting.cpp" />
     <ClCompile Include="Source\SceneGame.cpp" />
     <ClCompile Include="Source\SceneManager.cpp" />
     <ClCompile Include="Source\ScenePlinko.cpp" />
@@ -216,6 +226,15 @@
     <ClInclude Include="Source\CK_Table.h" />
     <ClInclude Include="Source\ColliderManager.h" />
     <ClInclude Include="Source\CollisionManager.h" />
+    <ClInclude Include="Source\DS_BoothRoof.h" />
+    <ClInclude Include="Source\DS_BoothWall.h" />
+    <ClInclude Include="Source\DS_Bullet.h" />
+    <ClInclude Include="Source\DS_Conveyor.h" />
+    <ClInclude Include="Source\DS_Counter.h" />
+    <ClInclude Include="Source\DS_Counter2.h" />
+    <ClInclude Include="Source\DS_Duck.h" />
+    <ClInclude Include="Source\DS_Floor.h" />
+    <ClInclude Include="Source\DS_Pillar.h" />
     <ClInclude Include="Source\FPCamera.h" />
     <ClInclude Include="Source\GameManager.h" />
     <ClInclude Include="Source\GameObject.h" />
@@ -241,6 +260,7 @@
     <ClInclude Include="Source\RigidBody.h" />
     <ClInclude Include="Source\Scene.h" />
     <ClInclude Include="Source\SceneCanKnockdown.h" />
+    <ClInclude Include="Source\SceneDuckShooting.h" />
     <ClInclude Include="Source\SceneGame.h" />
     <ClInclude Include="Source\SceneManager.h" />
     <ClInclude Include="Source\ScenePlinko.h" />

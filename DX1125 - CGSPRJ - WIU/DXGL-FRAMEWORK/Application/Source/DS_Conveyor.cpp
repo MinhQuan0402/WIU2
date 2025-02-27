@@ -1,6 +1,7 @@
 #include "DS_Conveyor.h"
 #include "GameObjectManager.h"
 #include "SceneDuckShooting.h"
+#include "MeshManager.h"
 
 DS_Conveyor::DS_Conveyor() {
 	
@@ -25,6 +26,5 @@ void DS_Conveyor::Update()
 
 void DS_Conveyor::Render(Scene& scene)
 {
-	
-	scene.RenderMesh(scene.meshList[SceneDuckShooting::GEO_DS_CONVEYOR], scene.enableLight, m_transform);
+	scene.RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_DS_CONVEYOR], scene.enableLight, m_transform);
 }

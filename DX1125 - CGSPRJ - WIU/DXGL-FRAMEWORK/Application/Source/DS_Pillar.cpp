@@ -1,6 +1,7 @@
 #include "DS_Pillar.h"
 #include "GameObjectManager.h"
 #include "SceneDuckShooting.h"
+#include "MeshManager.h"
 
 DS_Pillar::DS_Pillar() {
 	
@@ -21,5 +22,5 @@ void DS_Pillar::Update()
 
 void DS_Pillar::Render(Scene& scene)
 {
-	scene.RenderMesh(scene.meshList[SceneDuckShooting::GEO_DS_PILLAR], scene.enableLight, m_transform);
+	scene.RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_DS_PILLAR], scene.enableLight, m_transform);
 }

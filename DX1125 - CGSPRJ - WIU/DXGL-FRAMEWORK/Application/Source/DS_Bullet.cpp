@@ -1,6 +1,7 @@
 #include "DS_Bullet.h"
 #include "GameObjectManager.h"
 #include "SceneDuckShooting.h"
+#include "MeshManager.h"
 
 DS_Bullet::DS_Bullet() : hit{}, timeoutTime{}
 {	
@@ -22,5 +23,5 @@ void DS_Bullet::Update()
 
 void DS_Bullet::Render(Scene& scene)
 {
-	scene.RenderRigidMesh(scene.meshList[SceneDuckShooting::GEO_DS_BULLET], scene.enableLight, m_transform, rb);
+	scene.RenderRigidMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_DS_BULLET], scene.enableLight, m_transform, rb);
 }

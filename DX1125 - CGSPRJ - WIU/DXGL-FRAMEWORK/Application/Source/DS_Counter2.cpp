@@ -1,6 +1,7 @@
 #include "DS_Counter2.h"
 #include "GameObjectManager.h"
 #include "SceneDuckShooting.h"
+#include "MeshManager.h"
 
 DS_Counter2::DS_Counter2() {
 	
@@ -21,5 +22,5 @@ void DS_Counter2::Update()
 
 void DS_Counter2::Render(Scene& scene)
 {
-	scene.RenderMesh(scene.meshList[SceneDuckShooting::GEO_DS_COUNTER], scene.enableLight, m_transform);
+	scene.RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_DS_COUNTER], scene.enableLight, m_transform);
 }

@@ -46,6 +46,39 @@
     <ClCompile Include="Source\CK_Ball.cpp" />
     <ClCompile Include="Source\SceneCanKnockdown.cpp" />
     <ClCompile Include="Source\MeshManager.cpp" />
+    <ClCompile Include="Source\Button_UI.cpp" />
+    <ClCompile Include="Source\SceneRingToss.cpp" />
+    <ClCompile Include="Source\TossBoard.cpp" />
+    <ClCompile Include="Source\DS_BoothRoof.cpp">
+      <Filter>DuckShooting</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DS_BoothWall.cpp">
+      <Filter>DuckShooting</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DS_Bullet.cpp">
+      <Filter>DuckShooting</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DS_Conveyor.cpp">
+      <Filter>DuckShooting</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DS_Counter.cpp">
+      <Filter>DuckShooting</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DS_Counter2.cpp">
+      <Filter>DuckShooting</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DS_Duck.cpp">
+      <Filter>DuckShooting</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DS_Floor.cpp">
+      <Filter>DuckShooting</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DS_Pillar.cpp">
+      <Filter>DuckShooting</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\SceneDuckShooting.cpp">
+      <Filter>DuckShooting</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\..\..\..\School\DX1125 - CGSPRJ - WIU\DXGL-FRAMEWORK\Application\Source\CQuad.h" />
@@ -163,15 +196,39 @@
     <ClCompile Include="Source\ColliderManager.cpp">
       <Filter>Source Files\Managers</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Button_UI.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\SceneRingToss.cpp">
-      <Filter>Source Files\Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\TossBoard.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
+    <ClInclude Include="Source\Button_UI.h" />
+    <ClInclude Include="Source\SceneRingToss.h" />
+    <ClInclude Include="Source\TossBoard.h" />
+    <ClInclude Include="Source\DS_Pillar.h">
+      <Filter>DuckShooting</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DS_BoothRoof.h">
+      <Filter>DuckShooting</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DS_BoothWall.h">
+      <Filter>DuckShooting</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DS_Bullet.h">
+      <Filter>DuckShooting</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DS_Conveyor.h">
+      <Filter>DuckShooting</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DS_Counter.h">
+      <Filter>DuckShooting</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DS_Counter2.h">
+      <Filter>DuckShooting</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DS_Duck.h">
+      <Filter>DuckShooting</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DS_Floor.h">
+      <Filter>DuckShooting</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\SceneDuckShooting.h">
+      <Filter>DuckShooting</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Application.h">
@@ -246,14 +303,10 @@
     <ClInclude Include="Source\SceneManager.h">
       <Filter>Header Files\Managers</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Button_UI.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\SceneRingToss.h">
-      <Filter>Header Files\Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\TossBoard.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="DuckShooting">
+      <UniqueIdentifier>{32299e5b-d6db-4845-b36e-3b3e478f2d81}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>
