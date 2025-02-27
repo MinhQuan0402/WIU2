@@ -129,7 +129,7 @@ void SceneRingToss::Init()
 	meshList[GEO_TEXT]->textureID = LoadTGA("Images//calibri.tga");
 	meshList[GEO_PLANE] = MeshBuilder::GenerateQuad("Quad", WHITE, 75.f);
 	meshList[GEO_PLANE]->textureID = LoadPNG("Images//ground.png");
-	meshList[GEO_BOARD] = MeshBuilder::GenerateOBJ("board", "Models//ring_toss_rack.obj");
+	/*meshList[GEO_BOARD] = MeshBuilder::GenerateOBJ("board", "Models//ring_toss_rack.obj");
 	meshList[GEO_BOARD]->textureID = LoadPNG("Images//wood.png");
 	meshList[GEO_BOTTLE] = MeshBuilder::GenerateOBJ("Bottle", "Models//ring_toss_bottle.obj");
 	meshList[GEO_RING] = MeshBuilder::GenerateOBJ("Ring", "Models//ring_toss_rope.obj");
@@ -144,7 +144,8 @@ void SceneRingToss::Init()
 	meshList[GEO_COUNTER]->textureID = LoadPNG("Images//counter.png");
 	meshList[GEO_LIGHTPOLE] = MeshBuilder::GenerateOBJMTL("Light pole", "Models//ring_toss_lightpole.obj", "Models//ring_toss_lightpole.mtl");
 
-	meshList[GEO_BOARD]->material = Material::Wood(WHITE);
+	meshList[GEO_BOARD]
+	meshList[GEO_BOARD]->material = Material::Wood(WHITE);*/
 
 	mainCamera.Init(glm::vec3(0, 10, 20.0f), glm::vec3(0, 10, 0), VECTOR3_UP);
 	mainCamera.constraintYaw = 0.5f;
@@ -467,18 +468,18 @@ void SceneRingToss::Render()
 	modelStack.Translate(6.0f, 0.0f, 0.0f);
 	modelStack.Rotate(-90.0f, .0f, 1.0f, 0.0f);
 	modelStack.Scale(7.f, 7.f, 7.f);
-	RenderMesh(meshList[GEO_LIGHTPOLE], enableLight);
+	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_RT_LIGHTPOLE], enableLight);
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
 	modelStack.Translate(-6.0f, 0.0f, 0.0f);
 	modelStack.Rotate(-90.0f, .0f, 1.0f, 0.0f);
 	modelStack.Scale(7.f, 7.f, 7.f);
-	RenderMesh(meshList[GEO_LIGHTPOLE], enableLight);
+	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_RT_LIGHTPOLE], enableLight);
 	modelStack.PopMatrix();
 
 	meshList[GEO_COUNTER]->material = Material::Wood(WHITE);
-	RenderMesh(meshList[GEO_COUNTER], enableLight, objInScene[COUNTER]->m_transform);
+	RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_RT_COUNTER], enableLight, objInScene[COUNTER]->m_transform);
 	GameObjectManager::RenderAll(*this);
 
 	if (isInView)
