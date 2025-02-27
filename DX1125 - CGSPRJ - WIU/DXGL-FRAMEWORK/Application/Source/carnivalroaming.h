@@ -94,7 +94,10 @@ private:
 
 	GameObject* objInscene[NUM_OBJ];
 
-	glm::vec3 devVec = glm::vec3{ 0, 0, 0 };
+	//glm::vec3 devVec = glm::vec3{ 0, 0, 0 };
+
+	float lightTimer;
+	bool isLightChanged;
 };
 
 #endif
