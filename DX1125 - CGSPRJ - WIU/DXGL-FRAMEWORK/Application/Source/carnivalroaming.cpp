@@ -31,7 +31,7 @@
 #include "SceneDuckShooting.h"
 
 
-carnivalroaming::carnivalroaming() : numLight{ 1 }
+carnivalroaming::carnivalroaming() : numLight{ 9 }
 {
 	meshList.resize(NUM_GEOMETRY);
 	lights.resize(numLight);
@@ -80,17 +80,33 @@ void carnivalroaming::Init()
 		m_parameters[U_MATERIAL_SPECULAR] = glGetUniformLocation(m_programID, "material.kSpecular");
 		m_parameters[U_MATERIAL_SHININESS] = glGetUniformLocation(m_programID, "material.kShininess");
 
-		m_parameters[U_LIGHT0_TYPE] = glGetUniformLocation(m_programID, "lights[0].type");
-		m_parameters[U_LIGHT0_POSITION] = glGetUniformLocation(m_programID, "lights[0].position_cameraspace");
-		m_parameters[U_LIGHT0_COLOR] = glGetUniformLocation(m_programID, "lights[0].color");
-		m_parameters[U_LIGHT0_POWER] = glGetUniformLocation(m_programID, "lights[0].power");
-		m_parameters[U_LIGHT0_KC] = glGetUniformLocation(m_programID, "lights[0].kC");
-		m_parameters[U_LIGHT0_KL] = glGetUniformLocation(m_programID, "lights[0].kL");
-		m_parameters[U_LIGHT0_KQ] = glGetUniformLocation(m_programID, "lights[0].kQ");
-		m_parameters[U_LIGHT0_SPOTDIRECTION] = glGetUniformLocation(m_programID, "lights[0].spotDirection");
-		m_parameters[U_LIGHT0_COSCUTOFF] = glGetUniformLocation(m_programID, "lights[0].cosCutoff");
-		m_parameters[U_LIGHT0_COSINNER] = glGetUniformLocation(m_programID, "lights[0].cosInner");
-		m_parameters[U_LIGHT0_EXPONENT] = glGetUniformLocation(m_programID, "lights[0].exponent");
+		for (int i = 0; i < numLight; ++i)
+		{
+			std::string index = std::to_string(i);
+			std::string typeString = "lights[" + index + "].type";
+			std::string positionString = "lights[" + index + "].position_cameraspace";
+			std::string colorString = "lights[" + index + "].color";
+			std::string powerString = "lights[" + index + "].power";
+			std::string kCString = "lights[" + index + "].kC";
+			std::string kLString = "lights[" + index + "].kL";
+			std::string kQString = "lights[" + index + "].kQ";
+			std::string spotString = "lights[" + index + "].spotDirection";
+			std::string cosCutOffString = "lights[" + index + "].cosCutoff";
+			std::string cosInnerString = "lights[" + index + "].cosInner";
+			std::string exponentString = "lights[" + index + "].exponent";
+
+			m_parameters[U_LIGHT0_TYPE + U_LIGHT0_EXPONENT * i] = glGetUniformLocation(m_programID, typeString.data());
+			m_parameters[U_LIGHT0_POSITION + U_LIGHT0_EXPONENT * i] = glGetUniformLocation(m_programID, positionString.data());
+			m_parameters[U_LIGHT0_COLOR + U_LIGHT0_EXPONENT * i] = glGetUniformLocation(m_programID, colorString.data());
+			m_parameters[U_LIGHT0_POWER + U_LIGHT0_EXPONENT * i] = glGetUniformLocation(m_programID, powerString.data());
+			m_parameters[U_LIGHT0_KC + U_LIGHT0_EXPONENT * i] = glGetUniformLocation(m_programID, kCString.data());
+			m_parameters[U_LIGHT0_KL + U_LIGHT0_EXPONENT * i] = glGetUniformLocation(m_programID, kLString.data());
+			m_parameters[U_LIGHT0_KQ + U_LIGHT0_EXPONENT * i] = glGetUniformLocation(m_programID, kQString.data());
+			m_parameters[U_LIGHT0_SPOTDIRECTION + U_LIGHT0_EXPONENT * i] = glGetUniformLocation(m_programID, spotString.data());
+			m_parameters[U_LIGHT0_COSCUTOFF + U_LIGHT0_EXPONENT * i] = glGetUniformLocation(m_programID, cosCutOffString.data());
+			m_parameters[U_LIGHT0_COSINNER + U_LIGHT0_EXPONENT * i] = glGetUniformLocation(m_programID, cosInnerString.data());
+			m_parameters[U_LIGHT0_EXPONENT + U_LIGHT0_EXPONENT * i] = glGetUniformLocation(m_programID, exponentString.data());
+		}
 
 		m_parameters[U_LIGHTENABLED] = glGetUniformLocation(m_programID, "lightEnabled");
 		m_parameters[U_NUMLIGHTS] = glGetUniformLocation(m_programID, "numLights");
@@ -115,6 +131,7 @@ void carnivalroaming::Init()
 		meshList[GEO_TICKET]->textureID = LoadPNG("Images//ticket.png");
 
 		meshList[GEO_PLANE] = MeshBuilder::GenerateQuad("Quad", WHITE, 75.0f);
+		meshList[GEO_PLANE]->material = Material::Wood(WHITE);
 		meshList[GEO_PLANE]->textureID = LoadPNG("Images//ground.png");
 
 		meshList[GEO_TOP] = MeshBuilder::GenerateQuad("Plane", glm::vec3(1.f, 1.f, 1.f), 10.f);
@@ -161,15 +178,55 @@ void carnivalroaming::Init()
 		lights[0].exponent = 3.f;
 		lights[0].spotDirection = glm::vec3(0.f, -1.f, 0.f);
 
-		glUniform3fv(m_parameters[U_LIGHT0_COLOR], 1, &lights[0].color.r);
-		glUniform1i(m_parameters[U_LIGHT0_TYPE], lights[0].type);
-		glUniform1f(m_parameters[U_LIGHT0_POWER], lights[0].power);
-		glUniform1f(m_parameters[U_LIGHT0_KC], lights[0].kC);
-		glUniform1f(m_parameters[U_LIGHT0_KL], lights[0].kL);
-		glUniform1f(m_parameters[U_LIGHT0_KQ], lights[0].kQ);
-		glUniform1f(m_parameters[U_LIGHT0_COSCUTOFF], cosf(glm::radians<float>(lights[0].cosCutoff)));
-		glUniform1f(m_parameters[U_LIGHT0_COSINNER], cosf(glm::radians<float>(lights[0].cosInner)));
-		glUniform1f(m_parameters[U_LIGHT0_EXPONENT], lights[0].exponent);
+		lights[1].m_transform.m_position = glm::vec3(209.35, 18.3634, -488.576);
+		lights[2].m_transform.m_position = glm::vec3(-238.221, 18.3634, -488.576);
+		lights[3].m_transform.m_position = glm::vec3(-238.221, 18.3634, 508.851);
+		lights[4].m_transform.m_position = glm::vec3(209.35, 18.3634, 508.851);
+		lights[5].m_transform.m_position = glm::vec3(738, 18.3634, -191.292);
+		lights[6].m_transform.m_position = glm::vec3(738, 18.3634, 261.943);
+		lights[7].m_transform.m_position = glm::vec3(-738, 18.3634, -191.292);
+		lights[8].m_transform.m_position = glm::vec3(-738, 18.3634, 261.943);
+
+		for (int i = 1; i < numLight; ++i)
+		{
+			lights[i].type = Light::LIGHT_POINT;
+			lights[i].power = 3.f;
+			lights[i].kC = 0.5f;
+			lights[i].kL = 0.01f;
+			lights[i].kQ = 0.001f;
+			lights[i].cosCutoff = 45.f;
+			lights[i].cosInner = 30.f;
+			lights[i].exponent = 3.f;
+			lights[i].spotDirection = glm::vec3(0.f, 1.f, 0.f);
+		}
+
+		for (int i = 1; i < numLight; ++i)
+		{
+			MeshManager::GetInstance()->meshList[MeshManager::GEO_DS_FAIRYLIGHT]->materials[i - 1].kEmission = glm::vec3(0.5f, 0.5f, 0.5f);
+
+			glm::vec3 randColor = glm::vec3{
+				Math::RandFloatMinMax(0.0f, 1.0f),
+				Math::RandFloatMinMax(0.0f, 1.0f),
+				Math::RandFloatMinMax(0.0f, 1.0f)
+			};
+
+			MeshManager::GetInstance()->meshList[MeshManager::GEO_DS_FAIRYLIGHT]->materials[i - 1].kAmbient = glm::vec3(randColor);
+			lights[i].color = randColor;
+		}
+
+
+		for (int i = 0; i < numLight; ++i)
+		{
+			glUniform1i(m_parameters[U_LIGHT0_TYPE + U_LIGHT0_EXPONENT * i], lights[i].type);
+			glUniform3fv(m_parameters[U_LIGHT0_COLOR + U_LIGHT0_EXPONENT * i], 1, &lights[i].color.r);
+			glUniform1f(m_parameters[U_LIGHT0_POWER + U_LIGHT0_EXPONENT * i], lights[i].power);
+			glUniform1f(m_parameters[U_LIGHT0_KC + U_LIGHT0_EXPONENT * i], lights[i].kC);
+			glUniform1f(m_parameters[U_LIGHT0_KL + U_LIGHT0_EXPONENT * i], lights[i].kL);
+			glUniform1f(m_parameters[U_LIGHT0_KQ + U_LIGHT0_EXPONENT * i], lights[i].kQ);
+			glUniform1f(m_parameters[U_LIGHT0_COSCUTOFF + U_LIGHT0_EXPONENT * i], cosf(glm::radians<float>(lights[i].cosCutoff)));
+			glUniform1f(m_parameters[U_LIGHT0_COSINNER + U_LIGHT0_EXPONENT * i], cosf(glm::radians<float>(lights[i].cosInner)));
+			glUniform1f(m_parameters[U_LIGHT0_EXPONENT + U_LIGHT0_EXPONENT * i], lights[i].exponent);
+		}
 
 		enableLight = true;
 	}
@@ -289,12 +346,14 @@ void carnivalroaming::Init()
 
 	std::cout << GameManager::GetInstance()->GetPoints() << std::endl;
 
-	devVec = mainCamera.m_transform.m_position + glm::vec3(0, 0, 10);
-
+	lightTimer = 0;
+	isLightChanged = false;
 }
 
 void carnivalroaming::Update()
 {
+	//devVec = mainCamera.m_transform.m_position + glm::vec3(0, 0, 10);
+
 	HandleKeyPress();
 	mainCamera.Update();
 	glm::vec3 inputMovementDir{};
@@ -314,6 +373,44 @@ void carnivalroaming::Update()
 	glm::vec3 finalForce = inputMovementDir * 200.0f;
 	
 	objInscene[PLAYERBOX]->rb->setLinearVelocity(btVector3(finalForce.x, 0.0f, finalForce.z));
+
+
+
+
+	// update light:
+	{
+		lightTimer += Time::deltaTime;
+
+		if (isTimeReach(lightTimer, 2.f, 2.05f) && !isLightChanged)
+		{
+			for (int i = 1; i < numLight; ++i)
+			{
+				MeshManager::GetInstance()->meshList[MeshManager::GEO_DS_FAIRYLIGHT]->materials[i - 1].kEmission = glm::vec3(0.5f, 0.5f, 0.5f);
+
+				glm::vec3 randColor = glm::vec3{
+					Math::RandFloatMinMax(0.0f, 1.0f),
+					Math::RandFloatMinMax(0.0f, 1.0f),
+					Math::RandFloatMinMax(0.0f, 1.0f)
+				};
+
+				MeshManager::GetInstance()->meshList[MeshManager::GEO_DS_FAIRYLIGHT]->materials[i - 1].kAmbient = glm::vec3(randColor);
+				lights[i].color = randColor;
+				glUniform3fv(m_parameters[U_LIGHT0_COLOR + U_LIGHT0_EXPONENT * i], 1, &lights[i].color.r);
+			}
+
+			isLightChanged = true;
+		}
+		else if (lightTimer >= 2.1f)
+		{
+			lightTimer = 0.0f;
+			isLightChanged = false;
+		}
+	}
+
+
+
+
+
 	GameObjectManager::GetInstance()->UpdateAll();
 }
 
@@ -327,28 +424,28 @@ void carnivalroaming::LateUpdate()
 
 	// Developer Controls:
 	{
-		float speed = 20;
-		if (KeyboardController::GetInstance()->IsKeyDown('Y')) {
-			devVec.y += speed * Time::deltaTime;
-		}
-		if (KeyboardController::GetInstance()->IsKeyDown('U')) {
-			devVec.y -= speed * Time::deltaTime;
-		}
-		if (KeyboardController::GetInstance()->IsKeyDown('T')) {
-			devVec.z += speed * Time::deltaTime;
-		}
-		if (KeyboardController::GetInstance()->IsKeyDown('G')) {
-			devVec.z -= speed * Time::deltaTime;
-		}
-		if (KeyboardController::GetInstance()->IsKeyDown('F')) {
-			devVec.x += speed * Time::deltaTime;
-		}
-		if (KeyboardController::GetInstance()->IsKeyDown('H')) {
-			devVec.x -= speed * Time::deltaTime;
-		}
+		//float speed = 50;
+		//if (KeyboardController::GetInstance()->IsKeyDown('Y')) {
+		//	devVec.y += speed * Time::deltaTime;
+		//}
+		//if (KeyboardController::GetInstance()->IsKeyDown('U')) {
+		//	devVec.y -= speed * Time::deltaTime;
+		//}
+		//if (KeyboardController::GetInstance()->IsKeyDown('T')) {
+		//	devVec.z += speed * Time::deltaTime;
+		//}
+		//if (KeyboardController::GetInstance()->IsKeyDown('G')) {
+		//	devVec.z -= speed * Time::deltaTime;
+		//}
+		//if (KeyboardController::GetInstance()->IsKeyDown('F')) {
+		//	devVec.x += speed * Time::deltaTime;
+		//}
+		//if (KeyboardController::GetInstance()->IsKeyDown('H')) {
+		//	devVec.x -= speed * Time::deltaTime;
+		//}
 
-		//lights[0].m_transform.m_position = devVec;
-		std::cout << devVec.x << ", " << devVec.y << ", " << devVec.z << std::endl;
+		////lights[0].m_transform.m_position = devVec;
+		//std::cout << devVec.x << ", " << devVec.y << ", " << devVec.z << std::endl;
 
 		GameObjectManager::GetInstance()->UpdateAll(); 
 	}
@@ -442,27 +539,30 @@ void carnivalroaming::Render()
 		// Load identity matrix into the model stack
 		modelStack.LoadIdentity();
 	
-		if (lights[0].type == Light::LIGHT_DIRECTIONAL)
+		for (int i = 0; i < numLight; ++i)
 		{
-			glm::vec3 lightDir(lights[0].m_transform.m_position.x, lights[0].m_transform.m_position.y, lights[0].m_transform.m_position.z);
-			glm::vec3 lightDirection_cameraspace = viewStack.Top() * glm::vec4(lightDir, 0);
-			glUniform3fv(m_parameters[U_LIGHT0_POSITION], 1, glm::value_ptr(lightDirection_cameraspace));
-		}
-		else if (lights[0].type == Light::LIGHT_SPOT)
-		{
-			glm::vec3 lightPosition_cameraspace = viewStack.Top() * glm::vec4(lights[0].m_transform.m_position, 1);
-			glUniform3fv(m_parameters[U_LIGHT0_POSITION], 1, glm::value_ptr(lightPosition_cameraspace));
-			glm::vec3 spotDirection_cameraspace = viewStack.Top() * glm::vec4(lights[0].spotDirection, 0);
-			glUniform3fv(m_parameters[U_LIGHT0_SPOTDIRECTION], 1, glm::value_ptr(spotDirection_cameraspace));
-		}
-		else {
-			// Calculate the light position in camera space
-			glm::vec3 lightPosition_cameraspace = viewStack.Top() * glm::vec4(lights[0].m_transform.m_position, 1);
-			glUniform3fv(m_parameters[U_LIGHT0_POSITION], 1, glm::value_ptr(lightPosition_cameraspace));
+			if (lights[i].type == Light::LIGHT_DIRECTIONAL)
+			{
+				glm::vec3 lightDir(lights[i].m_transform.m_position.x, lights[i].m_transform.m_position.y, lights[i].m_transform.m_position.z);
+				glm::vec3 lightDirection_cameraspace = viewStack.Top() * glm::vec4(lightDir, 0);
+				glUniform3fv(m_parameters[U_LIGHT0_POSITION + U_LIGHT0_EXPONENT * i], 1, glm::value_ptr(lightDirection_cameraspace));
+			}
+			else if (lights[i].type == Light::LIGHT_SPOT)
+			{
+				glm::vec3 lightPosition_cameraspace = viewStack.Top() * glm::vec4(lights[i].m_transform.m_position, 1);
+				glUniform3fv(m_parameters[U_LIGHT0_POSITION + U_LIGHT0_EXPONENT * i], 1, glm::value_ptr(lightPosition_cameraspace));
+				glm::vec3 spotDirection_cameraspace = viewStack.Top() * glm::vec4(lights[i].spotDirection, 0);
+				glUniform3fv(m_parameters[U_LIGHT0_SPOTDIRECTION + U_LIGHT0_EXPONENT * i], 1, glm::value_ptr(spotDirection_cameraspace));
+			}
+			else {
+				// Calculate the light position in camera space
+				glm::vec3 lightPosition_cameraspace = viewStack.Top() * glm::vec4(lights[i].m_transform.m_position, 1);
+				glUniform3fv(m_parameters[U_LIGHT0_POSITION + U_LIGHT0_EXPONENT * i], 1, glm::value_ptr(lightPosition_cameraspace));
+			}
 		}
 
 		modelStack.PushMatrix();
-		RenderMesh(meshList[GEO_AXIS]);
+		//RenderMesh(meshList[GEO_AXIS]);
 		modelStack.PopMatrix();
 	}
 
@@ -475,6 +575,74 @@ void carnivalroaming::Render()
 	modelStack.Scale(1500.0f, 1000.0f, 0.0f);
 	RenderMesh(meshList[GEO_PLANE], true);
 	modelStack.PopMatrix();*/
+
+	// Fairy lights:
+	{
+		/*for (int i = 1; i < numLight; i++) {
+			modelStack.PushMatrix();
+			modelStack.Translate(lights[i].m_transform.m_position.x, lights[i].m_transform.m_position.y, lights[i].m_transform.m_position.z);
+			if (i > 4) {
+				modelStack.Rotate(90, 0, 1, 0);
+			}
+			modelStack.Scale(43, 43, 43);
+			RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_DS_FAIRYLIGHT], enableLight);
+			modelStack.PopMatrix();
+		}*/
+
+		modelStack.PushMatrix();
+		modelStack.Translate(209.35, 18.3634, -498.576);
+		modelStack.Scale(43, 43, 43);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_DS_FAIRYLIGHT], enableLight);
+		modelStack.PopMatrix();
+
+		modelStack.PushMatrix();
+		modelStack.Translate(-238.221, 18.3634, -498.576);
+		modelStack.Scale(43, 43, 43);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_DS_FAIRYLIGHT], enableLight);
+		modelStack.PopMatrix();
+
+
+		modelStack.PushMatrix();
+		modelStack.Translate(-238.221, 18.3634, 498.851);
+		modelStack.Scale(43, 43, 43);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_DS_FAIRYLIGHT], enableLight);
+		modelStack.PopMatrix();
+
+		modelStack.PushMatrix();
+		modelStack.Translate(209.35, 18.3634, 498.851);
+		modelStack.Scale(43, 43, 43);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_DS_FAIRYLIGHT], enableLight);
+		modelStack.PopMatrix();
+
+		modelStack.PushMatrix();
+		modelStack.Translate(748, 18.3634, -191.292);
+		modelStack.Rotate(90, 0, 1, 0);
+		modelStack.Scale(43, 43, 43);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_DS_FAIRYLIGHT], enableLight);
+		modelStack.PopMatrix();
+
+		modelStack.PushMatrix();
+		modelStack.Translate(748, 18.3634, 261.943);
+		modelStack.Rotate(90, 0, 1, 0);
+		modelStack.Scale(43, 43, 43);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_DS_FAIRYLIGHT], enableLight);
+		modelStack.PopMatrix();
+
+		modelStack.PushMatrix();
+		modelStack.Translate(-748, 18.3634, -191.292);
+		modelStack.Rotate(90, 0, 1, 0);
+		modelStack.Scale(43, 43, 43);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_DS_FAIRYLIGHT], enableLight);
+		modelStack.PopMatrix();
+
+		modelStack.PushMatrix();
+		modelStack.Translate(-748, 18.3634, 261.943);
+		modelStack.Rotate(90, 0, 1, 0);
+		modelStack.Scale(43, 43, 43);
+		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_DS_FAIRYLIGHT], enableLight);
+		modelStack.PopMatrix();
+	}
+
 
 	// Render white cube inside circus:
 	{
@@ -1532,18 +1700,6 @@ void carnivalroaming::Render()
 		modelStack.Rotate(90, 0, 1, 0);
 		modelStack.Scale(2.5, 2.5, 2.5);
 		RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_FENCE], true);
-
-
-		// Fairy lights:
-		{
-			modelStack.PushMatrix();
-			modelStack.Translate(devVec.x, devVec.y, devVec.z);
-			modelStack.Scale(6, 6, 6);
-			RenderMesh(MeshManager::GetInstance()->meshList[MeshManager::GEO_DS_FAIRYLIGHT], enableLight);
-			modelStack.PopMatrix();
-		}
-
-
 		modelStack.PopMatrix();
 	}
 
@@ -1626,12 +1782,6 @@ void carnivalroaming::Render()
 	//modelStack.Scale(100.0f, 200.f, 0.0f);
 	//RenderMesh(meshList[GEO_HITBOX]);
 	//modelStack.PopMatrix();
-
-	modelStack.PushMatrix();
-	modelStack.Translate(devVec.x, devVec.y, devVec.z);
-	modelStack.Scale(1, 1, 1);
-	RenderMesh(meshList[GEO_CUBE]);
-	modelStack.PopMatrix();
 
 	if (CheckCollisionWith(objInscene[PLAYERBOX]->getObject(), objInscene[BOX13]->getObject()) and KeyboardController::GetInstance()->IsKeyDown('E'))
 	{
