@@ -12,6 +12,7 @@
 #include "Time.h"
 #include <GLFW/glfw3.h>
 #include "Utility.h"
+#include "btBulletCollisionCommon.h"
 #include "ColliderManager.h"
 
 
@@ -74,7 +75,7 @@ void Scene::RenderMesh(Mesh* mesh, bool enableLight)
 	mesh->Render();
 	if (mesh->textureID > 0)
 	{
-		glBindTexture(GL_TEXTURE_2D, 0 );
+		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 }
 void Scene::RenderMesh(Mesh* mesh, bool enableLight, Transform& transform)
@@ -127,6 +128,8 @@ void Scene::RenderRigidMesh(Mesh* mesh, bool enableLight, Transform& transform, 
 	glm::mat4 MVP, modelView, modelView_inverse_transpose;
 	modelStack.LoadIdentity();
 	modelStack.LoadMatrix(GetTransformMatrix(body));
+	GameObject* userGO = static_cast<GameObject*>(body->getUserPointer());
+	modelStack.Translate(-userGO->colliderOffset.x, -userGO->colliderOffset.y, -userGO->colliderOffset.z);
 	modelStack.Scale(transform.m_scale.x, transform.m_scale.y, transform.m_scale.z);
 	MVP = projectionStack.Top() * viewStack.Top() * modelStack.Top();
 	glUniformMatrix4fv(m_parameters[U_MVP], 1, GL_FALSE, glm::value_ptr(MVP));
@@ -199,7 +202,6 @@ void Scene::RenderText(Mesh* mesh, std::string text, glm::vec3 color)
 {
 	if (!mesh || mesh->textureID <= 0) //Proper error check
 		return;
-	modelStack.LoadIdentity();
 	modelStack.PushMatrix();
 	// Enable blending
 	glEnable(GL_BLEND);
@@ -227,10 +229,10 @@ void Scene::RenderText(Mesh* mesh, std::string text, glm::vec3 color)
 	}
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glUniform1i(m_parameters[U_TEXT_ENABLED], 0);
-	glEnable(GL_CULL_FACE);
-	glDisable(GL_BLEND);
-	glEnable(GL_DEPTH_TEST);
 	modelStack.PopMatrix();
+	glEnable(GL_DEPTH_TEST);
+	glDisable(GL_BLEND);
+	modelStack.LoadIdentity();
 }
 void Scene::RenderTextOnScreen(Mesh* mesh, std::string text, glm::vec3 color, float size, float x, float y)
 {
@@ -345,6 +347,7 @@ void Scene::RenderChildCollider(btCollisionShape* childShape, float matrix[16])
 	}
 	modelStack.PopMatrix();
 }
+
 void Scene::HandleKeyPress(void)
 {
 	if (KeyboardController::GetInstance()->IsKeyPressed(0x31))
@@ -404,4 +407,3 @@ void Scene::HandleKeyPress(void)
 	}
 
 }
-

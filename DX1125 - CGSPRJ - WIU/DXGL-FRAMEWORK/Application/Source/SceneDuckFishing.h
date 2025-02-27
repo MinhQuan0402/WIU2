@@ -32,6 +32,7 @@ public:
 		GEO_FD_POOL,
 		GEO_FD_WATER,
 		GEO_FD_STEP_STOOL,
+		GEO_FD_DUCKBOTTOM,
 
 		NUM_GEOMETRY
 	};
@@ -47,6 +48,7 @@ public:
 
 private:
 	void RenderSkybox(void);
+	void RenderGround(int size);
 	int numLight;
 	
 	float duckX[20];
@@ -55,7 +57,16 @@ private:
 
 	float spinnerRotation;
 	float threshold = 1.1f;
-	glm::vec3 CamDir;
+	bool isPickable; 
+	bool isInView;
+	bool isSelected; 
+	int lightPower; 
+
+	float time;
+	float lightTimer1;
+	int random_number;
+	float fov;
+	glm::vec3 spotLightDuckPosition;
 	enum OBJINSCENE
 	{
 		GROUND,

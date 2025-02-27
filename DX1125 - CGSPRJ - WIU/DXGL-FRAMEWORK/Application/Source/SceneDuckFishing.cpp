@@ -26,7 +26,8 @@
 #include "PoolFloor.h"
 #include "SpinyWater.h"
 
-SceneDuckFishing::SceneDuckFishing() : numLight{ 2 }
+
+SceneDuckFishing::SceneDuckFishing() : numLight{ 4 }
 {
 	meshList.resize(NUM_GEOMETRY);
 	lights.resize(numLight);
@@ -70,17 +71,33 @@ void SceneDuckFishing::Init()
 	m_parameters[U_MATERIAL_SPECULAR] = glGetUniformLocation(m_programID, "material.kSpecular");
 	m_parameters[U_MATERIAL_SHININESS] = glGetUniformLocation(m_programID, "material.kShininess");
 
-	m_parameters[U_LIGHT0_TYPE] = glGetUniformLocation(m_programID, "lights[0].type");
-	m_parameters[U_LIGHT0_POSITION] = glGetUniformLocation(m_programID, "lights[0].position_cameraspace");
-	m_parameters[U_LIGHT0_COLOR] = glGetUniformLocation(m_programID, "lights[0].color");
-	m_parameters[U_LIGHT0_POWER] = glGetUniformLocation(m_programID, "lights[0].power");
-	m_parameters[U_LIGHT0_KC] = glGetUniformLocation(m_programID, "lights[0].kC");
-	m_parameters[U_LIGHT0_KL] = glGetUniformLocation(m_programID, "lights[0].kL");
-	m_parameters[U_LIGHT0_KQ] = glGetUniformLocation(m_programID, "lights[0].kQ");
-	m_parameters[U_LIGHT0_SPOTDIRECTION] = glGetUniformLocation(m_programID, "lights[0].spotDirection");
-	m_parameters[U_LIGHT0_COSCUTOFF] = glGetUniformLocation(m_programID, "lights[0].cosCutoff");
-	m_parameters[U_LIGHT0_COSINNER] = glGetUniformLocation(m_programID, "lights[0].cosInner");
-	m_parameters[U_LIGHT0_EXPONENT] = glGetUniformLocation(m_programID, "lights[0].exponent");
+	for (int i = 0; i < numLight; ++i)
+	{
+		std::string index = std::to_string(i);
+		std::string typeString = "lights[" + index + "].type"; 
+		std::string positionString = "lights[" + index + "].position_cameraspace"; 
+		std::string colorString = "lights[" + index + "].color";
+		std::string powerString = "lights[" + index + "].power";
+		std::string kCString = "lights[" + index + "].kC"; 
+		std::string kLString = "lights[" + index + "].kL";
+		std::string kQString = "lights[" + index + "].kQ";
+		std::string spotString = "lights[" + index + "].spotDirection";
+		std::string cosCutOffString = "lights[" + index + "].cosCutoff";
+		std::string cosInnerString = "lights[" + index + "].cosInner";
+		std::string exponentString = "lights[" + index + "].exponent";
+
+		m_parameters[U_LIGHT0_TYPE + U_LIGHT0_EXPONENT * i] = glGetUniformLocation(m_programID, typeString.data());
+		m_parameters[U_LIGHT0_POSITION + U_LIGHT0_EXPONENT * i] = glGetUniformLocation(m_programID, positionString.data());
+		m_parameters[U_LIGHT0_COLOR + U_LIGHT0_EXPONENT * i] = glGetUniformLocation(m_programID, colorString.data());
+		m_parameters[U_LIGHT0_POWER + U_LIGHT0_EXPONENT * i] = glGetUniformLocation(m_programID, powerString.data());
+		m_parameters[U_LIGHT0_KC + U_LIGHT0_EXPONENT * i] = glGetUniformLocation(m_programID, kCString.data());
+		m_parameters[U_LIGHT0_KL + U_LIGHT0_EXPONENT * i] = glGetUniformLocation(m_programID, kLString.data());
+		m_parameters[U_LIGHT0_KQ + U_LIGHT0_EXPONENT * i] = glGetUniformLocation(m_programID, kQString.data());
+		m_parameters[U_LIGHT0_SPOTDIRECTION + U_LIGHT0_EXPONENT * i] = glGetUniformLocation(m_programID, spotString.data());
+		m_parameters[U_LIGHT0_COSCUTOFF + U_LIGHT0_EXPONENT * i] = glGetUniformLocation(m_programID, cosCutOffString.data());
+		m_parameters[U_LIGHT0_COSINNER + U_LIGHT0_EXPONENT * i] = glGetUniformLocation(m_programID, cosInnerString.data());
+		m_parameters[U_LIGHT0_EXPONENT + U_LIGHT0_EXPONENT * i] = glGetUniformLocation(m_programID, exponentString.data());
+	}
 
 	m_parameters[U_LIGHTENABLED] = glGetUniformLocation(m_programID, "lightEnabled");
 	m_parameters[U_NUMLIGHTS] = glGetUniformLocation(m_programID, "numLights");
@@ -96,8 +113,9 @@ void SceneDuckFishing::Init()
 	meshList[GEO_SPHERE] = MeshBuilder::GenerateSphere("Sphere", YELLOW, 1.0f, 100, 100);
 	meshList[GEO_CUBE] = MeshBuilder::GenerateCube("Cube", GREY, 1.0f);
 	meshList[GEO_CYLINDER] = MeshBuilder::GenerateCylinder("Cylinder", BLUE, 180, 1.0f, 1.0f);
-	meshList[GEO_PLANE] = MeshBuilder::GenerateQuad("Quad", RED, 1000.0f);
-	
+	meshList[GEO_PLANE] = MeshBuilder::GenerateQuad("Quad", RED, 75.0f);
+	meshList[GEO_PLANE]->textureID = LoadPNG("Images//ground.png");
+
 	meshList[GEO_TOP] = MeshBuilder::GenerateQuad("Plane", glm::vec3(1.f, 1.f, 1.f), 10.f);
 	meshList[GEO_TOP]->textureID = LoadPNG("Images//top.png");
 	meshList[GEO_BOTTOM] = MeshBuilder::GenerateQuad("Plane", glm::vec3(1.f, 1.f, 1.f), 10.f);
@@ -112,25 +130,37 @@ void SceneDuckFishing::Init()
 	meshList[GEO_BACK]->textureID = LoadPNG("Images//left.png");
 
 	meshList[GEO_FD_DUCKY] = MeshBuilder::GenerateOBJMTL("Duck", "Models//FD_Duckie.obj", "Models//FD_Duckie.mtl");
+
 	meshList[GEO_FD_TENTFRAME] = MeshBuilder::GenerateOBJMTL("TENT FRAME", "Models//FD_CK_BoothGuards.obj", "Models//FD_CK_BoothGuards.mtl");
+	meshList[GEO_FD_TENTFRAME]->material = Material::Metal(GREY);
 	meshList[GEO_FD_TENTROOF] = MeshBuilder::GenerateOBJMTL("TENT Roof", "Models//FD_CK_BoothRoof.obj", "Models//FD_CK_BoothRoof.mtl");
 	meshList[GEO_FD_TENTROOF]->textureID = LoadPNG("Images//FD_CK_BoothRoof.png");
+	meshList[GEO_FD_TENTROOF]->material = Material::Wood(WHITE);
 	meshList[GEO_FD_POOL] = MeshBuilder::GenerateOBJ("Pool", "Models//FD_pool.obj");
 	meshList[GEO_FD_POOL]->textureID = LoadPNG("Images//FD_pool.png");
+	meshList[GEO_FD_POOL]->material = Material::Metal(BLUE);
+
 	meshList[GEO_FD_WATER] = MeshBuilder::GenerateCircle("Water", WHITE, 5);
 	meshList[GEO_FD_WATER]->textureID = LoadPNG("Images//FD_water.png");
+	meshList[GEO_FD_WATER]->material = Material::Plastic(BRIGHTBLUE);
+
+	meshList[GEO_FD_DUCKBOTTOM] = MeshBuilder::GenerateQuad("Plane", glm::vec3(1.f, 1.f, 1.f), 10.f);
+	meshList[GEO_FD_DUCKBOTTOM]->textureID = LoadPNG("Images//FD_duckNumberBottom.png");
+
 	/*meshList[GEO_FD_STEP_STOOL] = MeshBuilder::GenerateOBJ("StepStool", "Models//FD_step_stool.obj");
 	meshList[GEO_FD_STEP_STOOL]->textureID = LoadPNG("Images//FD_step_stool.png");*/
-
-	mainCamera.Init(glm::vec3(8, 6, 6), glm::vec3(0, 6, 0), VECTOR3_UP);
+	spotLightDuckPosition = glm::vec3(0, 0, 0);
+	mainCamera.Init(glm::vec3(0, 10, 15), glm::vec3(0, 10, 0), VECTOR3_UP);
 	mainCamera.sensitivity = 100;
-	glUniform1i(m_parameters[U_NUMLIGHTS], 2);
+	glUniform1i(m_parameters[U_NUMLIGHTS], numLight);
+
+	lightPower = 0;
 
 	lights[0].m_transform.m_position = glm::vec3{};
-	lights[0].m_transform.m_position = glm::vec3(0, 5, 0);
+	lights[0].m_transform.m_position = glm::vec3(0, 23, 0);
 	lights[0].color = glm::vec3(1, 1, 1);
-	lights[0].type = Light::LIGHT_SPOT;
-	lights[0].power = 1;
+	lights[0].type = Light::LIGHT_POINT;
+	lights[0].power = 1.5;
 	lights[0].kC = 1.f;
 	lights[0].kL = 0.01f;
 	lights[0].kQ = 0.001f;
@@ -139,16 +169,44 @@ void SceneDuckFishing::Init()
 	lights[0].exponent = 3.f;
 	lights[0].spotDirection = glm::vec3(0.f, 1.f, 0.f);
 
-	glUniform3fv(m_parameters[U_LIGHT0_COLOR], 1, &lights[0].color.r);
-	glUniform1i(m_parameters[U_LIGHT0_TYPE], lights[0].type);
-	glUniform1f(m_parameters[U_LIGHT0_POWER], lights[0].power);
-	glUniform1f(m_parameters[U_LIGHT0_KC], lights[0].kC);
-	glUniform1f(m_parameters[U_LIGHT0_KL], lights[0].kL);
-	glUniform1f(m_parameters[U_LIGHT0_KQ], lights[0].kQ);
-	glUniform1f(m_parameters[U_LIGHT0_COSCUTOFF], cosf(glm::radians<float>(lights[0].cosCutoff)));
-	glUniform1f(m_parameters[U_LIGHT0_COSINNER], cosf(glm::radians<float>(lights[0].cosInner)));
-	glUniform1f(m_parameters[U_LIGHT0_EXPONENT], lights[0].exponent);
+	lights[1].m_transform.m_position = glm::vec3{};
+	lights[1].m_transform.m_position = glm::vec3(spotLightDuckPosition.x, spotLightDuckPosition.y + 5, spotLightDuckPosition.z);
+	lights[1].color = glm::vec3(1, 1, 1);
+	lights[1].type = Light::LIGHT_SPOT;
+	lights[1].power = lightPower; 
+	lights[1].kC = 1.f;
+	lights[1].kL = 0.01f;
+	lights[1].kQ = 0.001f;
+	lights[1].cosCutoff = 25.f;
+	lights[1].cosInner = 10.f;
+	lights[1].exponent = 3.f;
+	lights[1].spotDirection = glm::vec3(0.f, 1.f, 0.f);
+	for (int i = 2; i < numLight; ++i)
+	{
+		lights[i].color = glm::vec3(1, 1, 1);
+		lights[i].type = Light::LIGHT_POINT;
+		lights[i].power = 0.f;
+		lights[i].kC = 0.5f;
+		lights[i].kL = 0.01f;
+		lights[i].kQ = 0.001f;
+		lights[i].cosCutoff = 45.f;
+		lights[i].cosInner = 30.f;
+		lights[i].exponent = 3.f;
+		lights[i].spotDirection = glm::vec3(0.f, 1.f, 0.f);
+	}
 
+	for (int i = 0; i < numLight; ++i)
+	{
+		glUniform1i(m_parameters[U_LIGHT0_TYPE + U_LIGHT0_EXPONENT * i], lights[i].type);
+		glUniform3fv(m_parameters[U_LIGHT0_COLOR + U_LIGHT0_EXPONENT * i], 1, &lights[i].color.r);
+		glUniform1f(m_parameters[U_LIGHT0_POWER + U_LIGHT0_EXPONENT * i], lights[i].power);
+		glUniform1f(m_parameters[U_LIGHT0_KC + U_LIGHT0_EXPONENT * i], lights[i].kC);
+		glUniform1f(m_parameters[U_LIGHT0_KL + U_LIGHT0_EXPONENT * i], lights[i].kL);
+		glUniform1f(m_parameters[U_LIGHT0_KQ + U_LIGHT0_EXPONENT * i], lights[i].kQ);
+		glUniform1f(m_parameters[U_LIGHT0_COSCUTOFF + U_LIGHT0_EXPONENT * i], cosf(glm::radians<float>(lights[i].cosCutoff)));
+		glUniform1f(m_parameters[U_LIGHT0_COSINNER + U_LIGHT0_EXPONENT * i], cosf(glm::radians<float>(lights[i].cosInner)));
+		glUniform1f(m_parameters[U_LIGHT0_EXPONENT + U_LIGHT0_EXPONENT * i], lights[i].exponent);
+	}
 	enableLight = true;
 	//Application::showCursor = true;
 	//Application::enableCursor = true;
@@ -158,8 +216,6 @@ void SceneDuckFishing::Init()
 	
 	for (int i = 0; i < 20; i++)
 	{
-		
-
 		float theta = (std::rand() / (float)RAND_MAX) * 2.0f * M_PI;
 
 		float r = std::sqrt((std::rand() / (float)RAND_MAX)) * maxRadius;
@@ -170,9 +226,10 @@ void SceneDuckFishing::Init()
 		duckX[i] = x;
 		duckZ[i] = z;
 		duckRotation[i] = rotationAngle;
-		std::cout << "X: " << duckX[i]<< "Z:" << duckZ[i] << "Rotate: "<< rotationAngle << std::endl;
+		
 	}
-	
+	isPickable = true;
+	isInView = false;
 	PhysicsMaterial groundMat;
 	groundMat.m_bounciness = 0.5f;
 	groundMat.m_friction = 0.5f;
@@ -185,7 +242,7 @@ void SceneDuckFishing::Init()
 		objInScene[DUCK]->m_transform.Translate(duckX[0], 7.f, duckZ[0]);
 		objInScene[DUCK]->m_transform.Rotate(0.0f, duckRotation[0], 0.0f);
 
-		/*objInScene[DUCK2] = new Ducks();
+		objInScene[DUCK2] = new Ducks();
 		objInScene[DUCK2]->m_transform.Translate(duckX[1], 7.f, duckZ[1]);
 		objInScene[DUCK2]->m_transform.Rotate(0.0f, duckRotation[1], 0.0f);
 
@@ -259,7 +316,7 @@ void SceneDuckFishing::Init()
 
 		objInScene[DUCK20] = new Ducks();
 		objInScene[DUCK20]->m_transform.Translate(duckX[19], 7.f, duckZ[19]);
-		objInScene[DUCK20]->m_transform.Rotate(0.0f, duckRotation[19], 0.0f);*/
+		objInScene[DUCK20]->m_transform.Rotate(0.0f, duckRotation[19], 0.0f);
 	}
 
 	objInScene[POOLWALL] = new PoolWall();
@@ -269,41 +326,43 @@ void SceneDuckFishing::Init()
 	objInScene[POOLWALL3] = new PoolWall();
 	objInScene[POOLWALL3]->m_transform.Translate(0.0f, 7.f, 0.0f);
 
-	objInScene[POOL_SPINNER] = new SpinyWater();
-	objInScene[POOL_SPINNER]->m_transform.Translate(0, 3.5, 0);
-	objInScene[POOL_SPINNER]->m_transform.Rotate(90.0f, spinnerRotation, 0.0f);
+	{
+		objInScene[POOL_SPINNER] = new SpinyWater();
+		objInScene[POOL_SPINNER]->m_transform.Translate(0, 3.5, 0);
+		objInScene[POOL_SPINNER]->m_transform.Rotate(90.0f, spinnerRotation, 0.0f);
 
-	objInScene[POOL_SPINNER2] = new SpinyWater();
-	objInScene[POOL_SPINNER2]->m_transform.Translate(9, 3.5, 0);
-	objInScene[POOL_SPINNER2]->m_transform.Rotate(90.0f, spinnerRotation, 0.0f);
+		objInScene[POOL_SPINNER2] = new SpinyWater();
+		objInScene[POOL_SPINNER2]->m_transform.Translate(9, 3.5, 0);
+		objInScene[POOL_SPINNER2]->m_transform.Rotate(90.0f, spinnerRotation, 0.0f);
 
-	objInScene[POOL_SPINNER3] = new SpinyWater();
-	objInScene[POOL_SPINNER3]->m_transform.Translate(-9, 3.5, 0);
-	objInScene[POOL_SPINNER3]->m_transform.Rotate(90.0f, spinnerRotation, 0.0f);
+		objInScene[POOL_SPINNER3] = new SpinyWater();
+		objInScene[POOL_SPINNER3]->m_transform.Translate(-9, 3.5, 0);
+		objInScene[POOL_SPINNER3]->m_transform.Rotate(90.0f, spinnerRotation, 0.0f);
 
-	objInScene[POOL_SPINNER4] = new SpinyWater();
-	objInScene[POOL_SPINNER4]->m_transform.Translate(0, 3.5, 9);
-	objInScene[POOL_SPINNER4]->m_transform.Rotate(90.0f, spinnerRotation, 0.0f);
+		objInScene[POOL_SPINNER4] = new SpinyWater();
+		objInScene[POOL_SPINNER4]->m_transform.Translate(0, 3.5, 9);
+		objInScene[POOL_SPINNER4]->m_transform.Rotate(90.0f, spinnerRotation, 0.0f);
 
-	objInScene[POOL_SPINNER5] = new SpinyWater();
-	objInScene[POOL_SPINNER5]->m_transform.Translate(0, 3.5, -9);
-	objInScene[POOL_SPINNER5]->m_transform.Rotate(90.0f, spinnerRotation, 0.0f);
+		objInScene[POOL_SPINNER5] = new SpinyWater();
+		objInScene[POOL_SPINNER5]->m_transform.Translate(0, 3.5, -9);
+		objInScene[POOL_SPINNER5]->m_transform.Rotate(90.0f, spinnerRotation, 0.0f);
 
-	objInScene[POOL_SPINNER6] = new SpinyWater();
-	objInScene[POOL_SPINNER6]->m_transform.Translate(-9, 3.5, -9);
-	objInScene[POOL_SPINNER6]->m_transform.Rotate(90.0f, spinnerRotation, 0.0f);
+		objInScene[POOL_SPINNER6] = new SpinyWater();
+		objInScene[POOL_SPINNER6]->m_transform.Translate(-9, 3.5, -9);
+		objInScene[POOL_SPINNER6]->m_transform.Rotate(90.0f, spinnerRotation, 0.0f);
 
-	objInScene[POOL_SPINNER7] = new SpinyWater();
-	objInScene[POOL_SPINNER7]->m_transform.Translate(9, 3.5, 9);
-	objInScene[POOL_SPINNER7]->m_transform.Rotate(90.0f, spinnerRotation, 0.0f);
-	
-	objInScene[POOL_SPINNER8] = new SpinyWater();
-	objInScene[POOL_SPINNER8]->m_transform.Translate(-9, 3.5, 9);
-	objInScene[POOL_SPINNER8]->m_transform.Rotate(90.0f, spinnerRotation, 0.0f);
+		objInScene[POOL_SPINNER7] = new SpinyWater();
+		objInScene[POOL_SPINNER7]->m_transform.Translate(9, 3.5, 9);
+		objInScene[POOL_SPINNER7]->m_transform.Rotate(90.0f, spinnerRotation, 0.0f);
 
-	objInScene[POOL_SPINNER9] = new SpinyWater();
-	objInScene[POOL_SPINNER9]->m_transform.Translate(9, 3.5, -9);
-	objInScene[POOL_SPINNER9]->m_transform.Rotate(90.0f, spinnerRotation, 0.0f);
+		objInScene[POOL_SPINNER8] = new SpinyWater();
+		objInScene[POOL_SPINNER8]->m_transform.Translate(-9, 3.5, 9);
+		objInScene[POOL_SPINNER8]->m_transform.Rotate(90.0f, spinnerRotation, 0.0f);
+
+		objInScene[POOL_SPINNER9] = new SpinyWater();
+		objInScene[POOL_SPINNER9]->m_transform.Translate(9, 3.5, -9);
+		objInScene[POOL_SPINNER9]->m_transform.Rotate(90.0f, spinnerRotation, 0.0f);
+	}
 
 	objInScene[POOLFLOOR] = new PoolFloor();
 	//objInScene[POOLWALL3]->m_transform.Translate(0.0f, 7.f, 0.0f);
@@ -330,14 +389,17 @@ void SceneDuckFishing::Init()
 	GameObjectManager::GetInstance()->addItem(objInScene[CYLINDER]);*/
 
 	GameObjectManager::GetInstance()->IniAll();
-	
-} 
+	std::srand(std::time(nullptr)); // Seed with time
+	time = 0;
+	fov = 45.0f;
+
+	} 
 
 void SceneDuckFishing::Update()
 {
 	HandleKeyPress();
 	mainCamera.Update();
-	glm::vec3 inputMovementDir{};
+	/*glm::vec3 inputMovementDir{};
 	if (KeyboardController::GetInstance()->IsKeyDown('W'))
 		inputMovementDir = mainCamera.view;
 	if (KeyboardController::GetInstance()->IsKeyDown('S'))
@@ -347,9 +409,10 @@ void SceneDuckFishing::Update()
 	if (KeyboardController::GetInstance()->IsKeyDown('A'))
 		inputMovementDir = -mainCamera.right;
 	glm::vec3 finalForce = inputMovementDir * 10.0f * Time::deltaTime;
-	mainCamera.m_transform.Translate(finalForce);
+	mainCamera.m_transform.Translate(finalForce);*/
 
 	spinnerRotation += 100* Time::deltaTime;
+	
 	objInScene[POOL_SPINNER]->SetRigidbodyRotation(0.0f, spinnerRotation, 0.0f);
 	objInScene[POOL_SPINNER2]->SetRigidbodyRotation(0.0f, -spinnerRotation, 0.0f);
 	objInScene[POOL_SPINNER3]->SetRigidbodyRotation(0.0f, -spinnerRotation, 0.0f);
@@ -360,30 +423,97 @@ void SceneDuckFishing::Update()
 	objInScene[POOL_SPINNER8]->SetRigidbodyRotation(0.0f, spinnerRotation, 0.0f);
 	objInScene[POOL_SPINNER9]->SetRigidbodyRotation(0.0f, -spinnerRotation, 0.0f);
 	
-	std::cout << mainCamera.target.z << std::endl;
-	if (std::abs(mainCamera.target.x - objInScene[DUCK]->GetRigidbodyPosition().x) <= threshold &&
-		std::abs(mainCamera.target.z - objInScene[DUCK]->GetRigidbodyPosition().z) <= threshold)
+
+	if(isSelected == false)
 	{
-		std::cout << "Detecting duck 1" << std::endl;
+		for (int i = 0; i < 20; ++i)
+		{
+			if (isObjectInteractable(objInScene[DUCK + i]->GetRigidbodyPosition(), mainCamera, 25.0f, 20.f))
+			{
+				isInView = true;
+				//currentIndexRing = DUCK + i; 
+				if (KeyboardController::GetInstance()->IsKeyPressed('F'))
+				{
+
+					//isShoot = false;
+					isInView = false;
+					if (std::rand() % 10 < 7) { // 70% chance (values 0-6 out of 0-9) 
+						random_number = std::rand() % 49 + 1; // Range 1-49 
+					}
+					else { // 30% chance
+						random_number = std::rand() % 51 + 50; // Range 50-100 
+					}
+					isSelected = true;
+					break;
+				}
+
+				lightPower = 1;
+				lights[1].power = lightPower;
+				glUniform1f(m_parameters[U_LIGHT0_POWER + U_LIGHT0_EXPONENT * 1], lights[1].power);
+				spotLightDuckPosition = objInScene[DUCK + i]->GetRigidbodyPosition();
+				lights[1].m_transform.m_position = glm::vec3(spotLightDuckPosition.x, spotLightDuckPosition.y + 5, spotLightDuckPosition.z);
+				break;
+			}
+			else
+			{
+				isInView = false;
+				lightPower = 0;
+				lights[1].power = lightPower;
+				glUniform1f(m_parameters[U_LIGHT0_POWER + U_LIGHT0_EXPONENT * 1], lights[1].power);
+			}
+
+		}
 	}
+	else
+	{
+		time += Time::deltaTime;
+	}
+
+	lightTimer1 += Time::deltaTime; 
+	if (isTimeReach(lightTimer1, 2.f, 2.05f))
+	{
+		glm::vec3 randColor = glm::vec3{
+			Math::RandFloatMinMax(0.0f, 1.0f),
+			Math::RandFloatMinMax(0.0f, 1.0f),
+			Math::RandFloatMinMax(0.0f, 1.0f)
+		};
+
+		
+		lights[0].color = randColor;
+		glUniform3fv(m_parameters[U_LIGHT0_COLOR], 1, &lights[0].color.r);
+	}
+	else if (lightTimer1 >= 2.1f)
+		lightTimer1 = 0.0f;
+
 	
+
+	
+	glm::vec3 prevTarget = mainCamera.target;
 	mainCamera.UpdateCameraRotation();
+	// stop player rotating too far:
+	{
+		glm::vec3 toObject = glm::normalize(glm::vec3(0, 3, 0) - mainCamera.m_transform.m_position);
+
+		glm::vec3 lookVector = glm::normalize(mainCamera.target - mainCamera.m_transform.m_position);
+
+		float dotProduct = glm::dot(lookVector, toObject);
+		float threshold = glm::cos(glm::radians(fov * 0.9));
+
+		if (dotProduct <= threshold) // Rotated too much
+		{
+			mainCamera.target = prevTarget;
+		}
+		else {
+			float closeness = (dotProduct - threshold) / (1.0f - threshold);
+			mainCamera.sensitivity = 10 + closeness * (50 - 10);
+		}
+	}
 	GameObjectManager::GetInstance()->UpdateAll();
 }
 
 void SceneDuckFishing::LateUpdate()
 {
-	/*glm::vec3 boxPosition = objInScene[BOX]->GetRigidbodyPosition();
-	if (boxPosition.y <= 10.0f && KeyboardController::GetInstance()->IsKeyDown(VK_SPACE))
-	{
-		objInScene[BOX]->SetRigidbodyPosition(boxPosition.x, 10.0f, boxPosition.z);
-		objInScene[BOX]->rb->clearGravity();
-	}
-
-	if (CheckCollisionWith(objInScene[BOX]->getObject(), objInScene[SPHERE]->getObject()))
-	{
-		std::cout << "Is Collided!" << std::endl;
-	}*/
+	
 	
 }
 
@@ -393,7 +523,7 @@ void SceneDuckFishing::Render()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glm::mat4 model = glm::mat4(1.0f);
 	// Setup Model View Projection matrix
-	projectionStack.LoadMatrix(glm::perspective(45.0f,
+	projectionStack.LoadMatrix(glm::perspective(fov,
 		Application::m_consoleWidth / (float)Application::m_consoleHeight,
 		0.1f, 1000.0f));
 
@@ -406,54 +536,68 @@ void SceneDuckFishing::Render()
 	// Load identity matrix into the model stack
 	modelStack.LoadIdentity();
 
-	if (lights[0].type == Light::LIGHT_DIRECTIONAL)
+	for (int i = 0; i < numLight; ++i)
 	{
-		glm::vec3 lightDir(lights[0].m_transform.m_position.x, lights[0].m_transform.m_position.y, lights[0].m_transform.m_position.z);
-		glm::vec3 lightDirection_cameraspace = viewStack.Top() * glm::vec4(lightDir, 0);
-		glUniform3fv(m_parameters[U_LIGHT0_POSITION], 1, glm::value_ptr(lightDirection_cameraspace));
-	}
-	else if (lights[0].type == Light::LIGHT_SPOT)
-	{
-		glm::vec3 lightPosition_cameraspace = viewStack.Top() * glm::vec4(lights[0].m_transform.m_position, 1);
-		glUniform3fv(m_parameters[U_LIGHT0_POSITION], 1, glm::value_ptr(lightPosition_cameraspace));
-		glm::vec3 spotDirection_cameraspace = viewStack.Top() * glm::vec4(lights[0].spotDirection, 0);
-		glUniform3fv(m_parameters[U_LIGHT0_SPOTDIRECTION], 1, glm::value_ptr(spotDirection_cameraspace));
-	}
-	else {
-		// Calculate the light position in camera space
-		glm::vec3 lightPosition_cameraspace = viewStack.Top() * glm::vec4(lights[0].m_transform.m_position, 1);
-		glUniform3fv(m_parameters[U_LIGHT0_POSITION], 1, glm::value_ptr(lightPosition_cameraspace));
+		if (lights[i].type == Light::LIGHT_DIRECTIONAL)
+		{
+			glm::vec3 lightDir(lights[i].m_transform.m_position.x, lights[i].m_transform.m_position.y, lights[i].m_transform.m_position.z);
+			glm::vec3 lightDirection_cameraspace = viewStack.Top() * glm::vec4(lightDir, 0);
+			glUniform3fv(m_parameters[U_LIGHT0_POSITION + U_LIGHT0_EXPONENT * i], 1, glm::value_ptr(lightDirection_cameraspace));
+		}
+		else if (lights[i].type == Light::LIGHT_SPOT)
+		{
+			glm::vec3 lightPosition_cameraspace = viewStack.Top() * glm::vec4(lights[i].m_transform.m_position, 1);
+			glUniform3fv(m_parameters[U_LIGHT0_POSITION + U_LIGHT0_EXPONENT * i], 1, glm::value_ptr(lightPosition_cameraspace));
+			glm::vec3 spotDirection_cameraspace = viewStack.Top() * glm::vec4(lights[i].spotDirection, 0);
+			glUniform3fv(m_parameters[U_LIGHT0_SPOTDIRECTION + U_LIGHT0_EXPONENT * i], 1, glm::value_ptr(spotDirection_cameraspace));
+		}
+		else {
+			// Calculate the light position in camera space
+			glm::vec3 lightPosition_cameraspace = viewStack.Top() * glm::vec4(lights[i].m_transform.m_position, 1);
+			glUniform3fv(m_parameters[U_LIGHT0_POSITION + U_LIGHT0_EXPONENT * i], 1, glm::value_ptr(lightPosition_cameraspace));
+		}
 	}
 
 	modelStack.PushMatrix();
 	RenderMesh(meshList[GEO_AXIS]);
 	modelStack.PopMatrix();
 
+	//for (int i = 0; i < numLight; ++i)
+	//{
+	//	modelStack.PushMatrix();
+	//	modelStack.Translate(lights[i].m_transform.m_position.x, lights[i].m_transform.m_position.y, lights[i].m_transform.m_position.z);
+	//	RenderMesh(meshList[GEO_LIGHT], false);
+	//	modelStack.PopMatrix();
+	//}
+
 	RenderSkybox();
+	RenderGround(7);
+
 
 	modelStack.PushMatrix();
 	modelStack.Scale(4.0f, 2.0f,4.0f);
-	RenderMesh(meshList[GEO_FD_TENTFRAME]);
+	RenderMesh(meshList[GEO_FD_TENTFRAME],true);
 	modelStack.PushMatrix();
-	//modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
-	RenderMesh(meshList[GEO_FD_TENTROOF]);
+	
+	RenderMesh(meshList[GEO_FD_TENTROOF],true);
 	modelStack.PopMatrix();
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
 	modelStack.Translate(0, 3.5, 0);
-	modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
+	modelStack.Rotate(-90.0f, 1.0f, 0.0f, 0.0f);
 	modelStack.Scale(2.5f, 2.5f, 1.0f);
-	RenderMesh(meshList[GEO_FD_WATER]); 
+	RenderMesh(meshList[GEO_FD_WATER], true); 
 	modelStack.PopMatrix();
 
 
 	modelStack.PushMatrix();
 	modelStack.Translate(0, 4.5, 0);
 	modelStack.Scale(0.7f, 0.7f, 0.7f);
-	RenderMesh(meshList[GEO_FD_POOL]);
+	RenderMesh(meshList[GEO_FD_POOL],true);
 	modelStack.PopMatrix();
 
+	
 	//modelStack.PushMatrix();
 	//modelStack.Translate(0, 0.0, 15);
 	//modelStack.Rotate(180.0f, 0.0f, 1.0f, 0.0f);
@@ -469,67 +613,79 @@ void SceneDuckFishing::Render()
 	/*RenderRigidMesh(meshList[GEO_SPHERE], false, objInScene[SPHERE]->m_transform, objInScene[SPHERE]->rb);
 	RenderRigidMesh(meshList[GEO_CUBE], false, objInScene[BOX]->m_transform, objInScene[BOX]->rb);
 	RenderRigidMesh(meshList[GEO_CYLINDER], false, objInScene[CYLINDER]->m_transform, objInScene[CYLINDER]->rb);*/
+
+	
 	GameObjectManager::GetInstance()->RenderAll(*this);
-
-#ifdef DRAW_HITBOX
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	for (btCollisionShape* shape : ColliderManager::GetInstance()->colliders)
+	if (isInView == true)
 	{
-		modelStack.PushMatrix();
-		modelStack.LoadIdentity();
-		GameObject* userGO = static_cast<GameObject*>(shape->getUserPointer());
-		modelStack.LoadMatrix(GetTransformMatrix(userGO->rb));
-		if (shape->getShapeType() == SPHERE_SHAPE_PROXYTYPE)
-		{
-			SphereCollider* sphereCollider = static_cast<SphereCollider*>(shape);
-			float size = sphereCollider->GetRadius();
-			modelStack.Scale(size, size, size);
-			modelStack.Scale(shape->getLocalScaling().x(), shape->getLocalScaling().y(), shape->getLocalScaling().z());
-			RenderMesh(hitboxMeshList[HITBOX_SPHERE]);
-		}
-		else if (shape->getShapeType() == BOX_SHAPE_PROXYTYPE)
-		{
-			BoxCollider* boxCollider = static_cast<BoxCollider*>(shape);
-			float width, height, depth;
-			boxCollider->GetDimension(width, height, depth);
-			modelStack.Scale(width, height, depth);
-			modelStack.Scale(shape->getLocalScaling().x(), shape->getLocalScaling().y(), shape->getLocalScaling().z());
-			RenderMesh(hitboxMeshList[HITBOX_BOX]);
-		}
-		else if (shape->getShapeType() == CYLINDER_SHAPE_PROXYTYPE)
-		{
-			CylinderCollider* cylinderCollider = static_cast<CylinderCollider*>(shape);
-			float rad, height;
-			cylinderCollider->GetDimension(rad, height);
-			modelStack.Scale(rad / 2.0f, height, rad / 2.0f);
-			modelStack.Scale(shape->getLocalScaling().x(), shape->getLocalScaling().y(), shape->getLocalScaling().z());
-			RenderMesh(hitboxMeshList[HITBOX_CYLINDER]);
-		}
-		else if (shape->getShapeType() == COMPOUND_SHAPE_PROXYTYPE)
-		{
-			btCompoundShape* compoundShape = static_cast<btCompoundShape*>(shape);
-			for (unsigned i = 0; i < (unsigned)compoundShape->getNumChildShapes(); ++i)
-			{
-				btCollisionShape* childShape = compoundShape->getChildShape(i);
-				btTransform childTransform = compoundShape->getChildTransform(i);
-				float mat[16];
-				childTransform.getOpenGLMatrix(mat);
-
-				RenderChildCollider(childShape, mat);
-			}
-		}
-		else if (shape->getShapeType() == STATIC_PLANE_PROXYTYPE)
-		{
-			modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
-			RenderMesh(hitboxMeshList[HITBOX_GROUND]);
-		}
-		modelStack.PopMatrix();
+		RenderTextOnScreen(meshList[GEO_TEXT],"[F] to check duck", YELLOW, 50, 400, 350);
 	}
 
-	if (isFillMode) glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
-
-#endif
+	if (isSelected == true and time <=3)
+		{	
+		RenderMeshOnScreen(meshList[GEO_FD_DUCKBOTTOM], 570, 340, 50, 50);
+		RenderTextOnScreen(meshList[GEO_TEXT], std::to_string(random_number), WHITE, 100, 600, 300);
+		}
+	
+//#ifdef DRAW_HITBOX
+//	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+//	for (btCollisionShape* shape : ColliderManager::GetInstance()->colliders)
+//	{
+//		modelStack.PushMatrix();
+//		modelStack.LoadIdentity();
+//		GameObject* userGO = static_cast<GameObject*>(shape->getUserPointer());
+//		modelStack.LoadMatrix(GetTransformMatrix(userGO->rb));
+//		if (shape->getShapeType() == SPHERE_SHAPE_PROXYTYPE)
+//		{
+//			SphereCollider* sphereCollider = static_cast<SphereCollider*>(shape);
+//			float size = sphereCollider->GetRadius();
+//			modelStack.Scale(size, size, size);
+//			modelStack.Scale(shape->getLocalScaling().x(), shape->getLocalScaling().y(), shape->getLocalScaling().z());
+//			RenderMesh(hitboxMeshList[HITBOX_SPHERE]);
+//		}
+//		else if (shape->getShapeType() == BOX_SHAPE_PROXYTYPE)
+//		{
+//			BoxCollider* boxCollider = static_cast<BoxCollider*>(shape);
+//			float width, height, depth;
+//			boxCollider->GetDimension(width, height, depth);
+//			modelStack.Scale(width, height, depth);
+//			modelStack.Scale(shape->getLocalScaling().x(), shape->getLocalScaling().y(), shape->getLocalScaling().z());
+//			RenderMesh(hitboxMeshList[HITBOX_BOX]);
+//		}
+//		else if (shape->getShapeType() == CYLINDER_SHAPE_PROXYTYPE)
+//		{
+//			CylinderCollider* cylinderCollider = static_cast<CylinderCollider*>(shape);
+//			float rad, height;
+//			cylinderCollider->GetDimension(rad, height);
+//			modelStack.Scale(rad / 2.0f, height, rad / 2.0f);
+//			modelStack.Scale(shape->getLocalScaling().x(), shape->getLocalScaling().y(), shape->getLocalScaling().z());
+//			RenderMesh(hitboxMeshList[HITBOX_CYLINDER]);
+//		}
+//		else if (shape->getShapeType() == COMPOUND_SHAPE_PROXYTYPE)
+//		{
+//			btCompoundShape* compoundShape = static_cast<btCompoundShape*>(shape);
+//			for (unsigned i = 0; i < (unsigned)compoundShape->getNumChildShapes(); ++i)
+//			{
+//				btCollisionShape* childShape = compoundShape->getChildShape(i);
+//				btTransform childTransform = compoundShape->getChildTransform(i);
+//				float mat[16];
+//				childTransform.getOpenGLMatrix(mat);
+//
+//				RenderChildCollider(childShape, mat);
+//			}
+//		}
+//		else if (shape->getShapeType() == STATIC_PLANE_PROXYTYPE)
+//		{
+//			modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
+//			RenderMesh(hitboxMeshList[HITBOX_GROUND]);
+//		}
+//		modelStack.PopMatrix();
+//	}
+//
+//	if (isFillMode) glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+//
+//
+//#endif
 }
 
 void SceneDuckFishing::Exit()
@@ -600,4 +756,30 @@ void SceneDuckFishing::RenderSkybox(void)
 	// Skybox should be rendered without light
 	RenderMesh(meshList[GEO_BOTTOM], false);
 	modelStack.PopMatrix();
+}
+void SceneDuckFishing::RenderGround(int size)
+{
+	if (size % 2 == 0) size += 1;
+
+	int valueToMul = (size - 1) / 2;
+	glm::vec3 originPos = glm::vec3{ 75.0f * (float)valueToMul, 0.0f, 75.0f * (float)valueToMul };
+	float orignalX = originPos.x;
+	meshList[GEO_PLANE]->material = Material::Wood(WHITE);
+	for (int i = 0; i < size; i++)
+	{
+		originPos.x = orignalX;
+		for (int j = 0; j < size; ++j)
+		{
+
+			modelStack.PushMatrix();
+			modelStack.Translate(originPos.x, originPos.y, originPos.z);
+			modelStack.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
+			RenderMesh(meshList[GEO_PLANE], enableLight);
+			modelStack.PopMatrix();
+
+			originPos.x -= 75.0f;
+		}
+
+		originPos.z -= 75.0f;
+	}
 }
